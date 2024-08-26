@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "3cc857ddb951d0f84b80f8cdc346d122"
+name = "trial-app"
+handle = "trial-app-10"
+application_url = "https://ceiling-impression-backed-assurance.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "spiny-wheel.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products,write_orders"
+
+[auth]
+redirect_urls = [
+  "https://ceiling-impression-backed-assurance.trycloudflare.com/auth/callback",
+  "https://ceiling-impression-backed-assurance.trycloudflare.com/auth/shopify/callback",
+  "https://ceiling-impression-backed-assurance.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false
