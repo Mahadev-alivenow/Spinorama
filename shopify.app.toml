@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://ceiling-impression-backed-assurance.trycloudflare.com"
+application_url = "https://nightlife-varied-cassette-join.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://ceiling-impression-backed-assurance.trycloudflare.com/auth/callback",
-  "https://ceiling-impression-backed-assurance.trycloudflare.com/auth/shopify/callback",
-  "https://ceiling-impression-backed-assurance.trycloudflare.com/api/auth/callback"
+  "https://nightlife-varied-cassette-join.trycloudflare.com/auth/callback",
+  "https://nightlife-varied-cassette-join.trycloudflare.com/auth/shopify/callback",
+  "https://nightlife-varied-cassette-join.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -15,6 +15,7 @@ import {
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import ButtonWithForm from "../components/ButtonWithForm";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -324,6 +325,9 @@ export default function Index() {
           </Layout.Section>
         </Layout>
       </BlockStack>
+      <div>
+        <ButtonWithForm />
+      </div>
     </Page>
   );
 }

@@ -1,4 +1,5 @@
 import { vitePlugin as remix } from "@remix-run/dev";
+import path from "path";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -35,6 +36,28 @@ if (host === "localhost") {
 }
 
 export default defineConfig({
+  entry: "./src/components/ButtonWithForm.jsx",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-react"],
+          },
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".js", ".jsx"],
+  },
   server: {
     port: Number(process.env.PORT || 3000),
     hmr: hmrConfig,
