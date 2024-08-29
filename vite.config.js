@@ -36,7 +36,7 @@ if (host === "localhost") {
 }
 
 export default defineConfig({
-  entry: "./src/components/ButtonWithForm.jsx",
+  entry: "~/components/ButtonWithForm.jsx",
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
