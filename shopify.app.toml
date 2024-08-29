@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://nightlife-varied-cassette-join.trycloudflare.com"
+application_url = "https://congress-competitions-consists-patrick.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://nightlife-varied-cassette-join.trycloudflare.com/auth/callback",
-  "https://nightlife-varied-cassette-join.trycloudflare.com/auth/shopify/callback",
-  "https://nightlife-varied-cassette-join.trycloudflare.com/api/auth/callback"
+  "https://congress-competitions-consists-patrick.trycloudflare.com/auth/callback",
+  "https://congress-competitions-consists-patrick.trycloudflare.com/auth/shopify/callback",
+  "https://congress-competitions-consists-patrick.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
