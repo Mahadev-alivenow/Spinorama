@@ -1,46 +1,35 @@
 
-<button is="party-button">
-  <span class="visually-hidden">Start the party!</span>
-</button>
+<div id="party">
+  <button is="party-button">
+    <span class="visually-hidden">Start the party!</span>
+  </button>
 <div id="alivenow-game">
-  <form id="form" method="post" action="/api/submit-user">
+
+
+  //<form id="formtheme" action="https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app/usertheme" method="post" enctype="multipart/form-data">
+  <form id="formtheme" action="https://stingray-app-eevdq.ondigitalocean.app/usertheme" method="post" enctype="multipart/form-data">
 
     {%- if block.settings.heading -%}
     <h2>{{ block.settings.heading }}</h2>
     {%- endif -%}
 
 
-    {% comment %} <div class="container">
-      <div class="left">
-        <div class="header">
-          <h2 class="animation a1">Welcome Back</h2>
-          <h4 class="animation a2">Log in to your account using email and password</h4>
-        </div>
-        <div class="form">
-          <input type="email" class="form-field animation a3" placeholder="Email Address">
-          <input type="password" class="form-field animation a4" placeholder="Password">
-          <p class="animation a5"><a href="#">Forgot Password</a></p>
-          <button id="submit-btn" class="animation a6">LOGIN</button>
-        </div>
-      </div>
-      <div class="right"></div>
-    </div> {% endcomment %}
-
     <div id="backdrop">
       <h2>GET 10% OFF</h2>
       <p>Sign with email to get 10% Discount code.</p>
       <div id="controls">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+        <label for="username">Name:</label>
+        <input type="text" id="username" name="username" required />
         <br>
       </div>
       <div id="controls">
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" required />
         <br>
       </div>
-      <div class="error"></div>
+      <div id="form-error"></div>
       <button type="submit" id="submit-btn">Submit</button>
+    </div>
   </form>
 
   <div id="thankyou-modal" class="modal">
@@ -50,12 +39,15 @@
       <button id="close-modal">Close</button>
     </div>
   </div>
+
 </div>
+
 
 <script>
   var urls = "{{ 'wheel.png' | asset_img_url: '720x720' }}";
   var urls_pin = "{{ 'pin.png' | asset_img_url: '150x150' }}";
 </script>
+
 
 <style>
   .visually-hidden {

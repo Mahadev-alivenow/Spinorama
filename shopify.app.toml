@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://congress-competitions-consists-patrick.trycloudflare.com"
+application_url = "https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app"
 embedded = true
 
 [build]
@@ -17,13 +17,18 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://congress-competitions-consists-patrick.trycloudflare.com/auth/callback",
-  "https://congress-competitions-consists-patrick.trycloudflare.com/auth/shopify/callback",
-  "https://congress-competitions-consists-patrick.trycloudflare.com/api/auth/callback"
+  "https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app/auth/callback",
+  "https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app/auth/shopify/callback",
+  "https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
+
+[app_proxy]
+url = "https://4233-2406-7400-51-7bdb-849d-f344-86ae-b8d4.ngrok-free.app/app/proxy-2"
+subpath = "proxytest"
+prefix = "apps"
 
 [pos]
 embedded = false

@@ -50,7 +50,7 @@ canvas:empty {
 }
 #backdrop{
 display: none;
-    /* position: fixed; */
+    position: fixed;
     width: 100%;
     /* height: 30%; */
     z-index: 111;
@@ -64,6 +64,10 @@ display: none;
     border-radius: 2rem;
     min-width: 35rem;
     padding: .5rem;
+    height: 33rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
 }
 
@@ -110,7 +114,7 @@ display: none;
 }
 #form-error{
   /* opacity: 0; */
-  display: none;
+  /* display: none; */
   color: red;
   padding: 0 0 5px 0;
 

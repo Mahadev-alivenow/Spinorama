@@ -17,4 +17,16 @@ module.exports = {
   serverModuleFormat: "cjs",
   dev: { port: process.env.HMR_SERVER_PORT || 8002 },
   future: {},
+  // Define routes and paths
+  routes: [
+    {
+      path: "/signup",
+      file: "./routes/signup.jsx",
+    },
+    {
+      path: "/success",
+      file: "./routes/success.jsx",
+    },
+  ],
 };
+

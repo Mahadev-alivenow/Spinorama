@@ -1,3 +1,4 @@
+// import{ActionFunction} from "@remix-run/node"
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -24,7 +25,14 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  // console.log("-------------hit app proxy -------------");
+  // const { admin } = await authenticate.admin(request);
+  // const { session } = await authenticate.public.appProxy(request);
+  // if (session) {
+  //   console.log(session);
+  // }
+  // return null;
+
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
   ];

@@ -1,6 +1,7 @@
 {
   "name": "trial",
   "private": true,
+
   "scripts": {
     "build": "remix vite:build",
     "dev": "shopify app dev",
@@ -32,8 +33,12 @@
     "@shopify/polaris": "^12.27.0",
     "@shopify/shopify-app-remix": "^3.0.2",
     "@shopify/shopify-app-session-storage-prisma": "^5.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "isbot": "^5.1.0",
     "mongodb": "^6.8.0",
+    "mongoose": "^8.6.1",
     "prisma": "^5.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -42,7 +47,9 @@
   "devDependencies": {
     "@remix-run/eslint-config": "^2.7.1",
     "@shopify/api-codegen-preset": "^1.1.1",
+    "@types/cors": "^2.8.17",
     "@types/eslint": "^8.40.0",
+    "@types/express": "^4.17.21",
     "@types/node": "^22.2.0",
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
