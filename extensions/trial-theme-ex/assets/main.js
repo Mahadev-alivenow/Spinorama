@@ -5,6 +5,7 @@ const thankyouModal = document.getElementById("thankyou-modal");
 const closeModalBtn = document.getElementById("close-modal");
 let formError = document.getElementById("form-error");
 const container = document.getElementById("party");
+  const signupForm = document.getElementById("formtheme");
 
 let partyButton = document.querySelector("[is=party-button]");
 console.log("formError");
@@ -19,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("flex");
     document.getElementById("alivenow-game").style.display = "flex";
   });
-  const signupForm = document.getElementById("formtheme");
 
   signupForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(signupForm);
 
     console.log(formData);
-    fetch(signupForm.action, {
+    console.log('form action : ',signupForm.action)
+    fetch("https://stingray-app-eevdq.ondigitalocean.app/user", {
       method: "POST",
       body: formData,
     })
