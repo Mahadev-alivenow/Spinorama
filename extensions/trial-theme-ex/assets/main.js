@@ -1,49 +1,3 @@
-// pure javascript to scale the game
-function resize() {
-  var canvas = document.querySelector("canvas");
-  var windowWidth = window.innerWidth;
-  var windowHeight = window.innerHeight;
-  var windowRatio = windowWidth / windowHeight;
-  var gameRatio = game.config.width / game.config.height;
-  if (windowRatio < gameRatio) {
-    canvas.style.width = windowWidth + "px";
-    canvas.style.height = windowWidth / gameRatio + "px";
-  } else {
-    canvas.style.width = windowHeight * gameRatio + "px";
-    canvas.style.height = windowHeight + "px";
-  }
-}
-
-// let userForm = document.querySelector("[type=app-form]");
-
-// userForm.addEventListener("submit", function (e) {
-//   e.preventDefault();
-//   console.log("form btn data click");
-//   let formData = new FormData(userForm);
-//   let data = [...formData.values()];
-//   fetch(`${location.origin}/apps/proxy-5/userinfo?shop=${Shopify.shop}`, {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify(data),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => console.log(data))
-//     .catch((error) => console.log(error));
-// });
-
-// $("root").css("overflow", "hidden");
-
-// Example: shopify app extension script
-// document.addEventListener("DOMContentLoaded", function () {
-//   var iframe = document.createElement("iframe");
-//   iframe.src = "https://seahorse-app-fstfy.ondigitalocean.app/";
-//   iframe.width = "100%";
-//   iframe.height = "600";
-//   iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-popups";
-//   iframe.frameBorder = "0";
-//   document.body.appendChild(iframe);
-// });
-
 let proxy = "proxy";
 let userForm = document.getElementById("submit-btn");
 // const userForm = document.getElementById("form");
@@ -73,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(signupForm);
 
     console.log(formData);
+    console.log("updated url main js");
     fetch("https://stingray-app-eevdq.ondigitalocean.app/usertheme", {
       method: "POST",
       body: formData,
