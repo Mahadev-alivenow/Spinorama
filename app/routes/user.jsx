@@ -11,7 +11,7 @@ export const action = async ({ request }) => {
   const username = formData.get("username");
   const email = formData.get("email");
 
-  console.log(formData);
+  console.log("formData in user jsx : ", formData);
   // 4. Validate the form data
   if (!username || !email) {
     return json({ error: "Username and email are required" }, { status: 400 });
@@ -44,7 +44,7 @@ export const action = async ({ request }) => {
 // 9. Create the frontend form (see next section)
 export default function UserForm() {
   const actionData = useActionData();
-  console.log(actionData);
+  console.log('actiondata in user jsx : ',actionData);
   return (
     <div>
       <h1>Create a new user</h1>

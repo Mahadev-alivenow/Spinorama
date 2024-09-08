@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(signupForm);
 
-    console.log(formData);
-    console.log('form action : ',signupForm.action)
+    console.log("form data in main.js file : ", formData);
+    console.log("form action in mainjs : ", signupForm.action);
     fetch("https://stingray-app-eevdq.ondigitalocean.app/user", {
       method: "POST",
       body: formData,
