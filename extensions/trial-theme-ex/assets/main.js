@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log(formData);
     console.log("updated url main js");
-    fetch("https://stingray-app-eevdq.ondigitalocean.app/usertheme", {
+    fetch(signupForm.action, {
       method: "POST",
       body: formData,
     })
