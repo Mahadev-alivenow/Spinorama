@@ -27,9 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(signupForm);
 
     console.log(formData);
-    console.log("updated URL: ", signupForm.action);
-    console.log('user end point')
-    fetch("https://stingray-app-eevdq.ondigitalocean.app/usertheme", {
+    fetch(signupForm.action, {
       method: "POST",
       body: formData,
     })
