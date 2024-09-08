@@ -1,28 +1,42 @@
-import express from 'express';
-import cors from 'cors';
-import { createRequestHandler } from '@remix-run/express'; // Import Remix Express handler
+const express = require("express");
+const { createRequestHandler } = require("@remix-run/express");
+const cors = require("cors");
 
 const app = express();
 
-// Set up CORS to allow requests from your Shopify domain
-app.use(cors({
-  origin: 'https://your-shopify-store.myshopify.com', // Replace with your actual Shopify domain
-}));
+// Set allowed origin to your Shopify domain
+const allowedOrigins = ["https://stingray-app-eevdq.ondigitalocean.app/"];
 
-// Any additional middlewares like body-parser, etc., can be added here
-
-// Your existing Remix handler here
-app.all(
-  '*',
-  createRequestHandler({
-    // You can add options here
-    getLoadContext() {
-      // Whatever you need in context
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
-  })
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Enable credentials if needed
+  }),
 );
 
+// Static assets middleware
+app.use(express.static("public"));
+
+// Remix request handler
+app.all(
+  "*",
+  createRequestHandler({
+    getLoadContext() {
+      // Anything you want to pass to loaders
+    },
+  }),
+);
+
+// Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is listening on port ${port}`);
 });
