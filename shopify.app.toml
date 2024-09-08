@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://stingray-app-eevdq.ondigitalocean.app"
+application_url = "https://t-hu-bufing-sku.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://stingray-app-eevdq.ondigitalocean.app/auth/callback",
-  "https://stingray-app-eevdq.ondigitalocean.app/auth/shopify/callback",
-  "https://stingray-app-eevdq.ondigitalocean.app/api/auth/callback"
+  "https://t-hu-bufing-sku.trycloudflare.com/auth/callback",
+  "https://t-hu-bufing-sku.trycloudflare.com/auth/shopify/callback",
+  "https://t-hu-bufing-sku.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://stingray-app-eevdq.ondigitalocean.app/app/proxy-2"
+url = "https://t-hu-bufing-sku.trycloudflare.com/app/proxy-2"
 subpath = "proxytest"
 prefix = "apps"
 

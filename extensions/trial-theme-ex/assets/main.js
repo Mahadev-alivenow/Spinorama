@@ -5,10 +5,12 @@ const thankyouModal = document.getElementById("thankyou-modal");
 const closeModalBtn = document.getElementById("close-modal");
 let formError = document.getElementById("form-error");
 const container = document.getElementById("party");
+const signupForm = document.getElementById("formtheme");
 
 let partyButton = document.querySelector("[is=party-button]");
-console.log("formError");
+console.log("formError new ");
 console.log(formError);
+console.log(signupForm);
 
 document.addEventListener("DOMContentLoaded", function () {
   partyButton.addEventListener("click", async function (e) {
@@ -19,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("flex");
     document.getElementById("alivenow-game").style.display = "flex";
   });
-  const signupForm = document.getElementById("formtheme");
 
   signupForm.addEventListener("submit", function (event) {
     event.preventDefault();
