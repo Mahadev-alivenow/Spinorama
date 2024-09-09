@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Form object:", formObject);
     console.log("signupForm.action: ", signupForm.action);
     // Make the POST request with the form data
-    fetch("https://stingray-app-eevdq.ondigitalocean.app/user", {
+    fetch("https://stingray-app-eevdq.ondigitalocean.app/usertheme", {
       // fetch("https://condo-scanning-white-partial.trycloudflare.com/user", {
       method: "POST",
       headers: {

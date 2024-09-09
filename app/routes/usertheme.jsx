@@ -4,39 +4,87 @@ import { useActionData } from "@remix-run/react";
 import { Form } from "react-router-dom";
 import { db } from "../utils/db.server"; // Ensure you have a MongoDB connection file like db.server.ts
 
-// 2. Define the action function that handles the form submission
 export const action = async ({ request }) => {
-  // 3. Get the submitted form data
-  const formData = await request.formData();
-  const username = formData.get("username");
-  const email = formData.get("email");
-
-  console.log(formData);
-  // 4. Validate the form data
-  if (!username || !email) {
-    return json({ error: "Username and email are required" }, { status: 400 });
+  // Handle preflight OPTIONS request
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS", // Allowed HTTP methods
+        "Access-Control-Allow-Headers": "Content-Type", // Allowed headers
+        "Access-Control-Max-Age": "86400", // Cache the preflight response for 1 day
+      },
+    });
   }
 
-  // 5. Connect to MongoDB
-  //   const client = await client();
-  // console.log(clientPromise);
-  const database = await db();
-  const users = database.collection("shopifyUsers");
+  // Proceed with the form submission if the request is POST
+  if (request.method === "POST") {
+    const formData = await request.formData();
+    const username = formData.get("username");
+    const email = formData.get("email");
 
-  // const db = await clientPromise.db(process.env.DB_NAME);
-  // const users = db.collection("users");
+    if (!username || !email) {
+      return json(
+        { error: "Username and email are required" },
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        },
+      );
+    }
 
-  // 6. Check if the email already exists in the database
-  const existingUser = await users.findOne({ email });
-  if (existingUser) {
-    return json({ error: "Email is already in use" }, { status: 409 });
+    // Connect to MongoDB
+    const database = await db();
+    const users = database.collection("shopifyUsers");
+
+    // Check if the email already exists in the database
+    const existingUser = await users.findOne({ email });
+    if (existingUser) {
+      return json(
+        { error: "Email is already in use" },
+        {
+          status: 409,
+          headers: {
+            "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        },
+      );
+    }
+
+    // Save the new user data
+    const newUser = { username, email, createdAt: new Date() };
+    await users.insertOne(newUser);
+
+    return json(
+      { message: "User created successfully" },
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      },
+    );
   }
 
-  // 7. Save the new user data
-  const newUser = { username, email, createdAt: new Date() };
-  await users.insertOne(newUser);
-  console.log("inserted : ", newUser);
-  // 8. Redirect to a success page (optional)
-  // return redirect("/success");
-  return json({ message: "User created successfully" }, { status: 201 });
+  // If it's not an OPTIONS or POST request, return a method not allowed response
+  return json(
+    { error: "Method Not Allowed" },
+    {
+      status: 405,
+      headers: {
+        "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    },
+  );
 };
