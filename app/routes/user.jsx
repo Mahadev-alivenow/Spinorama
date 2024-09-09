@@ -10,6 +10,7 @@ export const action = async ({ request }) => {
         "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS", // Allowed HTTP methods
         "Access-Control-Allow-Headers": "Content-Type", // Allowed headers
+        "Access-Control-Max-Age": "86400", // Cache the preflight response for 1 day
       },
     });
   }
@@ -27,6 +28,8 @@ export const action = async ({ request }) => {
           status: 400,
           headers: {
             "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
           },
         },
       );
@@ -45,6 +48,8 @@ export const action = async ({ request }) => {
           status: 400,
           headers: {
             "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
           },
         },
       );
@@ -60,6 +65,8 @@ export const action = async ({ request }) => {
         status: 200,
         headers: {
           "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
+          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
         },
       },
     );
@@ -73,12 +80,13 @@ export const action = async ({ request }) => {
       headers: {
         "Access-Control-Allow-Origin": "https://spiny-wheel.myshopify.com", // Allow Shopify domain
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
     },
   );
 };
 
-// Create the frontend form component
+// Frontend form component
 export default function UserForm() {
   const actionData = useActionData();
 
