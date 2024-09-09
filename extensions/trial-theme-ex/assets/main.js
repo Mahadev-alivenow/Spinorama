@@ -30,7 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("form action in mainjs :---- ", signupForm.action);
     fetch("https://stingray-app-eevdq.ondigitalocean.app/user", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({formData}),
     })
       .then((response) => {
         if (response.ok) {
