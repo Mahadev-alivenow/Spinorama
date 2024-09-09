@@ -1,8 +1,13 @@
+function toUrlEncoded(formData) {
+  const urlEncoded = new URLSearchParams(formData).toString();
+  return urlEncoded;
+}
+const thankyouModal = document.getElementById("thankyou-modal");
+
 document.addEventListener("DOMContentLoaded", function () {
   let partyButton = document.querySelector("[is=party-button]");
   let signupForm = document.getElementById("formtheme");
   let formError = document.getElementById("form-error");
-  const thankyouModal = document.getElementById("thankyou-modal");
 
   partyButton.addEventListener("click", async function (e) {
     e.preventDefault();
@@ -25,15 +30,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     console.log("Form object:", formObject);
-
+    console.log("signupForm.action: ", signupForm.action);
     // Make the POST request with the form data
-    fetch("https://stingray-app-eevdq.ondigitalocean.app/user", {
-    // fetch("https://condo-scanning-white-partial.trycloudflare.com/user", {
+    fetch("https://stingray-app-eevdq.ondigitalocean.app/usertheme", {
+      // fetch("https://condo-scanning-white-partial.trycloudflare.com/user", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify(formObject), // Send form data as JSON
+      body: toUrlEncoded(formData),
     })
       .then((response) => {
         if (response.ok) {

@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://condo-scanning-white-partial.trycloudflare.com"
+application_url = "https://37ba-106-51-65-216.ngrok-free.app"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://condo-scanning-white-partial.trycloudflare.com/auth/callback",
-  "https://condo-scanning-white-partial.trycloudflare.com/auth/shopify/callback",
-  "https://condo-scanning-white-partial.trycloudflare.com/api/auth/callback"
+  "https://37ba-106-51-65-216.ngrok-free.app/auth/callback",
+  "https://37ba-106-51-65-216.ngrok-free.app/auth/shopify/callback",
+  "https://37ba-106-51-65-216.ngrok-free.app/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://condo-scanning-white-partial.trycloudflare.com/app/proxy-2"
+url = "https://37ba-106-51-65-216.ngrok-free.app/app/proxy-2"
 subpath = "proxytest"
 prefix = "apps"
 
