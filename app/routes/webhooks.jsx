@@ -1,16 +1,9 @@
 // app/routes/webhooks.jsx
 
 import { json } from "@remix-run/node";
-// import crypto from "node:crypto";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-let crypto;
-if (typeof window === "undefined") {
-  console.log("only on server---------------");
-  (async () => {
-    crypto = await import("crypto"); // Require crypto only in server environment
-  })();
-}
+import crypto from "crypto"; // Import crypto directly
 
 export async function action({ request }) {
   const { topic, shop, session, admin } = await authenticate.webhook(request);
@@ -26,7 +19,7 @@ export async function action({ request }) {
   const hmacHeader = request.headers.get("X-Shopify-Hmac-Sha256");
   console.log("Received HMAC Header:", hmacHeader);
 
-  const isValid = verifyShopifyWebhook(bodyText, hmacHeader);
+  const isValid = await verifyShopifyWebhook(bodyText, hmacHeader);
 
   console.log("isValid:", isValid);
 
@@ -84,7 +77,6 @@ async function verifyShopifyWebhook(data, hmacHeader) {
     return false;
   }
 
-  // const crypto = await import('crypto');
   const hash = crypto
     .createHmac("sha256", secret)
     .update(data, "utf8") // Specify 'utf8' to ensure the correct encoding
