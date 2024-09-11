@@ -3,7 +3,7 @@
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-//default
+//defaults
 import crypto from "crypto"; // Import crypto directly 
 
 export async function action({ request }) {
