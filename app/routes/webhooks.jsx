@@ -4,6 +4,13 @@ import { json } from "@remix-run/node";
 // import crypto from "node:crypto";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+let crypto;
+if (typeof window === "undefined") {
+  console.log("only on server---------------");
+  (async () => {
+    crypto = await import("crypto"); // Require crypto only in server environment
+  })();
+}
 
 export async function action({ request }) {
   const { topic, shop, session, admin } = await authenticate.webhook(request);
@@ -77,7 +84,7 @@ async function verifyShopifyWebhook(data, hmacHeader) {
     return false;
   }
 
-  const crypto = await import('crypto');
+  // const crypto = await import('crypto');
   const hash = crypto
     .createHmac("sha256", secret)
     .update(data, "utf8") // Specify 'utf8' to ensure the correct encoding
