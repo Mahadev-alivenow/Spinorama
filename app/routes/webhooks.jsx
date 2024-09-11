@@ -3,7 +3,8 @@
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import crypto from "crypto"; // Import crypto directly
+//default
+import crypto from "crypto"; // Import crypto directly 
 
 export async function action({ request }) {
   const { topic, shop, session, admin } = await authenticate.webhook(request);
