@@ -1,7 +1,7 @@
 // app/routes/webhooks.jsx
 
 import { json } from "@remix-run/node";
-import crypto from "node:crypto";
+// import crypto from "node:crypto";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
@@ -70,13 +70,14 @@ export async function action({ request }) {
 }
 
 // Helper function to verify Shopify's HMAC signature
-function verifyShopifyWebhook(data, hmacHeader) {
+async function verifyShopifyWebhook(data, hmacHeader) {
   const secret = process.env.SHOPIFY_API_SECRET;
   if (!secret) {
     console.error("SHOPIFY_API_SECRET is not set");
     return false;
   }
 
+  const crypto = await import('crypto');
   const hash = crypto
     .createHmac("sha256", secret)
     .update(data, "utf8") // Specify 'utf8' to ensure the correct encoding
