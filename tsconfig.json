@@ -1,5 +1,5 @@
 {
-  "include": ["env.d.ts", "**/*.ts", "**/*.tsx", "app/utils/db.server.js", "app/routes/user.jsx"],
+  "include": ["env.d.ts", "**/*.ts", "**/*.tsx", "app/utils/db.server.js", "app/routes/user.jsx", "app/routes/webhooks/SHOP_REDACT.jsx", "app/routes/webhooks.jsx", "app/routes/webhooks.jsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "strict": true,

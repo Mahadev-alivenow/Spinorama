@@ -3,7 +3,7 @@
 client_id = "3cc857ddb951d0f84b80f8cdc346d122"
 name = "trial-app"
 handle = "trial-app-10"
-application_url = "https://37ba-106-51-65-216.ngrok-free.app"
+application_url = "https://9f5b-106-51-65-216.ngrok-free.app"
 embedded = true
 
 [build]
@@ -17,16 +17,32 @@ scopes = "read_products,write_orders"
 
 [auth]
 redirect_urls = [
-  "https://37ba-106-51-65-216.ngrok-free.app/auth/callback",
-  "https://37ba-106-51-65-216.ngrok-free.app/auth/shopify/callback",
-  "https://37ba-106-51-65-216.ngrok-free.app/api/auth/callback"
+  "https://9f5b-106-51-65-216.ngrok-free.app/auth/callback",
+  "https://9f5b-106-51-65-216.ngrok-free.app/auth/shopify/callback",
+  "https://9f5b-106-51-65-216.ngrok-free.app/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/customer_deletion"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/customer_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/deletion"
+  compliance_topics = [ "shop/redact" ]
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/api/webhooks/app/uninstalled"
+
 [app_proxy]
-url = "https://37ba-106-51-65-216.ngrok-free.app/app/proxy-2"
+url = "https://9f5b-106-51-65-216.ngrok-free.app/app/proxy-2"
 subpath = "proxytest"
 prefix = "apps"
 

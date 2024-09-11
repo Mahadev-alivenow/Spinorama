@@ -40,6 +40,9 @@ app.post("/user", (req, res) => {
 app.post("/usertheme", (req, res) => {
   res.json({ message: "CORS is enabled for Shopify store!" });
 });
+app.post("/SHOP_REDACT", (req, res) => {
+  res.json({ message: "CORS is enabled for Shopify store!" });
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
