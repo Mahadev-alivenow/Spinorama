@@ -1,0 +1,101 @@
+/* Spin Wheel Button Styles */
+#spin-wheel-button {
+  position: fixed;
+  z-index: 999999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.spin-wheel-button-inner {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.spin-wheel-button-inner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.spin-wheel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spin-wheel-text {
+  margin-left: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Position Variants */
+.spin-wheel-position-bottomRight {
+  right: 20px;
+  bottom: 20px;
+}
+
+.spin-wheel-position-bottomLeft {
+  left: 20px;
+  bottom: 20px;
+}
+
+.spin-wheel-position-topRight {
+  right: 20px;
+  top: 20px;
+}
+
+.spin-wheel-position-topLeft {
+  left: 20px;
+  top: 20px;
+}
+
+.spin-wheel-position-centerBottom {
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+}
+
+.spin-wheel-position-topCenter {
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .spin-wheel-button-inner {
+    padding: 8px 12px;
+  }
+
+  .spin-wheel-text {
+    font-size: 12px;
+  }
+
+  .spin-wheel-position-bottomRight,
+  .spin-wheel-position-bottomLeft,
+  .spin-wheel-position-centerBottom {
+    bottom: 10px;
+  }
+
+  .spin-wheel-position-topRight,
+  .spin-wheel-position-topLeft,
+  .spin-wheel-position-topCenter {
+    top: 10px;
+  }
+
+  .spin-wheel-position-bottomRight,
+  .spin-wheel-position-topRight {
+    right: 10px;
+  }
+
+  .spin-wheel-position-bottomLeft,
+  .spin-wheel-position-topLeft {
+    left: 10px;
+  }
+}

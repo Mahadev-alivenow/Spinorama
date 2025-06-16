@@ -1,0 +1,13 @@
+{% if app.metafields.mtappsremixbillingdemo.hasPlan %}
+<!-- Load the dynamic script that will fetch campaign data and create the button -->
+<script src="{{ app_url }}/api/embedded-script.js" defer></script>
+{% endif %}
+
+{% schema %}
+{
+"name": "Spin Wheel Button",
+"target": "body",
+"available_if": "{{ app.metafields.mtappsremixbillingdemo.hasPlan }}",
+"settings": []
+}
+{% endschema %}

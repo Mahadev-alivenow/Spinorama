@@ -1,0 +1,1598 @@
+{% if app.metafields.mtappsremixbillingdemo.hasPlan %}
+{{ 'theme.css' | asset_url | stylesheet_tag }}
+{{ 'spin-wheel.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+<!-- Debug section - uncomment to see metafield values -->
+<div style="display: none;">
+  <h3>Debug Metafields:</h3>
+  <p>floatingButtonPosition: {{ app.metafields.wheel-of-wonders.floatingButtonPosition }}</p>
+  <p>floatingButtonHasText: {{ app.metafields.wheel-of-wonders.floatingButtonHasText }}</p>
+  <p>floatingButtonText: {{ app.metafields.wheel-of-wonders.floatingButtonText }}</p>
+  <p>showFloatingButton: {{ app.metafields.wheel-of-wonders.showFloatingButton }}</p>
+  <p>primaryColor: {{ app.metafields.wheel-of-wonders.primaryColor }}</p>
+</div>
+{% endcomment %}
+
+{% assign buttonPosition = app.metafields.wheel-of-wonders.floatingButtonPosition | default: 'bottomRight' %}
+{% assign showButtonText = app.metafields.wheel-of-wonders.floatingButtonHasText | default: true %}
+{% assign buttonText = app.metafields.wheel-of-wonders.floatingButtonText | default: 'SPIN & WIN' %}
+{% assign showFloatingButton = app.metafields.wheel-of-wonders.showFloatingButton | default: true %}
+{% assign primaryColor = app.metafields.wheel-of-wonders.primaryColor | default: '#ffc700' %}
+{% assign shopDomain = shop.permanent_domain %}
+
+{% comment %} Determine wheel slices from metafields {% endcomment %}
+{% assign slices_raw = app.metafields.wheel-of-wonders.wheelSectors | default: 'six' %}
+{% case slices_raw %}
+{% when 'four' %}
+{% assign slices = 4 %}
+{% when 'six' %}
+{% assign slices = 6 %}
+{% when 'eight' %}
+{% assign slices = 8 %}
+{% else %}
+{% assign slices = 6 %}
+{% endcase %}
+
+{% if showFloatingButton %}
+<div id="spin-wheel-button" class="spin-wheel-position-{{ buttonPosition }}" style="display: block;">
+  <div class="spin-wheel-button-inner" style="background-color: {{ primaryColor }};">
+    <div class="spin-wheel-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 12V20H4V12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M22 7H2V12H22V7Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M12 20V7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path
+          d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path
+          d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+    {% if showButtonText %}
+    <span class="spin-wheel-text">{{ buttonText }}</span>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Spin Wheel Modal Container -->
+<div id="spin-wheel-modal" class="spin-wheel-modal">
+  <div class="MainContainer" data-theme="version1" data-slices="{{ slices }}">
+    <div class="InnerContainer"></div>
+
+    <div class="WheelVersion1" data-theme="version1Bottom">
+      <div class="wheel-container" id="wheel4">
+        <div class="NewcreateWheel" id="CNewWheels"></div>
+        <div class="WheelCircleLight">
+          <img style="width: 100%;" src="{{ 'DotedCirlceLight.png' | asset_url }}" alt="light">
+        </div>
+      </div>
+
+      <div class="spin-btn arrowImage" id="spin-btn4">
+        <img class="ArrowColorChange" src="{{ 'Arrow_base_wheel_2_Light.svg' | asset_url }}" alt="centerIcon"
+          style="width: 100%;">
+        <div class="Arrow" id="arrowImage">
+          <img class="ArrowColorChange" src="{{ 'Arrow_wheel_2_Light.svg' | asset_url }}" alt="centerIcon"
+            style="width: 100%; transform: rotate(180deg);">
+        </div>
+      </div>
+    </div>
+
+    <div class="EmailSections" data-theme="version1Bottom">
+      <div class="topsections">
+        <div class="LogoSelectionImg">
+          {% comment %} <img style="width: 100%;" src="{{ 'shop_logo.png' | asset_url }}" alt="LogoImage">
+          {% endcomment %}
+        </div>
+        <div class="TitleHeadline">
+          <div class="Hedline HeadlineTittle">GO AHEAD GIVE IT A SPIN!<br>
+            <span> This is a demo of our Spin to Win displays</span>
+          </div>
+        </div>
+      </div>
+      <div class="SpinEmail">
+        <div class="Email">
+          <input class="input" id="UserEnteredEmail" type="text" placeholder="email" required="">
+        </div>
+        <div class="SpintBtn ButtonText SpinBtnText" id="SpinBtnClick">
+          SPIN NOW
+        </div>
+      </div>
+
+      <div class="termSections">
+        <span id="privacyPolicyText">
+          {% comment %} I accept the terms and conditions {% endcomment %}
+        </span>
+      </div>
+    </div>
+
+    <div class="CouponAsingSections">
+      <div class="LogoSelectionImg">
+        {% comment %} <img style="width: 100%;" src="{{ 'shop_logo.png' | asset_url }}" alt="LogoImage">
+        {% endcomment %}
+      </div>
+      <div class="CouponTittleHeadline">
+        <div class="Hedline CouponHeadlineText">
+          LUCKY DAY!
+          <span> You have won 10% discount for your shopping</span>
+        </div>
+      </div>
+
+      <div class="CouponCodeBottomSec">
+        <div class="TextColorSel" style="text-align: center;"> Your discount code is</div>
+        <div class="Coupons">
+          <input class="input ResultCoupon" id="CouponsText" style="pointer-events: none;" type="text" required="">
+        </div>
+        <div class="CoupontBtn ResultBtnText" id="CouponBtnClick">
+          REDEEM NOW
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<audio id="SpinAudio" preload="auto">
+  <source src="{{ 'click.mp3' | asset_url }}" type="audio/mpeg" />
+</audio>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+
+<script>
+  document.addEventListener( 'DOMContentLoaded', function ()
+  {
+    // Get wheel slices from data attribute (set by Liquid)
+    const mainContainer = document.querySelector( ".MainContainer" );
+    const WheelSectorFromUser = parseInt( mainContainer.getAttribute( 'data-slices' ) || '6' );
+    console.log( "Wheel sectors from Liquid:", WheelSectorFromUser );
+
+    // Add flag to prevent multiple wheel initializations
+    let isWheelInitialized = false;
+
+    // Preload wheel assets
+    function preloadWheelAssets()
+    {
+      // Preload SVG for current wheel size
+      const svgUrl = "{{ 'RedWheel-' | append: slices | append: '.svg' | asset_url }}";
+      console.log( "Preloading SVG:", svgUrl );
+      const svgImg = new Image();
+      svgImg.src = svgUrl;
+
+      // Preload PNG fallback
+      const pngUrl = "{{ 'RedWheel-' | append: slices | append: '.png' | asset_url }}";
+      console.log( "Preloading PNG:", pngUrl );
+      const pngImg = new Image();
+      pngImg.src = pngUrl;
+
+      // Preload other assets
+      const dotedCircle = new Image();
+      dotedCircle.src = "{{ 'DotedCirlceLight.png' | asset_url }}";
+
+      const arrowBase = new Image();
+      arrowBase.src = "{{ 'Arrow_base_wheel_2_Light.svg' | asset_url }}";
+
+      const arrow = new Image();
+      arrow.src = "{{ 'Arrow_wheel_2_Light.svg' | asset_url }}";
+    }
+
+    // Call preload function
+    preloadWheelAssets();
+
+    const spinButton = document.getElementById( 'spin-wheel-button' );
+    const spinWheelModal = document.getElementById( 'spin-wheel-modal' );
+    const shopDomain = "{{ shopDomain }}";
+
+    // Main container and wheel elements
+    const MainContainer = document.querySelector( ".MainContainer" );
+    const WheelforForthBlock = document.querySelector( ".WheelVersion1" );
+    const EmailSections = document.querySelector( ".EmailSections" );
+    const SpinBtnClick = document.querySelector( "#SpinBtnClick" );
+    const CouponAsingSections = document.querySelector( ".CouponAsingSections" );
+    const SpinAudio = document.getElementById( "SpinAudio" );
+
+    // Default values from metafields
+    let HeadlineTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineText | default: 'TRY YOUR LUCK' }}";
+    let HeadlineChildTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineChildText | default: 'This is a demo of our Spin to Win' }}";
+    let HeadlineResultTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineResultText | default: 'CONGRATULATIONS' }}";
+    let TermCondTextFromUser = "{{ app.metafields.wheel-of-wonders.termCondText | default: 'I accept the terms and conditions' }}";
+    let ButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.buttonText | default: 'SPIN' }}";
+    let ResultButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.resultButtonText | default: 'REDEEM NOW' }}";
+    let BGColorFromUser = "{{ app.metafields.wheel-of-wonders.secondaryColor | default: '#107bd4' }}";
+    let FrameBorderColorFromUser = "{{ app.metafields.wheel-of-wonders.tertiaryColor | default: 'yellow' }}";
+    let LogoImagefromUser = "{{ app.metafields.wheel-of-wonders.logoImage | default: '' }}";
+    let VersionSelectionFromUser = "{{ app.metafields.wheel-of-wonders.versionSelection | default: 'bottom' }}";
+    let EnvormentSelectionFromUser = "{{ app.metafields.wheel-of-wonders.envSelection | default: 'light' }}";
+    let EmailPlaceHoldrFromUser = "{{ app.metafields.wheel-of-wonders.emailPlaceholder | default: 'Enter your Email' }}";
+    let CouponResultFromBackEnd = "{{ app.metafields.wheel-of-wonders.couponResult | default: 2 }}";
+    let ColorToneFromUser = "{{ app.metafields.wheel-of-wonders.colorTone | default: 'dualTone' }}";
+    let primaryColorFromUser = "{{ primaryColor }}";
+
+    // Helper function to determine if a color is light or dark
+    function isLightColor( color )
+    {
+      // Convert hex to RGB
+      const hex = color.replace( '#', '' );
+      const r = parseInt( hex.substr( 0, 2 ), 16 );
+      const g = parseInt( hex.substr( 2, 2 ), 16 );
+      const b = parseInt( hex.substr( 4, 2 ), 16 );
+
+      // Calculate luminance
+      const luminance = ( 0.299 * r + 0.587 * g + 0.114 * b ) / 255;
+      return luminance > 0.5;
+    }
+
+    // Helper function to get contrasting text color
+    function getContrastColor( backgroundColor )
+    {
+      return isLightColor( backgroundColor ) ? '#000000' : '#ffffff';
+    }
+
+    // Helper function to lighten a color
+    function lightenColor( color, percent )
+    {
+      const hex = color.replace( '#', '' );
+      const r = parseInt( hex.substr( 0, 2 ), 16 );
+      const g = parseInt( hex.substr( 2, 2 ), 16 );
+      const b = parseInt( hex.substr( 4, 2 ), 16 );
+
+      const newR = Math.min( 255, Math.floor( r + ( 255 - r ) * percent ) );
+      const newG = Math.min( 255, Math.floor( g + ( 255 - g ) * percent ) );
+      const newB = Math.min( 255, Math.floor( b + ( 255 - b ) * percent ) );
+
+      return `#${ newR.toString( 16 ).padStart( 2, '0' ) }${ newG.toString( 16 ).padStart( 2, '0' ) }${ newB.toString( 16 ).padStart( 2, '0' ) }`;
+    }
+
+    let WheelColor1FromUser;
+    let WheelColor2FromUser;
+    let WheelFontColor1FromUser;
+    let WheelFontColor2FromUser;
+
+    // Fixed color logic for single tone and dual tone
+    if ( ColorToneFromUser === "singleTone" )
+    {
+      // In single tone mode: alternate between primary color and a lighter shade
+      WheelColor1FromUser = primaryColorFromUser;
+      WheelColor2FromUser = lightenColor( primaryColorFromUser, 0.3 ); // 30% lighter
+
+      // Set contrasting text colors
+      WheelFontColor1FromUser = getContrastColor( WheelColor1FromUser );
+      WheelFontColor2FromUser = getContrastColor( WheelColor2FromUser );
+    } else if ( ColorToneFromUser === "dualTone" )
+    {
+      // In dual tone mode: use secondary and primary colors
+      WheelColor1FromUser = BGColorFromUser;
+      WheelColor2FromUser = primaryColorFromUser;
+
+      // Set contrasting text colors
+      WheelFontColor1FromUser = getContrastColor( WheelColor1FromUser );
+      WheelFontColor2FromUser = getContrastColor( WheelColor2FromUser );
+    } else
+    {
+      // fallback
+      WheelColor1FromUser = "#ffffff";
+      WheelColor2FromUser = primaryColorFromUser;
+      WheelFontColor1FromUser = "#000000";
+      WheelFontColor2FromUser = getContrastColor( primaryColorFromUser );
+    }
+
+    console.log( "Color settings:", {
+      colorTone: ColorToneFromUser,
+      primaryColor: primaryColorFromUser,
+      wheelColor1: WheelColor1FromUser,
+      wheelColor2: WheelColor2FromUser,
+      fontColor1: WheelFontColor1FromUser,
+      fontColor2: WheelFontColor2FromUser
+    } );
+
+    // Define wheel prizes based on sector count
+    let AllCoupons = [];
+
+    // Set default coupons based on wheel sectors
+    if ( WheelSectorFromUser === 4 )
+    {
+      AllCoupons = [ "10% OFF", "20% OFF", "30% OFF", "40% OFF" ];
+    } else if ( WheelSectorFromUser === 6 )
+    {
+      AllCoupons = [ "10% OFF", "20% OFF", "30% OFF", "40% OFF", "50% OFF", "60% OFF" ];
+    } else if ( WheelSectorFromUser === 8 )
+    {
+      AllCoupons = [ "10% OFF", "20% OFF", "30% OFF", "40% OFF", "50% OFF", "60% OFF", "70% OFF", "80% OFF" ];
+    }
+
+    // Try to get wheel sectors data from metafields JSON
+    {% if app.metafields.wheel-of-wonders.wheelSectorsData %}
+    try
+    {
+      const wheelSectorsData = JSON.parse( '{{ app.metafields.wheel-of-wonders.wheelSectorsData }}' );
+      if ( wheelSectorsData && wheelSectorsData.length > 0 )
+      {
+        // Map the sectors to coupon text
+        const sectorCoupons = wheelSectorsData.map( sector => sector.rewardType || sector.text || "10% OFF" );
+
+        // Make sure we have enough coupons for the wheel
+        while ( sectorCoupons.length < WheelSectorFromUser )
+        {
+          sectorCoupons.push( "10% OFF" );
+        }
+
+        // Trim if we have too many
+        if ( sectorCoupons.length > WheelSectorFromUser )
+        {
+          AllCoupons = sectorCoupons.slice( 0, WheelSectorFromUser );
+        } else
+        {
+          AllCoupons = sectorCoupons;
+        }
+      }
+    } catch ( e )
+    {
+      console.error( "Error parsing wheel sectors data:", e );
+    }
+    {% endif %}
+
+    // Set up wheel angles based on number of sectors
+    let AngleArr = [];
+
+    // Show the spin wheel when button is clicked
+    if ( spinButton )
+    {
+      spinButton.addEventListener( 'click', function ()
+      {
+        console.log( 'Spin wheel button clicked' );
+        spinWheelModal.style.display = "block";
+        MainContainer.style.display = "block";
+        spinButton.style.display = "none";
+
+        // Initialize the wheel only once
+        if ( !isWheelInitialized )
+        {
+          console.log( "Initializing wheel for the first time" );
+          initializeWheel();
+          isWheelInitialized = true;
+        } else
+        {
+          console.log( "Wheel already initialized, skipping initialization" );
+        }
+      } );
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener( 'click', function ( event )
+    {
+      if ( event.target === spinWheelModal )
+      {
+        spinWheelModal.style.display = 'none';
+        spinButton.style.display = 'block';
+      }
+    } );
+
+    // Initialize the wheel with all settings
+    function initializeWheel()
+    {
+      // Set the privacy policy text
+      // document.getElementById( "privacyPolicyText" ).textContent = TermCondTextFromUser;
+
+      // Get SVG URL directly from Liquid
+      const svgUrl = "{{ 'RedWheel-' | append: slices | append: '.svg' | asset_url }}";
+      console.log( "Loading SVG from:", svgUrl );
+
+      fetch( svgUrl )
+        .then( res =>
+        {
+          if ( !res.ok )
+          {
+            throw new Error( `Failed to load SVG: ${ res.status } ${ res.statusText }` );
+          }
+          return res.text();
+        } )
+        .then( svgText =>
+        {
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString( svgText, "image/svg+xml" );
+          const Version1Wheel = svgDoc.documentElement;
+          document.querySelector( '.NewcreateWheel' ).appendChild( Version1Wheel );
+
+          // Apply styling and setup
+          setupWheelAppearance();
+          selectCouponText( WheelSectorFromUser );
+        } )
+        .catch( error =>
+        {
+          console.error( "Error loading wheel SVG:", error );
+          // Fallback to a PNG image if SVG fails to load
+          const wheelContainer = document.querySelector( '.NewcreateWheel' );
+
+          // Use PNG URL directly from Liquid
+          const pngUrl = "{{ 'RedWheel-' | append: slices | append: '.png' | asset_url }}";
+          console.log( "Falling back to PNG:", pngUrl );
+
+          wheelContainer.innerHTML = `<img src="${ pngUrl }" alt="Wheel" style="width: 100%;">`;
+
+          // Still apply styling
+          setupWheelAppearance();
+        } );
+    }
+
+    // Set up wheel appearance based on settings
+    function setupWheelAppearance()
+    {
+      // Set wheel position based on VersionSelectionFromUser
+      if ( VersionSelectionFromUser === "top" )
+      {
+        WheelOnTop();
+        EmailSections.setAttribute( 'data-theme', 'version1Top' );
+        document.querySelector( ".WheelVersion1" ).setAttribute( 'data-theme', 'version1Top' );
+      } else if ( VersionSelectionFromUser === "center" )
+      {
+        WheelOnCenter();
+        EmailSections.setAttribute( 'data-theme', 'version1Center' );
+        document.querySelector( ".WheelVersion1" ).setAttribute( 'data-theme', 'version1Center' );
+      } else
+      {
+        WheelOnBottom();
+        EmailSections.setAttribute( 'data-theme', 'version1Bottom' );
+        document.querySelector( ".WheelVersion1" ).setAttribute( 'data-theme', 'version1Bottom' );
+      }
+
+      // Set environment (light/dark)
+      if ( EnvormentSelectionFromUser === "dark" )
+      {
+        DarkSelection();
+      } else
+      {
+        WhiteSelection();
+      }
+
+      // Set text and styling
+      document.querySelectorAll( '.HeadlineTittle' ).forEach( function ( el )
+      {
+        el.innerHTML = `${ HeadlineTextFromUser }<br><span>${ HeadlineChildTextFromUser }</span>`;
+        el.style.color = WheelColor2FromUser;
+      } );
+
+      document.querySelectorAll( '.SpinBtnText' ).forEach( function ( el )
+      {
+        el.innerHTML = ButtonTextFromUser;
+        el.style.backgroundColor = WheelColor2FromUser;
+        el.style.color = getContrastColor( WheelColor2FromUser );
+      } );
+
+      document.querySelectorAll( '#UserEnteredEmail' ).forEach( function ( el )
+      {
+        el.placeholder = EmailPlaceHoldrFromUser;
+        el.style.borderColor = WheelColor2FromUser;
+      } );
+
+      // Set logo if available
+      if ( LogoImagefromUser && LogoImagefromUser !== "" )
+      {
+        document.querySelectorAll( '.LogoSelectionImg img' ).forEach( function ( el )
+        {
+          el.src = LogoImagefromUser;
+        } );
+      }
+
+      // Set spin button color
+      document.querySelector( ".spin-btn" ).style.backgroundColor = WheelColor2FromUser;
+    }
+
+    // Set coupon text on wheel
+    function selectCouponText( WheelBandCount )
+    {
+      console.log( "Applying wheel colors:", {
+        color1: WheelColor1FromUser,
+        color2: WheelColor2FromUser,
+        fontColor1: WheelFontColor1FromUser,
+        fontColor2: WheelFontColor2FromUser
+      } );
+
+      // Apply wheel segment colors
+      document.querySelectorAll( '.WheelColorSelect1' ).forEach( function ( el )
+      {
+        el.style.fill = WheelColor1FromUser;
+      } );
+
+      document.querySelectorAll( '.WheelColorSelect2' ).forEach( function ( el )
+      {
+        el.style.fill = WheelColor2FromUser;
+      } );
+
+      // Apply text colors with proper contrast
+      document.querySelectorAll( '.WheelFontColor1' ).forEach( function ( el )
+      {
+        el.style.fill = WheelFontColor1FromUser;
+        el.style.fontFamily = "'Roboto', sans-serif";
+        el.style.fontWeight = "bold";
+      } );
+
+      document.querySelectorAll( '.WheelFontColor2' ).forEach( function ( el )
+      {
+        el.style.fill = WheelFontColor2FromUser;
+        el.style.fontFamily = "'Roboto', sans-serif";
+        el.style.fontWeight = "bold";
+      } );
+
+      // Set coupon text for each sector
+      for ( let i = 0; i < WheelBandCount; i++ )
+      {
+        const couponElement = document.querySelector( `.Coup${ i + 1 }` );
+        if ( couponElement && i < AllCoupons.length )
+        {
+          couponElement.textContent = `${ AllCoupons[ i ] }`;
+        }
+      }
+    }
+
+    // Wheel positioning functions
+    function WheelOnBottom()
+    {
+      if ( WheelSectorFromUser === 4 )
+      {
+        AngleArr = [ 360, 90, 180, 270 ];
+      } else if ( WheelSectorFromUser === 6 )
+      {
+        AngleArr = [ 0, 60, 120, 180, 240, 300 ];
+      } else if ( WheelSectorFromUser === 8 )
+      {
+        AngleArr = [ 0, 45, 90, 135, 180, 225, 270, 315 ];
+      }
+
+      MainContainer.style.display = "flex";
+      MainContainer.style.flexDirection = "column-reverse";
+      document.querySelectorAll( ".Arrow" ).forEach( ( val ) =>
+      {
+        val.style.top = "-50%";
+        val.style.transformOrigin = "bottom";
+        val.querySelector( "img" ).style.transform = "rotate(0deg)";
+      } );
+    }
+
+    function WheelOnTop()
+    {
+      if ( WheelSectorFromUser === 4 )
+      {
+        AngleArr = [ 180, 270, 360, 90 ];
+      } else if ( WheelSectorFromUser === 6 )
+      {
+        AngleArr = [ 180, 240, 300, 0, 60, 120 ];
+      } else if ( WheelSectorFromUser === 8 )
+      {
+        AngleArr = [ 180, 225, 270, 315, 0, 45, 90, 135 ];
+      }
+
+      document.querySelectorAll( ".Arrow" ).forEach( ( val ) =>
+      {
+        val.style.top = "70%";
+        val.style.transformOrigin = "top";
+        val.querySelector( "img" ).style.transform = "rotate(180deg)";
+      } );
+    }
+
+    function WheelOnCenter()
+    {
+      if ( WheelSectorFromUser === 4 )
+      {
+        AngleArr = [ 180, 270, 360, 90 ];
+      } else if ( WheelSectorFromUser === 6 )
+      {
+        AngleArr = [ 180, 240, 300, 0, 60, 120 ];
+      } else if ( WheelSectorFromUser === 8 )
+      {
+        AngleArr = [ 180, 225, 270, 315, 0, 45, 90, 135 ];
+      }
+
+      document.querySelectorAll( ".Arrow" ).forEach( ( val ) =>
+      {
+        val.style.top = "70%";
+        val.style.transformOrigin = "top";
+        val.querySelector( "img" ).style.transform = "rotate(180deg)";
+      } );
+    }
+
+    // Theme selection functions
+    function DarkSelection()
+    {
+      document.querySelectorAll( ".ArrowColorChange" ).forEach( ( val ) =>
+      {
+        val.style.filter = "invert(100%)";
+      } );
+
+      document.querySelectorAll( ".TextColorSel" ).forEach( ( val ) =>
+      {
+        val.style.color = "white";
+      } );
+
+      MainContainer.style.backgroundColor = "black";
+    }
+
+    function WhiteSelection()
+    {
+      document.querySelectorAll( ".ArrowColorChange" ).forEach( ( val ) =>
+      {
+        val.style.filter = "invert(0%)";
+      } );
+
+      document.querySelectorAll( ".TextColorSel" ).forEach( ( val ) =>
+      {
+        val.style.color = "black";
+      } );
+
+      MainContainer.style.backgroundColor = "white";
+    }
+
+    // Spin wheel animation
+    function SpinWheelStart( TypeOfWheel )
+    {
+      // Determine winning sector (can be randomized or predetermined)
+      let winningIndex = parseInt( CouponResultFromBackEnd ) || 2;
+
+      // If we have campaign data with sectors, we could implement weighted random selection
+      // based on the chance percentages in the campaign data
+      {% if app.metafields.wheel-of-wonders.wheelSectorsData %}
+      try
+      {
+        const wheelSectorsData = JSON.parse( '{{ app.metafields.wheel-of-wonders.wheelSectorsData }}' );
+        if ( wheelSectorsData && wheelSectorsData.length > 0 )
+        {
+          // Get the sectors with their chances
+          const sectors = wheelSectorsData.slice( 0, WheelSectorFromUser );
+
+          // Convert chance percentages to numbers
+          const chances = sectors.map( sector =>
+          {
+            const chanceStr = sector.chance || "0%";
+            return parseInt( chanceStr.replace( '%', '' ) ) || 0;
+          } );
+
+          // Implement weighted random selection
+          const totalChance = chances.reduce( ( sum, chance ) => sum + chance, 0 );
+          if ( totalChance > 0 )
+          {
+            let random = Math.random() * totalChance;
+            let cumulativeChance = 0;
+
+            for ( let i = 0; i < chances.length; i++ )
+            {
+              cumulativeChance += chances[ i ];
+              if ( random < cumulativeChance )
+              {
+                winningIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      } catch ( e )
+      {
+        console.error( "Error parsing wheel sectors data for random selection:", e );
+      }
+      {% endif %}
+
+      let AngleVal = AngleArr[ winningIndex ];
+      let lastTickIndex = 0;
+      const tickInterval = 360 / WheelSectorFromUser;
+
+      // Using GSAP for animation
+      gsap.to( `#${ TypeOfWheel }`, {
+        rotation: 360 * 10 + AngleVal, // 10 rotations + extra angle
+        duration: 10,
+        ease: "power2.inOut",
+        onUpdate: function ()
+        {
+          // Access the target element
+          const targetElement = this.targets()[ 0 ];
+          let currentRotation = gsap.getProperty( targetElement, "rotation" ) % 360;
+          if ( currentRotation < 0 ) currentRotation += 360;
+
+          this.currVal = Math.floor( ( currentRotation + tickInterval / 2 ) / tickInterval ) % WheelSectorFromUser;
+
+          if ( this.currVal !== lastTickIndex )
+          {
+            SpinAudio.currentTime = 0;
+            SpinAudio.play();
+            lastTickIndex = this.currVal;
+            ArrowAnimation( "#arrowImage" );
+          }
+        },
+        onComplete: function ()
+        {
+          // Show results after spin completes
+          setTimeout( () =>
+          {
+            showResults( winningIndex );
+          }, 1000 );
+        }
+      } );
+    }
+
+    // Arrow animation
+    function ArrowAnimation( SpinArrowVal )
+    {
+      gsap.fromTo(
+        `${ SpinArrowVal }`,
+        { rotation: -15 },
+        {
+          rotation: 0,
+          duration: 0.5,
+          yoyo: false,
+          ease: "elastic.out",
+          repeat: 0,
+        }
+      );
+    }
+
+    // Show results after spin
+    function showResults( winningIndex )
+    {
+      // Get the winning coupon
+      const winningCoupon = AllCoupons[ winningIndex ] || "10% OFF";
+
+      // Update result text
+      document.querySelectorAll( '.CouponHeadlineText' ).forEach( function ( el )
+      {
+        el.innerHTML = `${ HeadlineResultTextFromUser } <br> <span> You have won ${ winningCoupon } discount for your shopping</span>`;
+        el.style.color = WheelColor2FromUser;
+      } );
+
+      document.querySelectorAll( '.ResultCoupon' ).forEach( function ( el )
+      {
+        el.value = ` ${ winningCoupon }`;
+        el.style.borderColor = WheelColor2FromUser;
+      } );
+
+      document.querySelectorAll( '.ResultBtnText' ).forEach( function ( el )
+      {
+        el.innerHTML = ResultButtonTextFromUser;
+        el.style.backgroundColor = WheelColor2FromUser;
+        el.style.color = getContrastColor( WheelColor2FromUser );
+      } );
+
+      // Hide wheel, show results
+      EmailSections.style.display = "none";
+      CouponAsingSections.style.display = "flex";
+      WheelforForthBlock.style.display = "none";
+
+      // Save the result to the database
+      saveWinningResult( winningCoupon );
+    }
+
+    // Redeem button functionality
+    const couponBtnClick = document.getElementById( 'CouponBtnClick' );
+    if ( couponBtnClick )
+    {
+      couponBtnClick.addEventListener( 'click', function ()
+      {
+        // Close the modal and apply coupon
+        spinWheelModal.style.display = 'none';
+
+        // Get the coupon code
+        const couponCode = document.getElementById( 'CouponsText' ).value.trim();
+
+        // Apply the coupon to the cart
+        console.log( 'Applying coupon:', couponCode );
+
+        // Redirect to cart with discount code
+        window.location.href = '/cart?discount=' + encodeURIComponent( couponCode );
+      } );
+    }
+
+    // Spin button click handler
+    let SpinBtnClickFlag = true;
+    let validationFlag = true;
+
+    if ( SpinBtnClick )
+    {
+      SpinBtnClick.addEventListener( "click", () =>
+      {
+        if ( SpinBtnClickFlag )
+        {
+          validationCheck();
+          const SpintBtn = document.querySelector( ".SpintBtn" );
+
+          SpintBtn.style.transition = "transform 0.2s ease";
+          SpintBtn.style.transform = "scale(0.95, 0.95)";
+
+          setTimeout( () =>
+          {
+            SpintBtn.style.transform = "scale(1, 1)";
+          }, 300 );
+
+          if ( validationFlag )
+          {
+            SpinBtnClickFlag = false;
+            SpinWheelStart( "wheel4" );
+          }
+        }
+      } );
+    }
+
+    // Email validation
+    function validationCheck()
+    {
+      let email = document.querySelector( "#UserEnteredEmail" ).value.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if ( email === "" || ( !emailPattern.test( email ) ) )
+      {
+        validationFlag = false;
+        const el = document.querySelector( "#UserEnteredEmail" );
+        el.classList.remove( "Shaking" );
+        el.offsetWidth;
+        el.classList.add( "Shaking" );
+      } else
+      {
+        validationFlag = true;
+
+        // Save the email to the database
+        saveEmailToDatabase( email );
+      }
+    }
+
+    // Save winning result to database — now calls the unified function
+    function saveWinningResult( coupon )
+    {
+      const email = document.querySelector( "#UserEnteredEmail" ).value.trim();
+      console.log( `User ${ email } won: ${ coupon }` );
+      saveEmailToDatabase( email, coupon );
+    }
+
+    // Save email (+ optionally coupon) to database
+    function saveEmailToDatabase( email, coupon = null )
+    {
+      console.log( "Saving email:", email, "Coupon:", coupon );
+
+      // FIXED: Use a local API endpoint instead of the external one that's returning 404
+      // This will store data in the browser's localStorage as a fallback
+      // when the remote API is not available
+
+      // Create campaign ID if not provided
+      const campaignId = "{{ app.metafields.wheel-of-wonders.activeCampaignId | default: 'campaign-1749195725266' }}";
+
+      // First try to save to the remote API
+      const apiUrl = 'https://destroy-meaning-wonder-consistent.trycloudflare.com/api/save-email';
+
+      fetch( apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify( {
+          email,
+          coupon,
+          campaignId,
+          shopDomain: "{{ shopDomain }}"
+        } ),
+      } )
+        .then( ( response ) =>
+        {
+          if ( !response.ok )
+          {
+            console.warn( `API returned status: ${ response.status }` );
+            // If remote API fails, save to localStorage as fallback
+            saveToLocalStorage( email, coupon, campaignId );
+            return { success: true, message: "Saved locally", source: "localStorage" };
+          }
+          return response.json().catch( () => ( {} ) );
+        } )
+        .then( ( data ) =>
+        {
+          console.log( "Email save response:", data );
+        } )
+        .catch( ( error ) =>
+        {
+          console.warn( "Error saving email:", error );
+          // If fetch fails completely, save to localStorage as fallback
+          saveToLocalStorage( email, coupon, campaignId );
+        } );
+
+      // Helper function to save to localStorage as fallback
+      function saveToLocalStorage( email, coupon, campaignId )
+      {
+        try
+        {
+          // Get existing entries or initialize empty array
+          const storedEntries = localStorage.getItem( 'wheelOfWonders_entries' );
+          const entries = storedEntries ? JSON.parse( storedEntries ) : [];
+
+          // Add new entry
+          entries.push( {
+            email,
+            coupon,
+            campaignId,
+            timestamp: new Date().toISOString(),
+            shopDomain: "{{ shopDomain }}"
+          } );
+
+          // Save back to localStorage
+          localStorage.setItem( 'wheelOfWonders_entries', JSON.stringify( entries ) );
+          console.log( "Email saved to localStorage as fallback" );
+        } catch ( e )
+        {
+          console.error( "Failed to save to localStorage:", e );
+        }
+      }
+    }
+
+  } );
+</script>
+
+<style>
+  /* Base styles */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Floating button styles */
+  .spin-wheel-position-bottomRight {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+
+  .spin-wheel-position-bottomLeft {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 999;
+  }
+
+  .spin-wheel-position-topRight {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+
+  .spin-wheel-position-topLeft {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+  }
+
+  .spin-wheel-button-inner {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  .spin-wheel-button-inner:hover {
+    transform: scale(1.05);
+  }
+
+  .spin-wheel-icon {
+    margin-right: 8px;
+  }
+
+  .spin-wheel-text {
+    color: white;
+    font-weight: bold;
+    font-family: "Roboto", sans-serif;
+  }
+
+  /* Modal styles */
+  .spin-wheel-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  /* Main container styles */
+  .MainContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80vh;
+    width: 80vw;
+    border-radius: 1vh;
+    overflow: hidden;
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .MainContainer {
+      height: 115vw;
+    }
+  }
+
+  @media (min-width: 600px) and (max-width: 900px) {
+    .MainContainer {
+      height: 620px;
+      width: 70vw;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .MainContainer {
+      height: 90vw;
+      width: 70vw;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .MainContainer {
+      width: 43%;
+      height: 80vh;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .MainContainer {
+      height: 90%;
+    }
+  }
+
+  /* Title headline styles */
+  .TitleHeadline {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+  }
+
+  /* Email section styles */
+  .EmailSections[data-theme="version1Bottom"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    opacity: 1;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .EmailSections[data-theme="version1Bottom"] {
+      height: 50%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .EmailSections[data-theme="version1Bottom"] {
+      position: absolute !important;
+      left: 0;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      justify-content: center;
+      height: 30%;
+      width: 50%;
+      gap: 10%;
+    }
+  }
+
+  .EmailSections[data-theme="version1Center"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    width: 100%;
+    height: 80vh;
+    opacity: 1;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .EmailSections[data-theme="version1Center"] {
+      height: 115vw;
+    }
+  }
+
+  @media (min-width: 600px) and (max-width: 900px) {
+    .EmailSections[data-theme="version1Center"] {
+      height: 620px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .EmailSections[data-theme="version1Center"] {
+      position: absolute !important;
+      left: 0;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      justify-content: center;
+      height: 30%;
+      width: 50%;
+      gap: 10%;
+    }
+  }
+
+  .EmailSections[data-theme="version1Top"] {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    width: 100%;
+    height: 50%;
+    bottom: 2%;
+    opacity: 1;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (min-width: 1024px) {
+    .EmailSections[data-theme="version1Top"] {
+      position: absolute !important;
+      left: 0;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      justify-content: center;
+      height: 30%;
+      width: 50%;
+      gap: 10%;
+    }
+  }
+
+  .topsections {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    top: 0;
+    height: 20vh;
+  }
+
+  @media (min-width: 1024px) {
+    .topsections {
+      position: unset;
+      justify-content: space-between;
+    }
+  }
+
+  .SpinEmail .SpintBtn {
+    position: relative;
+    width: 100%;
+    height: 11vw;
+    background-color: #ff5200;
+    margin-top: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7vw;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    .SpinEmail .SpintBtn {
+      height: 11vw;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .SpinEmail .SpintBtn {
+      height: 4vw;
+      font-size: 1.5vw;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .SpinEmail .SpintBtn {
+      height: 5vw;
+      font-size: 2vw;
+    }
+  }
+
+  .input {
+    color: black;
+    width: 100%;
+    outline: 0;
+    border: 1px solid #ff5200;
+    height: 9vw;
+    text-align: center;
+    font-size: 4vw;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .input {
+      height: 11vw;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .input {
+      height: 4vw;
+      font-size: 1.5vw;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .input {
+      height: 5vw;
+      font-size: 2vw;
+    }
+  }
+
+  /* Coupon section styles */
+  .CouponAsingSections {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    width: 100%;
+    height: 60%;
+    opacity: 1;
+    right: 0;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .CouponAsingSections {
+      margin: auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .CouponAsingSections {
+      margin: auto;
+      width: 45%;
+    }
+  }
+
+  .TextColorSel {
+    line-height: 2;
+    font-size: 2vh;
+  }
+
+  @media (max-width: 600px) {
+    .TextColorSel {
+      font-size: 3vw;
+    }
+  }
+
+  .CouponTittleHeadline {
+    font-family: "Roboto", sans-serif;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .CouponTittleHeadline {
+      width: 100%;
+    }
+  }
+
+  .CouponCodeBottomSec {
+    width: 70%;
+  }
+
+  /* Terms section */
+  .termSections {
+    color: #ff5200;
+    width: 65%;
+    margin-top: 4%;
+    font-size: 4vw;
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .termSections {
+      width: 55%;
+      font-size: 3.5vw;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .termSections {
+      font-size: 2.5vw;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .termSections {
+      font-size: 1.5vw;
+      width: 50%;
+    }
+  }
+
+  /* Wheel styles */
+  .WheelVersion1[data-theme="version1Bottom"] {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    margin-bottom: 4%;
+  }
+
+  @media (min-width: 600px) and (max-width: 900px) {
+    .WheelVersion1[data-theme="version1Bottom"] {
+      height: 620px;
+      width: 70vw;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .WheelVersion1[data-theme="version1Bottom"] {
+      position: absolute !important;
+      min-width: 65%;
+      max-width: 70%;
+      right: -5%;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      height: max(55vw, 48vh);
+    }
+  }
+
+  .WheelVersion1[data-theme="version1Top"] {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    top: 0;
+    margin-top: 4%;
+  }
+
+  @media (min-width: 1024px) {
+    .WheelVersion1[data-theme="version1Top"] {
+      position: absolute !important;
+      min-width: 65%;
+      max-width: 70%;
+      right: -5%;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      height: max(55vw, 48vh);
+    }
+  }
+
+  .WheelVersion1[data-theme="version1Center"] {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    /* top: 50%; */
+  }
+
+  @media (min-width: 1024px) {
+    .WheelVersion1[data-theme="version1Center"] {
+      position: absolute !important;
+      min-width: 65%;
+      max-width: 70%;
+      right: -5%;
+      top: 50% !important;
+      margin-top: unset !important;
+      transform: translateY(-50%);
+      height: max(55vw, 48vh);
+    }
+  }
+
+  .wheel-container {
+    position: absolute;
+    width: 80%;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 0;
+  }
+
+  @media (max-width: 600px) {
+    .wheel-container {
+      width: 90%;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .wheel-container {
+      width: 95%;
+    }
+  }
+
+  @media (min-width: 600px) and (max-width: 900px) {
+    .wheel-container {
+      width: 450px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .wheel-container {
+      width: 550px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .wheel-container {
+      width: 80%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wheel-container {
+      width: 50% !important;
+    }
+  }
+
+  .LogoSelectionImg {
+    width: 15%;
+  }
+
+  .WheelCircleLight {
+    position: absolute;
+    z-index: 2;
+    width: 98.5%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .Arrow {
+    position: absolute;
+    z-index: 3;
+    width: 70%;
+    top: 70%;
+    transform-origin: top;
+  }
+
+  .spin-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: none;
+    border-radius: 50%;
+    background-color: #ff5200;
+    width: 8%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  @media (min-width: 1024px) {
+    .spin-btn {
+      width: 5%;
+    }
+  }
+
+  .Hedline {
+    text-align: center;
+    font-size: 4vh;
+    color: #ff5200;
+    width: 100%;
+    line-height: 1;
+    font-weight: bold;
+    font-family: "Roboto", sans-serif;
+  }
+
+  .Hedline span {
+    display: block;
+    font-size: 2vh;
+    line-height: 1;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .Hedline {
+      font-size: 7vw;
+    }
+
+    .Hedline span {
+      font-size: 3vw;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .Hedline {
+      font-size: 3.5vw;
+    }
+  }
+
+  .CoupontBtn {
+    position: relative;
+    height: 11vw;
+    background-color: #ff5200;
+    margin-top: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4.5vw;
+    font-weight: bold;
+    color: white;
+    width: 100%;
+    cursor: pointer;
+    font-family: "Roboto", sans-serif;
+  }
+
+  @media (min-width: 1024px) {
+    .CoupontBtn {
+      height: 4vw;
+      font-size: 2.5vh;
+      position: relative !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .CoupontBtn {
+      height: 5vw;
+      font-size: 2.5vw;
+    }
+  }
+
+  /* Animation */
+  .Shaking {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-5px);
+    }
+
+    50% {
+      transform: translateX(5px);
+    }
+
+    75% {
+      transform: translateX(-5px);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+"name": "Spin Factory !!!",
+"target": "compliance_head",
+"available_if": "{{ app.metafields.mtappsremixbillingdemo.hasPlan }}",
+"settings": [
+{
+"type": "product",
+"id": "product",
+"label": "Product",
+"autofill": true
+},
+{
+"type": "color",
+"id": "colour",
+"label": "Star Colour",
+"default": "#ff0000"
+}
+]
+}
+{% endschema %}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1444.76 1444.76">
+  <defs>
+    <style>
+      .cls-1 {
+        opacity: .75;
+      }
+
+      .cls-2 {
+        opacity: .88;
+      }
+
+      .cls-3 {
+        opacity: .62;
+      }
+
+      .cls-4 {
+        opacity: .44;
+      }
+
+      .cls-5 {
+        fill: #7d7d7d;
+      }
+
+      .cls-6 {
+         font-family: Lato-Black, Lato;
+        font-weight: 800;
+        <!-- font-family: MyriadPro-Regular, 'Myriad Pro'; -->
+        font-size: 60.90px;
+      }
+
+      .cls-7 {
+        opacity: .31;
+      }
+
+      .cls-8 {
+        opacity: .69;
+      }
+
+      .cls-9, .cls-10 {
+        fill: #fff;
+      }
+
+      .cls-11 {
+        opacity: .56;
+      }
+
+      .cls-12 {
+        opacity: .25;
+      }
+
+      .cls-13 {
+        opacity: .12;
+      }
+
+      .cls-10 {
+        fill-rule: evenodd;
+      }
+
+      .cls-14 {
+        opacity: .38;
+      }
+
+      .cls-15 {
+        opacity: .19;
+      }
+
+      .cls-16 {
+        opacity: .15;
+      }
+
+      .cls-17 {
+        opacity: 0;
+      }
+
+      .cls-18 {
+        opacity: .81;
+      }
+
+      .cls-19 {
+        letter-spacing: 0em;
+      }
+
+      .cls-20 {
+        opacity: .06;
+      }
+
+      .cls-21 {
+        letter-spacing: 0em;
+      }
+
+      .cls-22 {
+        opacity: .94;
+      }
+
+      .cls-23 {
+        opacity: .5;
+      }
+
+      .cls-24 {
+        fill: #777677;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <path class="cls-24 WheelColorSelect2" d="M722.16,726.44H27.91c0-256.94,139.59-481.29,347.07-601.33l347.18,601.33Z"/>
+        <path class="cls-24 WheelColorSelect2" d="M1416.4,726.44h-694.24L1069.34,125.11c207.48,120.05,347.07,344.39,347.07,601.33Z"/>
+        <path class="cls-24 WheelColorSelect2" d="M1069.34,1327.78c-102.13,59.09-220.7,92.91-347.18,92.91s-245.05-33.82-347.18-92.91l347.18-601.33,347.18,601.33Z"/>
+      </g>
+      <g>
+        <path class="cls-9 WheelColorSelect1" d="M1416.4,726.44c0,256.94-139.59,481.29-347.07,601.33l-347.18-601.33h694.24Z"/>
+        <path class="cls-9 WheelColorSelect1" d="M722.16,726.44l-347.18,601.33C167.5,1207.73,27.91,983.39,27.91,726.44h694.24Z"/>
+        <path class="cls-10 WheelColorSelect1" d="M1069.34,125.11l-347.18,601.33L374.98,125.11c102.13-59.09,220.7-92.91,347.18-92.91s245.05,33.82,347.18,92.91Z"/>
+      </g>
+    </g>
+    <g class="cls-16 ">
+      <circle cx="722.38" cy="724.41" r="670.24"/>
+      <circle class="cls-22" cx="722.38" cy="724.41" r="667.62"/>
+      <circle class="cls-2" cx="722.38" cy="724.41" r="665" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-18" cx="722.38" cy="724.41" r="662.38" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-1" cx="722.38" cy="724.41" r="659.77"/>
+      <circle class="cls-8" cx="722.38" cy="724.41" r="657.15" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-3" cx="722.38" cy="724.41" r="654.53" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-11" cx="722.38" cy="724.41" r="651.91" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-23" cx="722.38" cy="724.41" r="649.29" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-4" cx="722.38" cy="724.41" r="646.67" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-14" cx="722.38" cy="724.41" r="644.06" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-7" cx="722.38" cy="724.41" r="641.44" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-12" cx="722.38" cy="724.41" r="638.82" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-15" cx="722.38" cy="724.41" r="636.2" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-13" cx="722.38" cy="724.41" r="633.58" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-20" cx="722.38" cy="724.41" r="630.97" transform="translate(-300.66 722.97) rotate(-45)"/>
+      <circle class="cls-17" cx="722.38" cy="724.41" r="628.35" transform="translate(-300.66 722.97) rotate(-45)"/>
+    </g>
+    <path class="cls-5 WheelColorSelect2" d="M722.38,52c185.12,0,352.72,75.03,474.03,196.35,121.31,121.31,196.34,288.91,196.34,474.03s-75.03,352.72-196.34,474.03c-121.31,121.31-288.91,196.35-474.03,196.35s-352.72-75.03-474.03-196.35c-121.31-121.31-196.35-288.91-196.35-474.03S127.03,369.66,248.35,248.35c121.31-121.31,288.91-196.35,474.03-196.35M722.38,0c-97.5,0-192.11,19.11-281.2,56.79-42.82,18.11-84.11,40.52-122.73,66.61-38.24,25.83-74.2,55.5-106.87,88.18-32.68,32.68-62.34,68.63-88.18,106.87-26.09,38.62-48.5,79.91-66.61,122.73C19.11,530.27,0,624.88,0,722.38s19.11,192.11,56.79,281.2c18.11,42.82,40.52,84.11,66.61,122.73,25.83,38.24,55.5,74.2,88.18,106.87,32.68,32.68,68.63,62.34,106.87,88.18,38.62,26.09,79.91,48.5,122.73,66.61,89.09,37.68,183.7,56.79,281.2,56.79s192.11-19.11,281.2-56.79c42.82-18.11,84.11-40.52,122.73-66.61,38.24-25.83,74.2-55.5,106.87-88.18s62.34-68.63,88.18-106.87c26.09-38.62,48.5-79.91,66.61-122.73,37.68-89.09,56.79-183.7,56.79-281.2s-19.11-192.11-56.79-281.2c-18.11-42.82-40.52-84.11-66.61-122.73-25.83-38.24-55.5-74.2-88.18-106.87-32.68-32.68-68.63-62.34-106.87-88.18-38.62-26.09-79.91-48.5-122.73-66.61C914.49,19.11,819.88,0,722.38,0h0Z"/>
+      <text class="cls-6 Coup1 WheelFontColor2" text-anchor="middle" transform="translate(744.81 350.18) rotate(-92.41)"><tspan x="0" y="0">10% DISCOUNT</tspan></text>
+    <text class="cls-6 Coup2 WheelFontColor1" text-anchor="middle"  transform="translate(400.77 540.18) rotate(-155.41)"><tspan x="0" y="0">20% DISCOUNT</tspan></text>
+    <text class="cls-6 Coup3 WheelFontColor2" text-anchor="middle" transform="translate(410.11 890.43) rotate(144.59)"><tspan x="0" y="0">30% DISCOUNT</tspan></text>
+    <text class="cls-6 Coup4 WheelFontColor1"  text-anchor="middle" transform="translate(699.5 1070.7) rotate(90)"><tspan x="0" y="0">40% DISCOUNT</tspan></text>
+    <text class="cls-6 Coup5 WheelFontColor2" text-anchor="middle" transform="translate(1030.55 900.71) rotate(24.59)"><tspan x="0" y="0">50% DISCOUNT</tspan></text>
+    <text class="cls-6  Coup6 WheelFontColor1" text-anchor="middle" transform="translate(1040.21 540.45) rotate(-35.41)"><tspan x="0" y="0">60% DISCOUNT</tspan></text>
+  
+  </g>
+</svg>

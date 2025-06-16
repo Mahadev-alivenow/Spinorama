@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 249, 249, 249;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* App layout styles */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* Override Polaris button styles for primary buttons */
+.Polaris-Button--primary {
+  background: #4f46e5 !important;
+}
+
+.Polaris-Button--primary:hover {
+  background: #4338ca !important;
+}
+
+/* Ensure compatibility with both Shopify App Bridge and custom UI */
+.Polaris-Frame {
+  min-height: 100vh;
+}
+/* Custom styles for the app */
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #1e293b;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+/* Custom spinner wheel animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(var(--final-rotation));
+  }
+}
+
+.wheel-spinning {
+  animation: spin 5s cubic-bezier(0.15, 0.95, 0.35, 1.0) forwards;
+}
+
+/* Custom transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-5000 {
+  transition-duration: 5000ms;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+/* Custom styles for the app */
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #1e293b;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+/* Custom spinner wheel animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(var(--final-rotation));
+  }
+}
+
+.wheel-spinning {
+  animation: spin 5s cubic-bezier(0.15, 0.95, 0.35, 1.0) forwards;
+}
+
+/* Custom transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-5000 {
+  transition-duration: 5000ms;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Toggle switch styles */
+.toggle-checkbox {
+  right: 0;
+  z-index: 5;
+  opacity: 0;
+  top: 0;
+}
+
+.toggle-label {
+  transition: background-color 0.2s ease;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #4f46e5;
+}
+
+.toggle-checkbox + .toggle-label {
+  background-color: #d1d5db;
+}
+
+.toggle-checkbox:focus + .toggle-label {
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+}
+
+.toggle-checkbox:checked + .toggle-label:before {
+  transform: translateX(100%);
+}
+
+.toggle-label:before {
+  position: absolute;
+  content: "";
+  height: 1.25rem;
+  width: 1.25rem;
+  left: 0.125rem;
+  bottom: 0;
+}

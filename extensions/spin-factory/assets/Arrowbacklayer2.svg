@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="ArrowSpin" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 348 167">
+  <!-- Generator: Adobe Illustrator 29.6.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 91)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="3144.21" y1="876.42" x2="3294.43" y2="876.42" gradientTransform="translate(-643.91 3312.58) rotate(-91.06)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7e830"/>
+      <stop offset="1" stop-color="#f7e830"/>
+    </linearGradient>
+  </defs>
+  <path class="st0" d="M194.26,141.89L293.88.18,48.55,4.73l104.81,137.92c10.38,13.66,31.04,13.27,40.9-.76Z"/>
+</svg>

@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "541c453ade4061f958bce1782a26dc56"
+name = "Spin-Factory"
+handle = "spin-factory-1"
+application_url = "https://lung-circular-moderators-serve.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "wheel-of-wonders.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [
+  "https://lung-circular-moderators-serve.trycloudflare.com/auth/callback",
+  "https://lung-circular-moderators-serve.trycloudflare.com/auth/shopify/callback",
+  "https://lung-circular-moderators-serve.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-04"
+
+[pos]
+embedded = false
