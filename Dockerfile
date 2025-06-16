@@ -6,16 +6,15 @@ WORKDIR /app
 # Set to development to enable devDependencies
 ENV NODE_ENV=development
 
-# Install all (including devDependencies)
-COPY package*.json .
+# Install all dependencies (including devDependencies)
+COPY package*.json ./
 RUN npm install
 
-# Now copy rest of the application
+# Copy the rest of the application
 COPY . .
 
-# Build
+# Build the application
 RUN npm run build
-
 
 # 2️⃣ Runner
 FROM node:20-alpine AS runner
@@ -24,13 +23,18 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install production dependencies
-COPY package*.json .
+# Copy package files
+COPY package*.json ./
 
+# Install only production dependencies
 RUN npm install --omit=dev
 
-# Then copy over the build output
-COPY --from=builder /app/build .
+# Copy the build output from builder stage
+# This maintains the build directory structure
+COPY --from=builder /app/build ./build
+
+# Copy any other necessary files (like public assets if needed)
+COPY --from=builder /app/public ./public
 
 # Expose port
 EXPOSE 3000
