@@ -10,16 +10,16 @@ WORKDIR /app
 # Set the production environment
 ENV NODE_ENV=production
 
-# Copy package files first (for faster builds)
+# Copy the package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies (with vite-tsconfig-paths present in dependencies)
+# Install dependencies
 RUN npm install --omit=dev && npm cache clean --force
 
-# Optional: Remove CLI packages if not needed
+# Optional: Remove CLI packages if they are not needed in production
 RUN npm remove @shopify/cli
 
-# Copy all application files
+# Copy all app files to the container
 COPY . .
 
 # Build the application
