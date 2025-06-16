@@ -2,9 +2,9 @@
   "name": "spin-to-win",
   "private": true,
   "scripts": {
-    "start": "remix-serve ./build/server/index.js",
-    "docker-start": "npm run start",
-    "build": "remix vite:build",
+   "build": "remix vite:build",
+  "start": "node ./build/server/index.js",
+  "docker-start": "npm run build && npm start",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
