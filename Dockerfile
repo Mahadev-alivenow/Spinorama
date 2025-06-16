@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+# Generate Prisma client
+RUN npx prisma generate
+
 # Build the application
 RUN npm run build
 
@@ -29,8 +32,11 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm install --omit=dev
 
+# Copy Prisma schema and generate client in production
+COPY prisma ./prisma
+RUN npx prisma generate
+
 # Copy the build output from builder stage
-# This maintains the build directory structure
 COPY --from=builder /app/build ./build
 
 # Copy any other necessary files (like public assets if needed)
