@@ -1,29 +1,39 @@
-# Use Node 20 Alpine image directly
-FROM node:20-alpine
+# 1️⃣ Builder
+FROM node:20-alpine AS builder
 
-# Expose the application port
-EXPOSE 3000
-
-# Set the working directory
 WORKDIR /app
 
-# Set the production environment
-ENV NODE_ENV=production
+# Set to development to enable devDependencies
+ENV NODE_ENV=development
 
-# Copy the package files
-COPY package.json package-lock.json* ./
+# Install all (including devDependencies)
+COPY package*.json .
+RUN npm install
 
-# Install dependencies
-RUN npm install --omit=dev && npm cache clean --force
-
-# Optional: Remove CLI packages if they are not needed in production
-RUN npm remove @shopify/cli
-
-# Copy all app files to the container
+# Now copy rest of the application
 COPY . .
 
-# Build the application
+# Build
 RUN npm run build
 
-# Define the default command
-CMD ["npm", "run", "docker-start"]
+
+# 2️⃣ Runner
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install production dependencies
+COPY package*.json .
+
+RUN npm install --omit=dev
+
+# Then copy over the build output
+COPY --from=builder /app/build .
+
+# Expose port
+EXPOSE 3000
+
+# Run application
+CMD ["npm", "start"]
