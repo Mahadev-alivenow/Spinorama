@@ -7,7 +7,7 @@ import {
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
-import { restResources } from "@shopify/shopify-api/rest/admin/2024-01";
+import { restResources } from "@shopify/shopify-api/rest/admin/2025-01";
 import { BILLING_PLANS } from "./constants/billing";
 
 // export const MONTLY_PLAN = BILLING_PLANS.MONTHLY;

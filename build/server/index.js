@@ -9,7 +9,7 @@ import "@shopify/shopify-app-remix/adapters/node";
 import { shopifyApp, BillingInterval, AppDistribution, ApiVersion, LoginErrorType } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { PrismaClient } from "@prisma/client";
-import { restResources } from "@shopify/shopify-api/rest/admin/2024-01";
+import { restResources } from "@shopify/shopify-api/rest/admin/2025-01";
 import { toast, Toaster } from "react-hot-toast";
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { MongoClient, ObjectId } from "mongodb";
