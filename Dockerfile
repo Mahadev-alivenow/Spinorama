@@ -1,29 +1,42 @@
-# Use Node 20 Alpine image directly
-FROM node:20-alpine
+# 1️⃣ Builder stage
+FROM node:20-alpine AS builder
 
-# Expose the application port
-EXPOSE 3000
-
-# Set the working directory
 WORKDIR /app
 
-# Set the production environment
-ENV NODE_ENV=production
+# Set to production, but we need devDependencies for building
+ENV NODE_ENV=development
 
-# Copy package files first (for faster builds)
-COPY package.json package-lock.json* ./
+# First copy files to enable cache
+COPY package*.json .
 
-# Install dependencies (with vite-tsconfig-paths present in dependencies)
-RUN npm install --omit=dev && npm cache clean --force
+# Install all (so we have vite, vite-tsconfig-paths, etc.)
+RUN npm install
 
-# Optional: Remove CLI packages if not needed
-RUN npm remove @shopify/cli
-
-# Copy all application files
+# Now copy rest
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Define the default command
+
+# 2️⃣ Run stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Only copy necessary files
+COPY package*.json .
+
+# Install production deps
+RUN npm install --omit=dev
+
+# Then copy over the build output
+COPY --from=builder /app/build .
+
+# Expose port
+EXPOSE 3000
+
+# Run
 CMD ["npm", "run", "docker-start"]
