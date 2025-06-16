@@ -69,7 +69,7 @@ export default defineConfig({
         v3_routeConfig: true,
       },
     }),
-    tsconfigPaths(),
+    tsconfigPaths(), // <- this is correct
   ],
   build: {
     assetsInlineLimit: 0,

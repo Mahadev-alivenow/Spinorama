@@ -750,3 +750,192 @@ export async function getDiscountCodes(graphql) {
   const res = await result.json();
   return res;
 }
+
+
+// Create metafields specifically for campaign layout
+export async function createCampaignLayoutMetafields(graphql, shopName) {
+  try {
+    // Get the active campaign from MongoDB
+    const activeCampaign = await getActiveCampaign(shopName);
+
+    if (!activeCampaign) {
+      console.log("No active campaign found to create layout metafields");
+      return null;
+    }
+
+    console.log("Creating layout metafields for campaign:", activeCampaign.name);
+
+    // Extract layout information
+    const layout = activeCampaign.layout || {};
+    
+    // Layout-specific data
+    const floatingButtonHasText = layout.floatingButtonHasText === true ? "true" : "false";
+    const floatingButtonPosition = layout.floatingButtonPosition || "bottomRight";
+    const floatingButtonText = layout.floatingButtonText || "";
+    const showFloatingButton = layout.showFloatingButton === true ? "true" : "false";
+    const wheelSectors = String(layout.wheelSectors || "six");
+    const envSelection = layout.theme || "light";
+    const versionSelection = layout.popupLayout || "bottom";
+    const displayStyle = layout.displayStyle || "popup";
+    const logoImage = layout.logo || "";
+
+    // Colors
+    const primaryColor = activeCampaign.primaryColor || "#ffc700";
+    const secondaryColor = activeCampaign.secondaryColor || "#ffffff";
+    const tertiaryColor = activeCampaign.tertiaryColor || "#000000";
+    const colorTone = activeCampaign.color || "dualTone";
+
+    // Get app installation ID
+    const appIdQuery = await graphql(`
+      #graphql
+      query {
+        currentAppInstallation {
+          id
+        }
+      }
+    `);
+    const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id;
+
+    console.log("App Installation ID:", appInstallationID);
+
+    // Build layout-specific metafields
+    const layoutMetafields = [
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonHasText",
+        type: "boolean",
+        value: floatingButtonHasText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonPosition",
+        type: "single_line_text_field",
+        value: floatingButtonPosition,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonText",
+        type: "single_line_text_field",
+        value: floatingButtonText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "showFloatingButton",
+        type: "boolean",
+        value: showFloatingButton,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "displayStyle",
+        type: "single_line_text_field",
+        value: displayStyle,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "wheelSectors",
+        type: "single_line_text_field",
+        value: wheelSectors,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "envSelection",
+        type: "single_line_text_field",
+        value: envSelection,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "versionSelection",
+        type: "single_line_text_field",
+        value: versionSelection,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "primaryColor",
+        type: "single_line_text_field",
+        value: primaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "secondaryColor",
+        type: "single_line_text_field",
+        value: secondaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "tertiaryColor",
+        type: "single_line_text_field",
+        value: tertiaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "colorTone",
+        type: "single_line_text_field",
+        value: colorTone,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "activeCampaignId",
+        type: "single_line_text_field",
+        value: activeCampaign.id || "",
+        ownerId: appInstallationID,
+      },
+    ];
+
+    // Filter out empty values
+    const filteredMetafields = layoutMetafields.filter(
+      (mf) => mf.value !== undefined && mf.value !== null && mf.value !== "",
+    );
+
+    // Execute the metafields mutation
+    const metafieldsMutation = await graphql(
+      `
+        mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
+          metafieldsSet(metafields: $metafields) {
+            metafields {
+              id
+              namespace
+              key
+              value
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `,
+      { variables: { metafields: filteredMetafields } },
+    );
+
+    const data = await metafieldsMutation.json();
+    
+    if (data.data?.metafieldsSet?.userErrors?.length) {
+      console.error("Layout metafield userErrors:", data.data.metafieldsSet.userErrors);
+      return { success: false, errors: data.data.metafieldsSet.userErrors };
+    }
+
+    console.log("Successfully created layout metafields:", data.data.metafieldsSet.metafields);
+    
+    return {
+      success: true,
+      metafields: data.data.metafieldsSet.metafields,
+      campaignId: activeCampaign.id,
+    };
+
+  } catch (error) {
+    console.error("Error creating campaign layout metafields:", error);
+    return { success: false, error: error.message };
+  }
+}
