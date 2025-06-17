@@ -24,9 +24,13 @@ console.log("PORT:", process.env.PORT);
 console.log("HOST:", process.env.HOST);
 console.log("============================");
 
+const app = express();
+
 const BUILD_DIR = path.join(process.cwd(), "build");
 
-const app = express();
+// Serve static files first
+app.use(express.static(path.join(process.cwd(), "public")));
+
 
 app.use(express.json()); // Parse JSON request bodies
 
