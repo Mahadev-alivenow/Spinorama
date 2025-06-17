@@ -12,7 +12,7 @@ const BUILD_DIR = path.join(process.cwd(), "build");
 
 const app = express();
 
-app.use(express.json()); // Add this line to parse JSON request bodies
+app.use(express.json()); // Parse JSON request bodies
 
 // Verify Shopify HMAC for app proxy requests
 function verifyAppProxyHmac(req, res, next) {
@@ -50,6 +50,38 @@ function verifyAppProxyHmac(req, res, next) {
 
   next();
 }
+
+// Enhanced health check endpoint - MUST be before other routes
+app.get("/health", async (req, res) => {
+  try {
+    const healthData = {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      port: process.env.PORT || 3000,
+      host: process.env.HOST || "0.0.0.0",
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development",
+      shopifyAppUrl: process.env.SHOPIFY_APP_URL,
+    };
+
+    console.log("Health check accessed:", healthData);
+
+    res.status(200).json(healthData);
+  } catch (error) {
+    console.error("Health check error:", error);
+    res.status(500).json({
+      status: "unhealthy",
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Simple ping endpoint as backup
+app.get("/ping", (req, res) => {
+  console.log("Ping endpoint accessed at:", new Date().toISOString());
+  res.status(200).send("OK");
+});
 
 // App proxy routes
 app.get(
@@ -217,30 +249,24 @@ app.all(
       }),
 );
 
-const port = process.env.PORT || 3000;
+// Force port to 3000 in production, allow flexibility in development
+const port =
+  process.env.NODE_ENV === "production" ? 3000 : process.env.PORT || 3000;
+const host = process.env.HOST || "0.0.0.0";
 
-app.get("/health", async (req, res) => {
-  try {
-    // If you want, you can connect to your db here
-    res.status(200).send("OK");
-  } catch (error) {
-    res.status(500).send("Not healthy");
+// Start server with explicit host and port
+app.listen(port, host, () => {
+  console.log(`=== Shopify App Server Started ===`);
+  console.log(`Server listening at http://${host}:${port}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Shopify App URL: ${process.env.SHOPIFY_APP_URL}`);
+  console.log(`Health check: http://${host}:${port}/health`);
+  console.log(`=====================================`);
+
+  if (process.env.NODE_ENV === "development") {
+    broadcastDevReady(require(BUILD_DIR));
   }
 });
-
-// Change this to:
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Server listening at http://0.0.0.0:${port}`);
-});
-
-
-// app.listen(port, () => {
-//   console.log(`Express server listening on port ${port}`);
-
-//   if (process.env.NODE_ENV === "development") {
-//     broadcastDevReady(require(BUILD_DIR));
-//   }
-// });
 
 function purgeRequireCache() {
   // purge require cache on requests for "server side HMR" this won't let

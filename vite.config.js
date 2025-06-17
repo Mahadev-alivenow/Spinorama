@@ -20,6 +20,12 @@ if (
 const host = new URL(process.env.SHOPIFY_APP_URL || "http://localhost")
   .hostname;
 
+// Force production port to 3000
+const port =
+  process.env.NODE_ENV === "production"
+    ? 3000
+    : Number(process.env.PORT || 3000);
+
 let hmrConfig;
 if (host === "localhost") {
   hmrConfig = {
@@ -43,8 +49,8 @@ export default defineConfig({
     cors: {
       preflightContinue: true,
     },
-    port: Number(process.env.PORT || 3000),
-    host: "0.0.0.0", // Critical: bind to all interfaces
+    port: port,
+    host: process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost",
     hmr: hmrConfig,
     fs: {
       allow: ["app", "node_modules"],
@@ -66,7 +72,6 @@ export default defineConfig({
         v3_singleFetch: false,
         v3_routeConfig: true,
       },
-      // Ensure server builds to the expected location
       serverBuildPath: "build/server/index.js",
     }),
     tsconfigPaths(),
