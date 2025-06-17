@@ -1420,11 +1420,7 @@ const shopify = shopifyApp({
       name: "Monthly Subscription",
       price: 0,
       test: true,
-      trialDays: 14,
-      trialAmount: 0,
-      trialCurrencyCode: "USD",
-      trialInterval: BillingInterval.Every30Days,
-      trialName: "Monthly Subscription Trial"
+
     },
     [ANNUAL_PLAN]: {
       amount: 50,
@@ -1433,11 +1429,6 @@ const shopify = shopifyApp({
       name: "Annual Subscription",
       price: 0,
       test: true,
-      trialAmount: 0,
-      trialCurrencyCode: "USD",
-      trialInterval: BillingInterval.Annual,
-      trialName: "Annual Subscription Trial",
-      trialDays: 14
     }
   },
   webhooks: {
@@ -1620,7 +1611,6 @@ async function getSubscriptionStatus(graphql) {
               returnUrl
               status
               currentPeriodEnd
-              trialDays
               test
             }
           }

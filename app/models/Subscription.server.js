@@ -145,7 +145,6 @@ export async function getSubscriptionStatus(graphql) {
               returnUrl
               status
               currentPeriodEnd
-              trialDays
               test
             }
           }

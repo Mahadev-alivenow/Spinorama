@@ -9,7 +9,7 @@ import {
 } from "@remix-run/react";
 import { CampaignProvider, useCampaign } from "../context/CampaignContext";
 import { PlanProvider } from "../context/PlanContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import { toast } from "react-hot-toast";
 import CampaignActiveIndicator from "../components/CampaignActiveIndicator";
