@@ -3,22 +3,23 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://bras-innovation-yet-forgot.trycloudflare.com"
+application_url = "https://header-society-stage-covering.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
 dev_store_url = "wheel-of-wonders.myshopify.com"
+include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = ""
+scopes = "read_discounts,read_products,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://bras-innovation-yet-forgot.trycloudflare.com/auth/callback",
-  "https://bras-innovation-yet-forgot.trycloudflare.com/auth/shopify/callback",
-  "https://bras-innovation-yet-forgot.trycloudflare.com/api/auth/callback"
+  "https://header-society-stage-covering.trycloudflare.com/auth/callback",
+  "https://header-society-stage-covering.trycloudflare.com/auth/shopify/callback",
+  "https://header-society-stage-covering.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -8,6 +8,22 @@ import path from "path";
 import { getActiveCampaign } from "./models/Subscription.server";
 import { connectToDatabase } from "../lib/mongodb.server";
 
+// FORCE environment variables at the very top
+console.log("=== ORIGINAL ENV VALUES ===");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("PORT:", process.env.PORT);
+console.log("HOST:", process.env.HOST);
+
+// Force the port to 3000 regardless of environment
+process.env.PORT = "3000";
+process.env.HOST = process.env.HOST || "0.0.0.0";
+
+console.log("=== FORCED ENV VALUES ===");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("PORT:", process.env.PORT);
+console.log("HOST:", process.env.HOST);
+console.log("============================");
+
 const BUILD_DIR = path.join(process.cwd(), "build");
 
 const app = express();
@@ -57,11 +73,12 @@ app.get("/health", async (req, res) => {
     const healthData = {
       status: "healthy",
       timestamp: new Date().toISOString(),
-      port: process.env.PORT || 3000,
-      host: process.env.HOST || "0.0.0.0",
+      port: process.env.PORT,
+      host: process.env.HOST,
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || "development",
       shopifyAppUrl: process.env.SHOPIFY_APP_URL,
+      forcedPort: "3000",
     };
 
     console.log("Health check accessed:", healthData);
@@ -249,10 +266,9 @@ app.all(
       }),
 );
 
-// Force port to 3000 in production, allow flexibility in development
-const port =
-  process.env.NODE_ENV === "production" ? 3000 : process.env.PORT || 3000;
-const host = process.env.HOST || "0.0.0.0";
+// FORCE port to 3000 - no exceptions for any environment
+const port = process.env.PORT || 3000;
+const host = "0.0.0.0";
 
 // Start server with explicit host and port
 app.listen(port, host, () => {
@@ -261,6 +277,7 @@ app.listen(port, host, () => {
   console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`Shopify App URL: ${process.env.SHOPIFY_APP_URL}`);
   console.log(`Health check: http://${host}:${port}/health`);
+  console.log(`FORCED PORT: ${port} (ignoring any other port settings)`);
   console.log(`=====================================`);
 
   if (process.env.NODE_ENV === "development") {
