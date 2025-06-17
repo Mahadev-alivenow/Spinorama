@@ -35,9 +35,5 @@ COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=15s --timeout=10s --start-period=60s --retries=5 \
-    CMD curl -f http://localhost:3000/health || exit 1
-
 # Start the server directly
 CMD ["npm", "run", "docker-start"]
