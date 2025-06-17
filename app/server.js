@@ -219,13 +219,28 @@ app.all(
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-  console.log(`Express server listening on port ${port}`);
-
-  if (process.env.NODE_ENV === "development") {
-    broadcastDevReady(require(BUILD_DIR));
+app.get("/health", async (req, res) => {
+  try {
+    // If you want, you can connect to your db here
+    res.status(200).send("OK");
+  } catch (error) {
+    res.status(500).send("Not healthy");
   }
 });
+
+// Change this to:
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server listening at http://0.0.0.0:${port}`);
+});
+
+
+// app.listen(port, () => {
+//   console.log(`Express server listening on port ${port}`);
+
+//   if (process.env.NODE_ENV === "development") {
+//     broadcastDevReady(require(BUILD_DIR));
+//   }
+// });
 
 function purgeRequireCache() {
   // purge require cache on requests for "server side HMR" this won't let

@@ -3,7 +3,7 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://caroline-flight-man-injuries.trycloudflare.com"
+application_url = "https://subscription-combining-burlington-newsletters.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,9 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://caroline-flight-man-injuries.trycloudflare.com/auth/callback",
-  "https://caroline-flight-man-injuries.trycloudflare.com/auth/shopify/callback",
-  "https://caroline-flight-man-injuries.trycloudflare.com/api/auth/callback"
+  "https://subscription-combining-burlington-newsletters.trycloudflare.com/auth/callback",
+  "https://subscription-combining-burlington-newsletters.trycloudflare.com/auth/shopify/callback",
+  "https://subscription-combining-burlington-newsletters.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
