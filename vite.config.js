@@ -7,9 +7,7 @@ import autoprefixer from "autoprefixer";
 
 installGlobals({ nativeFetch: true });
 
-// Related: https://github.com/remix-run/remix/issues/2835#issuecomment-1144102176
-// Replace the HOST env var with SHOPIFY_APP_URL so that it doesn't break the remix server. The CLI will eventually
-// stop passing in HOST, so we can remove this workaround after the next major release.
+// Handle Shopify URL configuration
 if (
   process.env.HOST &&
   (!process.env.SHOPIFY_APP_URL ||
@@ -21,8 +19,8 @@ if (
 
 const host = new URL(process.env.SHOPIFY_APP_URL || "http://localhost")
   .hostname;
-let hmrConfig;
 
+let hmrConfig;
 if (host === "localhost") {
   hmrConfig = {
     protocol: "ws",
@@ -46,9 +44,9 @@ export default defineConfig({
       preflightContinue: true,
     },
     port: Number(process.env.PORT || 3000),
+    host: "0.0.0.0", // Critical: bind to all interfaces
     hmr: hmrConfig,
     fs: {
-      // See https://vitejs.dev/config/server-options.html#server-fs-allow for more information
       allow: ["app", "node_modules"],
     },
   },
@@ -68,13 +66,18 @@ export default defineConfig({
         v3_singleFetch: false,
         v3_routeConfig: true,
       },
+      // Ensure server builds to the expected location
+      serverBuildPath: "build/server/index.js",
     }),
-    tsconfigPaths(), // <- this is correct
+    tsconfigPaths(),
   ],
   build: {
     assetsInlineLimit: 0,
   },
   optimizeDeps: {
     include: ["@shopify/app-bridge-react", "@shopify/polaris"],
+  },
+  ssr: {
+    noExternal: ["@shopify/app-bridge-react", "@shopify/polaris"],
   },
 });

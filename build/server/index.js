@@ -2,7 +2,7 @@ var _a;
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import { PassThrough } from "stream";
 import { renderToPipeableStream } from "react-dom/server";
-import { RemixServer, useLoaderData, Meta, Links, Outlet, ScrollRestoration, Scripts, useActionData, Form, useLocation, Link, useNavigate, useParams, useSearchParams, useNavigation, useFetcher } from "@remix-run/react";
+import { RemixServer, useLoaderData, Meta, Links, Outlet, ScrollRestoration, Scripts, useActionData, Form as Form$1, useLocation, Link as Link$1, useNavigate, useParams, useSearchParams, useNavigation, useFetcher } from "@remix-run/react";
 import { createReadableStreamFromReadable, json, redirect } from "@remix-run/node";
 import { isbot } from "isbot";
 import "@shopify/shopify-app-remix/adapters/node";
@@ -11,12 +11,14 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { PrismaClient } from "@prisma/client";
 import { restResources } from "@shopify/shopify-api/rest/admin/2025-01";
 import { toast, Toaster } from "react-hot-toast";
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useLayoutEffect, useRef, PureComponent, useMemo, forwardRef, Component, memo, useId, useImperativeHandle, createElement, Children, isValidElement, createRef, useReducer } from "react";
 import { MongoClient, ObjectId } from "mongodb";
-import { AppProvider, Page as Page$5, Card, FormLayout, Text, TextField, Button, TopBar, Navigation as Navigation$1, Frame, useBreakpoints, BlockStack, Layout, InlineStack, Tabs, Icon, Popover, Box, Select, Tag, DataTable, Pagination, EmptyState, Modal, Avatar, Badge, Link as Link$1, List } from "@shopify/polaris";
+import { themes, breakpointsAliases, themeNameDefault, createThemeClassName, themeDefault, getMediaConditions, themeNames } from "@shopify/polaris-tokens";
+import { SelectIcon, ChevronDownIcon, ChevronUpIcon, AlertCircleIcon, XCircleIcon, SearchIcon, MenuHorizontalIcon, ArrowLeftIcon, SortDescendingIcon, SortAscendingIcon, ChevronLeftIcon, ChevronRightIcon, XIcon, AlertTriangleIcon, XSmallIcon, DeleteIcon, LayoutColumns3Icon, EditIcon, DuplicateIcon, InfoIcon, PlusIcon, MenuIcon, HomeIcon, ConfettiIcon, PersonIcon, FinanceIcon, AppsIcon, SettingsFilledIcon, NotificationIcon, ImportIcon, ExportIcon, FilterIcon, SortIcon, OrderIcon, ChartVerticalIcon, PageIcon } from "@shopify/polaris-icons";
+import cr, { createPortal } from "react-dom";
 import { useNavigate as useNavigate$1 } from "react-router-dom";
-import { TitleBar } from "@shopify/app-bridge-react";
-import { NotificationIcon, HomeIcon, ConfettiIcon, PersonIcon, FinanceIcon, AppsIcon, SettingsFilledIcon, ImportIcon, ExportIcon, SearchIcon, PlusIcon, FilterIcon, SortIcon, OrderIcon, ChartVerticalIcon, PageIcon } from "@shopify/polaris-icons";
+import isEqual from "react-fast-compare";
+import { Transition, CSSTransition, TransitionGroup } from "react-transition-group";
 if (process.env.NODE_ENV !== "production") {
   if (!global.prismaGlobal) {
     global.prismaGlobal = new PrismaClient();
@@ -1324,7 +1326,7 @@ function useCampaign() {
 const links$1 = () => [
   { rel: "stylesheet", href: "/app/styles/global.css" }
 ];
-const loader$z = async ({ request }) => {
+const loader$A = async ({ request }) => {
   var _a2, _b, _c, _d, _e;
   const discountCodes = [];
   try {
@@ -1485,7 +1487,7 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: App$2,
   links: links$1,
-  loader: loader$z
+  loader: loader$A
 }, Symbol.toStringTag, { value: "Module" }));
 const uri$2 = process.env.MONGODB_URI;
 if (!uri$2) {
@@ -2210,13 +2212,13 @@ async function action$j({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$y() {
+async function loader$z() {
   return json({ message: "Use POST to update campaign metafields" });
 }
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$j,
-  loader: loader$y
+  loader: loader$z
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$i({ request }) {
   var _a2, _b, _c;
@@ -2352,7 +2354,7 @@ async function action$i({ request }) {
     );
   }
 }
-async function loader$x({ request }) {
+async function loader$y({ request }) {
   try {
     const { session, admin } = await authenticate.admin(request);
     const shopName = session.shop;
@@ -2390,7 +2392,7 @@ const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   action: action$i,
   default: SyncCampaignMetafieldsRoute,
-  loader: loader$x
+  loader: loader$y
 }, Symbol.toStringTag, { value: "Module" }));
 const action$h = async ({ request }) => {
   console.log("Received app uninstalled webhook");
@@ -2422,7 +2424,7 @@ function formatShopName$1(shopName) {
   }
   return formattedName;
 }
-async function loader$w({ request }) {
+async function loader$x({ request }) {
   var _a2, _b, _c, _d;
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -2478,7 +2480,7 @@ async function loader$w({ request }) {
 }
 const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$w
+  loader: loader$x
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler$1(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -2567,7 +2569,7 @@ const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: handler$1
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$v({ request, context }) {
+async function loader$w({ request, context }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2586,9 +2588,9 @@ async function loader$v({ request, context }) {
 }
 const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$v
+  loader: loader$w
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$u({ request }) {
+async function loader$v({ request }) {
   const { session } = await authenticate.admin(request);
   try {
     const shopName = session.shop;
@@ -2626,7 +2628,7 @@ async function loader$u({ request }) {
 }
 const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$u
+  loader: loader$v
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$g({ request }) {
   const { admin } = await authenticate.admin(request);
@@ -2645,15 +2647,15 @@ async function action$g({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$t() {
+async function loader$u() {
   return json({ message: "Use POST to update metafields" });
 }
 const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$g,
-  loader: loader$t
+  loader: loader$u
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$s({ request }) {
+async function loader$t({ request }) {
   try {
     const { admin, session } = await authenticate.admin(request);
     const { shop } = session;
@@ -2692,9 +2694,9 @@ async function loader$s({ request }) {
 }
 const route9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$s
+  loader: loader$t
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$r({ request }) {
+async function loader$s({ request }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2727,9 +2729,9 @@ async function loader$r({ request }) {
 }
 const route10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$r
+  loader: loader$s
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$q({ request }) {
+async function loader$r({ request }) {
   const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
   const { getSubscriptionStatus: getSubscriptionStatus2 } = await Promise.resolve().then(() => Subscription_server);
   try {
@@ -2755,9 +2757,9 @@ async function loader$q({ request }) {
 }
 const route11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$q
+  loader: loader$r
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$p({ request }) {
+async function loader$q({ request }) {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -2950,7 +2952,7 @@ async function loader$p({ request }) {
 }
 const route12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$p
+  loader: loader$q
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$f({ request }) {
   const { authenticate: authenticate2, billing } = await Promise.resolve().then(() => shopify_server);
@@ -3017,13 +3019,13 @@ async function action$f({ request }) {
     );
   }
 }
-async function loader$o() {
+async function loader$p() {
   return json({ message: "Use POST to cancel a subscription" });
 }
 const route13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$f,
-  loader: loader$o
+  loader: loader$p
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$e({ request }) {
   try {
@@ -3070,13 +3072,13 @@ async function action$e({ request }) {
     });
   }
 }
-async function loader$n() {
+async function loader$o() {
   return json({ message: "POST requests only" }, { status: 405 });
 }
 const route14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$e,
-  loader: loader$n
+  loader: loader$o
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -3130,7 +3132,7 @@ const route15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: handler
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$m({ request }) {
+async function loader$n({ request }) {
   var _a2, _b;
   try {
     console.log("🔍 Authenticating admin...");
@@ -3229,7 +3231,7 @@ async function loader$m({ request }) {
 }
 const route16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$m
+  loader: loader$n
 }, Symbol.toStringTag, { value: "Module" }));
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -3308,7 +3310,7 @@ const mongodb_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   getShopName,
   setShopName
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$l({ request }) {
+async function loader$m({ request }) {
   var _a2, _b;
   try {
     let shopName = null;
@@ -3415,7 +3417,7 @@ function ServeCampaignRoute() {
 const route17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: ServeCampaignRoute,
-  loader: loader$l
+  loader: loader$m
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$d({ request }) {
   if (request.method !== "POST") {
@@ -3481,13 +3483,13 @@ async function action$c({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$k() {
+async function loader$l() {
   return json({ message: "Use POST to sync campaign" });
 }
 const route19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$c,
-  loader: loader$k
+  loader: loader$l
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$b({ request }) {
   if (request.method !== "POST") {
@@ -3522,7 +3524,7 @@ const corsHeaders$1 = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$j({ request }) {
+async function loader$k({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders$1 });
   }
@@ -3612,7 +3614,7 @@ async function action$a({ request }) {
 const route21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$a,
-  loader: loader$j
+  loader: loader$k
 }, Symbol.toStringTag, { value: "Module" }));
 const action$9 = async ({ request }) => {
   if (request.method !== "POST") {
@@ -3687,7 +3689,7 @@ const action$9 = async ({ request }) => {
     );
   }
 };
-const loader$i = async ({ request }) => {
+const loader$j = async ({ request }) => {
   try {
     const url = new URL(request.url);
     const campaignId = url.searchParams.get("campaignId");
@@ -3730,9 +3732,9 @@ const loader$i = async ({ request }) => {
 const route22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$9,
-  loader: loader$i
+  loader: loader$j
 }, Symbol.toStringTag, { value: "Module" }));
-const loader$h = () => {
+const loader$i = () => {
   return redirect("/campaigns/create");
 };
 function CreateCampaignRedirect() {
@@ -3741,14 +3743,14 @@ function CreateCampaignRedirect() {
 const route23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CreateCampaignRedirect,
-  loader: loader$h
+  loader: loader$i
 }, Symbol.toStringTag, { value: "Module" }));
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$g({ request }) {
+async function loader$h({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -3827,7 +3829,7 @@ async function action$8({ request }) {
 const route24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$8,
-  loader: loader$g
+  loader: loader$h
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$2(request) {
   try {
@@ -3848,7 +3850,7 @@ async function getEffectiveShopName$2(request) {
     return shopName;
   }
 }
-async function loader$f({ request }) {
+async function loader$g({ request }) {
   try {
     const shopName = await getEffectiveShopName$2(request);
     const { db, dbName } = await connectToDatabase(shopName);
@@ -3892,7 +3894,7 @@ async function action$7({ request }) {
 const route25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$7,
-  loader: loader$f
+  loader: loader$g
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$1(request) {
   try {
@@ -4037,13 +4039,13 @@ async function action$6({ request, params }) {
     return json({ error: "Internal server error" }, { status: 500 });
   }
 }
-async function loader$e({ request, params }) {
+async function loader$f({ request, params }) {
   return json({ message: "Use POST to update campaign status" });
 }
 const route26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$6,
-  loader: loader$e
+  loader: loader$f
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName(request) {
   try {
@@ -4064,7 +4066,7 @@ async function getEffectiveShopName(request) {
     return shopName;
   }
 }
-async function loader$d({ params, request }) {
+async function loader$e({ params, request }) {
   try {
     const { id } = params;
     const shopName = await getEffectiveShopName(request);
@@ -4134,9 +4136,9 @@ async function action$5({ request, params }) {
 const route27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action: action$5,
-  loader: loader$d
+  loader: loader$e
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$c({ request }) {
+async function loader$d({ request }) {
   try {
     let shopName = null;
     try {
@@ -4168,9 +4170,9 @@ async function loader$c({ request }) {
 }
 const route28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$c
+  loader: loader$d
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$b({ request }) {
+async function loader$c({ request }) {
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
@@ -4209,8 +4211,10973 @@ async function loader$b({ request }) {
 }
 const route29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$b
+  loader: loader$c
 }, Symbol.toStringTag, { value: "Module" }));
+let Key;
+(function(Key2) {
+  Key2[Key2["Backspace"] = 8] = "Backspace";
+  Key2[Key2["Tab"] = 9] = "Tab";
+  Key2[Key2["Enter"] = 13] = "Enter";
+  Key2[Key2["Shift"] = 16] = "Shift";
+  Key2[Key2["Ctrl"] = 17] = "Ctrl";
+  Key2[Key2["Alt"] = 18] = "Alt";
+  Key2[Key2["Pause"] = 19] = "Pause";
+  Key2[Key2["CapsLock"] = 20] = "CapsLock";
+  Key2[Key2["Escape"] = 27] = "Escape";
+  Key2[Key2["Space"] = 32] = "Space";
+  Key2[Key2["PageUp"] = 33] = "PageUp";
+  Key2[Key2["PageDown"] = 34] = "PageDown";
+  Key2[Key2["End"] = 35] = "End";
+  Key2[Key2["Home"] = 36] = "Home";
+  Key2[Key2["LeftArrow"] = 37] = "LeftArrow";
+  Key2[Key2["UpArrow"] = 38] = "UpArrow";
+  Key2[Key2["RightArrow"] = 39] = "RightArrow";
+  Key2[Key2["DownArrow"] = 40] = "DownArrow";
+  Key2[Key2["Insert"] = 45] = "Insert";
+  Key2[Key2["Delete"] = 46] = "Delete";
+  Key2[Key2["Key0"] = 48] = "Key0";
+  Key2[Key2["Key1"] = 49] = "Key1";
+  Key2[Key2["Key2"] = 50] = "Key2";
+  Key2[Key2["Key3"] = 51] = "Key3";
+  Key2[Key2["Key4"] = 52] = "Key4";
+  Key2[Key2["Key5"] = 53] = "Key5";
+  Key2[Key2["Key6"] = 54] = "Key6";
+  Key2[Key2["Key7"] = 55] = "Key7";
+  Key2[Key2["Key8"] = 56] = "Key8";
+  Key2[Key2["Key9"] = 57] = "Key9";
+  Key2[Key2["KeyA"] = 65] = "KeyA";
+  Key2[Key2["KeyB"] = 66] = "KeyB";
+  Key2[Key2["KeyC"] = 67] = "KeyC";
+  Key2[Key2["KeyD"] = 68] = "KeyD";
+  Key2[Key2["KeyE"] = 69] = "KeyE";
+  Key2[Key2["KeyF"] = 70] = "KeyF";
+  Key2[Key2["KeyG"] = 71] = "KeyG";
+  Key2[Key2["KeyH"] = 72] = "KeyH";
+  Key2[Key2["KeyI"] = 73] = "KeyI";
+  Key2[Key2["KeyJ"] = 74] = "KeyJ";
+  Key2[Key2["KeyK"] = 75] = "KeyK";
+  Key2[Key2["KeyL"] = 76] = "KeyL";
+  Key2[Key2["KeyM"] = 77] = "KeyM";
+  Key2[Key2["KeyN"] = 78] = "KeyN";
+  Key2[Key2["KeyO"] = 79] = "KeyO";
+  Key2[Key2["KeyP"] = 80] = "KeyP";
+  Key2[Key2["KeyQ"] = 81] = "KeyQ";
+  Key2[Key2["KeyR"] = 82] = "KeyR";
+  Key2[Key2["KeyS"] = 83] = "KeyS";
+  Key2[Key2["KeyT"] = 84] = "KeyT";
+  Key2[Key2["KeyU"] = 85] = "KeyU";
+  Key2[Key2["KeyV"] = 86] = "KeyV";
+  Key2[Key2["KeyW"] = 87] = "KeyW";
+  Key2[Key2["KeyX"] = 88] = "KeyX";
+  Key2[Key2["KeyY"] = 89] = "KeyY";
+  Key2[Key2["KeyZ"] = 90] = "KeyZ";
+  Key2[Key2["LeftMeta"] = 91] = "LeftMeta";
+  Key2[Key2["RightMeta"] = 92] = "RightMeta";
+  Key2[Key2["Select"] = 93] = "Select";
+  Key2[Key2["Numpad0"] = 96] = "Numpad0";
+  Key2[Key2["Numpad1"] = 97] = "Numpad1";
+  Key2[Key2["Numpad2"] = 98] = "Numpad2";
+  Key2[Key2["Numpad3"] = 99] = "Numpad3";
+  Key2[Key2["Numpad4"] = 100] = "Numpad4";
+  Key2[Key2["Numpad5"] = 101] = "Numpad5";
+  Key2[Key2["Numpad6"] = 102] = "Numpad6";
+  Key2[Key2["Numpad7"] = 103] = "Numpad7";
+  Key2[Key2["Numpad8"] = 104] = "Numpad8";
+  Key2[Key2["Numpad9"] = 105] = "Numpad9";
+  Key2[Key2["Multiply"] = 106] = "Multiply";
+  Key2[Key2["Add"] = 107] = "Add";
+  Key2[Key2["Subtract"] = 109] = "Subtract";
+  Key2[Key2["Decimal"] = 110] = "Decimal";
+  Key2[Key2["Divide"] = 111] = "Divide";
+  Key2[Key2["F1"] = 112] = "F1";
+  Key2[Key2["F2"] = 113] = "F2";
+  Key2[Key2["F3"] = 114] = "F3";
+  Key2[Key2["F4"] = 115] = "F4";
+  Key2[Key2["F5"] = 116] = "F5";
+  Key2[Key2["F6"] = 117] = "F6";
+  Key2[Key2["F7"] = 118] = "F7";
+  Key2[Key2["F8"] = 119] = "F8";
+  Key2[Key2["F9"] = 120] = "F9";
+  Key2[Key2["F10"] = 121] = "F10";
+  Key2[Key2["F11"] = 122] = "F11";
+  Key2[Key2["F12"] = 123] = "F12";
+  Key2[Key2["NumLock"] = 144] = "NumLock";
+  Key2[Key2["ScrollLock"] = 145] = "ScrollLock";
+  Key2[Key2["Semicolon"] = 186] = "Semicolon";
+  Key2[Key2["Equals"] = 187] = "Equals";
+  Key2[Key2["Comma"] = 188] = "Comma";
+  Key2[Key2["Dash"] = 189] = "Dash";
+  Key2[Key2["Period"] = 190] = "Period";
+  Key2[Key2["ForwardSlash"] = 191] = "ForwardSlash";
+  Key2[Key2["GraveAccent"] = 192] = "GraveAccent";
+  Key2[Key2["OpenBracket"] = 219] = "OpenBracket";
+  Key2[Key2["BackSlash"] = 220] = "BackSlash";
+  Key2[Key2["CloseBracket"] = 221] = "CloseBracket";
+  Key2[Key2["SingleQuote"] = 222] = "SingleQuote";
+})(Key || (Key = {}));
+const scrollable = {
+  props: {
+    "data-polaris-scrollable": true
+  },
+  selector: "[data-polaris-scrollable]"
+};
+const overlay = {
+  props: {
+    "data-polaris-overlay": true
+  }
+};
+const layer = {
+  props: {
+    "data-polaris-layer": true
+  },
+  selector: "[data-polaris-layer]"
+};
+const unstyled = {
+  props: {
+    "data-polaris-unstyled": true
+  }
+};
+const dataPolarisTopBar = {
+  props: {
+    "data-polaris-top-bar": true
+  },
+  selector: "[data-polaris-top-bar]"
+};
+const headerCell = {
+  props: {
+    "data-polaris-header-cell": true
+  },
+  selector: "[data-polaris-header-cell]"
+};
+const portal = {
+  selector: "[data-portal-id]"
+};
+const ThemeContext = /* @__PURE__ */ createContext(null);
+const ThemeNameContext = /* @__PURE__ */ createContext(null);
+function getTheme(themeName) {
+  return themes[themeName];
+}
+function useTheme() {
+  const theme = useContext(ThemeContext);
+  if (!theme) {
+    throw new Error("No theme was provided. Your application must be wrapped in an <AppProvider> or <ThemeProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.");
+  }
+  return theme;
+}
+function useThemeName() {
+  const themeName = useContext(ThemeNameContext);
+  if (!themeName) {
+    throw new Error("No themeName was provided. Your application must be wrapped in an <AppProvider> or <ThemeProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.");
+  }
+  return themeName;
+}
+function UseTheme(props) {
+  const theme = useTheme();
+  return props.children(theme);
+}
+function isObject(value) {
+  const type = typeof value;
+  return value != null && (type === "object" || type === "function");
+}
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+function variationName(name, value) {
+  return `${name}${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+}
+function sanitizeCustomProperties(styles2) {
+  const nonNullValues = Object.entries(styles2).filter(([_, value]) => value != null);
+  return nonNullValues.length ? Object.fromEntries(nonNullValues) : void 0;
+}
+function getResponsiveProps(componentName, componentProp, tokenSubgroup, responsiveProp) {
+  if (!responsiveProp) return {};
+  let result;
+  if (!isObject(responsiveProp)) {
+    result = {
+      [breakpointsAliases[0]]: `var(--p-${tokenSubgroup}-${responsiveProp})`
+    };
+  } else {
+    result = Object.fromEntries(Object.entries(responsiveProp).map(([breakpointAlias, aliasOrScale]) => [breakpointAlias, `var(--p-${tokenSubgroup}-${aliasOrScale})`]));
+  }
+  return Object.fromEntries(Object.entries(result).map(([breakpointAlias, value]) => [`--pc-${componentName}-${componentProp}-${breakpointAlias}`, value]));
+}
+function getResponsiveValue(componentName, componentProp, responsiveProp) {
+  if (!responsiveProp) return {};
+  if (!isObject(responsiveProp)) {
+    return {
+      [`--pc-${componentName}-${componentProp}-${breakpointsAliases[0]}`]: responsiveProp
+    };
+  }
+  return Object.fromEntries(Object.entries(responsiveProp).map(([breakpointAlias, responsiveValue]) => [`--pc-${componentName}-${componentProp}-${breakpointAlias}`, responsiveValue]));
+}
+var styles$13 = {
+  "themeContainer": "Polaris-ThemeProvider--themeContainer"
+};
+const themeNamesLocal = ["light", "dark-experimental"];
+const isThemeNameLocal = (name) => themeNamesLocal.includes(name);
+function ThemeProvider(props) {
+  const {
+    as: ThemeContainer = "div",
+    children,
+    className,
+    theme: themeName = themeNameDefault
+  } = props;
+  return /* @__PURE__ */ React.createElement(ThemeNameContext.Provider, {
+    value: themeName
+  }, /* @__PURE__ */ React.createElement(ThemeContext.Provider, {
+    value: getTheme(themeName)
+  }, /* @__PURE__ */ React.createElement(ThemeContainer, {
+    "data-portal-id": props["data-portal-id"],
+    className: classNames(createThemeClassName(themeName), styles$13.themeContainer, className)
+  }, children)));
+}
+const WithinContentContext = /* @__PURE__ */ createContext(false);
+const isServer = typeof window === "undefined" || typeof document === "undefined";
+const useIsomorphicLayoutEffect = isServer ? useEffect : useLayoutEffect;
+function useEventListener(eventName, handler2, target, options2) {
+  const handlerRef = useRef(handler2);
+  const optionsRef = useRef(options2);
+  useIsomorphicLayoutEffect(() => {
+    handlerRef.current = handler2;
+  }, [handler2]);
+  useIsomorphicLayoutEffect(() => {
+    optionsRef.current = options2;
+  }, [options2]);
+  useEffect(() => {
+    if (!(typeof eventName === "string" && target !== null)) return;
+    let targetElement;
+    if (typeof target === "undefined") {
+      targetElement = window;
+    } else if ("current" in target) {
+      if (target.current === null) return;
+      targetElement = target.current;
+    } else {
+      targetElement = target;
+    }
+    const eventOptions = optionsRef.current;
+    const eventListener = (event) => handlerRef.current(event);
+    targetElement.addEventListener(eventName, eventListener, eventOptions);
+    return () => {
+      targetElement.removeEventListener(eventName, eventListener, eventOptions);
+    };
+  }, [eventName, target]);
+}
+const Breakpoints = {
+  // TODO: Update to smDown
+  navigationBarCollapsed: "767.95px",
+  // TODO: Update to lgDown
+  stackedContent: "1039.95px"
+};
+const noWindowMatches = {
+  media: "",
+  addListener: noop$6,
+  removeListener: noop$6,
+  matches: false,
+  onchange: noop$6,
+  addEventListener: noop$6,
+  removeEventListener: noop$6,
+  dispatchEvent: (_) => true
+};
+function noop$6() {
+}
+function navigationBarCollapsed() {
+  return typeof window === "undefined" ? noWindowMatches : window.matchMedia(`(max-width: ${Breakpoints.navigationBarCollapsed})`);
+}
+function stackedContent() {
+  return typeof window === "undefined" ? noWindowMatches : window.matchMedia(`(max-width: ${Breakpoints.stackedContent})`);
+}
+const breakpointsQueryEntries = getBreakpointsQueryEntries(themeDefault.breakpoints);
+function getMatches(defaults, forceDefaults) {
+  if (!isServer && !forceDefaults) {
+    return Object.fromEntries(breakpointsQueryEntries.map(([directionAlias, query]) => [directionAlias, window.matchMedia(query).matches]));
+  }
+  return Object.fromEntries(breakpointsQueryEntries.map(([directionAlias]) => [directionAlias, false]));
+}
+function useBreakpoints(options2) {
+  const [breakpoints, setBreakpoints] = useState(getMatches(options2 == null ? void 0 : options2.defaults, true));
+  useIsomorphicLayoutEffect(() => {
+    const mediaQueryLists = breakpointsQueryEntries.map(([_, query]) => window.matchMedia(query));
+    const handler2 = () => setBreakpoints(getMatches());
+    mediaQueryLists.forEach((mql) => {
+      if (mql.addListener) {
+        mql.addListener(handler2);
+      } else {
+        mql.addEventListener("change", handler2);
+      }
+    });
+    handler2();
+    return () => {
+      mediaQueryLists.forEach((mql) => {
+        if (mql.removeListener) {
+          mql.removeListener(handler2);
+        } else {
+          mql.removeEventListener("change", handler2);
+        }
+      });
+    };
+  }, []);
+  return breakpoints;
+}
+function getBreakpointsQueryEntries(breakpoints) {
+  const mediaConditionEntries = Object.entries(getMediaConditions(breakpoints));
+  return mediaConditionEntries.map(([breakpointsToken, mediaConditions]) => Object.entries(mediaConditions).map(([direction, mediaCondition]) => {
+    const breakpointsAlias = breakpointsToken.split("-")[1];
+    const directionAlias = `${breakpointsAlias}${capitalize(direction)}`;
+    return [directionAlias, mediaCondition];
+  })).flat();
+}
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+function debounce(func, waitArg, options2) {
+  let lastArgs;
+  let lastThis;
+  let maxWait;
+  let result;
+  let timerId;
+  let lastCallTime;
+  let lastInvokeTime = 0;
+  let leading = false;
+  let maxing = false;
+  let trailing = true;
+  const useRAF = !waitArg && waitArg !== 0;
+  if (typeof func !== "function") {
+    throw new TypeError("Expected a function");
+  }
+  const wait = waitArg || 0;
+  if (typeof options2 === "object") {
+    leading = Boolean(options2.leading);
+    maxing = "maxWait" in options2;
+    maxWait = maxing ? Math.max(Number(options2.maxWait) || 0, wait) : void 0;
+    trailing = "trailing" in options2 ? Boolean(options2.trailing) : trailing;
+  }
+  function invokeFunc(time) {
+    const args = lastArgs;
+    const thisArg = lastThis;
+    lastArgs = void 0;
+    lastThis = void 0;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+  function startTimer(pendingFunc, wait2) {
+    if (useRAF) {
+      cancelAnimationFrame(timerId);
+      return requestAnimationFrame(pendingFunc);
+    }
+    return setTimeout(pendingFunc, wait2);
+  }
+  function cancelTimer(id) {
+    if (useRAF) {
+      return cancelAnimationFrame(id);
+    }
+    clearTimeout(id);
+  }
+  function leadingEdge(time) {
+    lastInvokeTime = time;
+    timerId = startTimer(timerExpired, wait);
+    return leading ? invokeFunc(time) : result;
+  }
+  function remainingWait(time) {
+    const timeSinceLastCall = time - lastCallTime;
+    const timeSinceLastInvoke = time - lastInvokeTime;
+    const timeWaiting = wait - timeSinceLastCall;
+    return maxing && maxWait ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+  }
+  function shouldInvoke(time) {
+    const timeSinceLastCall = time - lastCallTime;
+    const timeSinceLastInvoke = time - lastInvokeTime;
+    return lastCallTime === void 0 || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && maxWait && timeSinceLastInvoke >= maxWait;
+  }
+  function timerExpired() {
+    const time = Date.now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    timerId = startTimer(timerExpired, remainingWait(time));
+  }
+  function trailingEdge(time) {
+    timerId = void 0;
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = void 0;
+    return result;
+  }
+  function cancel() {
+    if (timerId !== void 0) {
+      cancelTimer(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = void 0;
+  }
+  function flush() {
+    return timerId === void 0 ? result : trailingEdge(Date.now());
+  }
+  function pending() {
+    return timerId !== void 0;
+  }
+  function debounced(...args) {
+    const time = Date.now();
+    const isInvoking = shouldInvoke(time);
+    lastArgs = args;
+    lastThis = this;
+    lastCallTime = time;
+    if (isInvoking) {
+      if (timerId === void 0) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        timerId = startTimer(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === void 0) {
+      timerId = startTimer(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  debounced.pending = pending;
+  return debounced;
+}
+class Rect {
+  static get zero() {
+    return new Rect();
+  }
+  constructor({
+    top = 0,
+    left = 0,
+    width = 0,
+    height = 0
+  } = {}) {
+    this.top = top;
+    this.left = left;
+    this.width = width;
+    this.height = height;
+  }
+  get center() {
+    return {
+      x: this.left + this.width / 2,
+      y: this.top + this.height / 2
+    };
+  }
+}
+function getRectForNode(node) {
+  if (!(node instanceof Element)) {
+    return new Rect({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+  }
+  const rect = node.getBoundingClientRect();
+  return new Rect({
+    top: rect.top,
+    left: rect.left,
+    width: rect.width,
+    height: rect.height
+  });
+}
+const SIXTY_FPS = 1e3 / 60;
+class StickyManager {
+  constructor(container) {
+    this.stickyItems = [];
+    this.stuckItems = [];
+    this.container = null;
+    this.topBarOffset = 0;
+    this.handleResize = debounce(() => {
+      this.manageStickyItems();
+    }, SIXTY_FPS, {
+      leading: true,
+      trailing: true,
+      maxWait: SIXTY_FPS
+    });
+    this.handleScroll = debounce(() => {
+      this.manageStickyItems();
+    }, SIXTY_FPS, {
+      leading: true,
+      trailing: true,
+      maxWait: SIXTY_FPS
+    });
+    if (container) {
+      this.setContainer(container);
+    }
+  }
+  registerStickyItem(stickyItem) {
+    this.stickyItems.push(stickyItem);
+  }
+  unregisterStickyItem(nodeToRemove) {
+    const nodeIndex = this.stickyItems.findIndex(({
+      stickyNode
+    }) => nodeToRemove === stickyNode);
+    this.stickyItems.splice(nodeIndex, 1);
+  }
+  setContainer(el) {
+    this.container = el;
+    if (isDocument$1(el)) {
+      this.setTopBarOffset(el);
+    }
+    this.container.addEventListener("scroll", this.handleScroll);
+    window.addEventListener("resize", this.handleResize);
+    this.manageStickyItems();
+  }
+  removeScrollListener() {
+    if (this.container) {
+      this.container.removeEventListener("scroll", this.handleScroll);
+      window.removeEventListener("resize", this.handleResize);
+    }
+  }
+  manageStickyItems() {
+    if (this.stickyItems.length <= 0) {
+      return;
+    }
+    const scrollTop = this.container ? scrollTopFor(this.container) : 0;
+    const containerTop = getRectForNode(this.container).top + this.topBarOffset;
+    this.stickyItems.forEach((stickyItem) => {
+      const {
+        handlePositioning
+      } = stickyItem;
+      const {
+        sticky,
+        top,
+        left,
+        width
+      } = this.evaluateStickyItem(stickyItem, scrollTop, containerTop);
+      this.updateStuckItems(stickyItem, sticky);
+      handlePositioning(sticky, top, left, width);
+    });
+  }
+  evaluateStickyItem(stickyItem, scrollTop, containerTop) {
+    var _a2;
+    const {
+      stickyNode,
+      placeHolderNode,
+      boundingElement,
+      offset,
+      disableWhenStacked
+    } = stickyItem;
+    if (disableWhenStacked && stackedContent().matches) {
+      return {
+        sticky: false,
+        top: 0,
+        left: 0,
+        width: "auto"
+      };
+    }
+    const stickyOffset = offset ? this.getOffset(stickyNode) + parseInt(
+      // Important: This will not update when the active theme changes.
+      // Update this to `useTheme` once converted to a function component.
+      themeDefault.space["space-500"],
+      10
+    ) : this.getOffset(stickyNode);
+    const scrollPosition2 = scrollTop + stickyOffset;
+    const placeHolderNodeCurrentTop = placeHolderNode.getBoundingClientRect().top - containerTop + scrollTop;
+    const top = containerTop + stickyOffset;
+    const width = placeHolderNode.getBoundingClientRect().width;
+    const left = placeHolderNode.getBoundingClientRect().left;
+    let sticky;
+    if (boundingElement == null) {
+      sticky = scrollPosition2 >= placeHolderNodeCurrentTop;
+    } else {
+      const stickyItemHeight = stickyNode.getBoundingClientRect().height || ((_a2 = stickyNode.firstElementChild) == null ? void 0 : _a2.getBoundingClientRect().height) || 0;
+      const stickyItemBottomPosition = boundingElement.getBoundingClientRect().bottom - stickyItemHeight + scrollTop - containerTop;
+      sticky = scrollPosition2 >= placeHolderNodeCurrentTop && scrollPosition2 < stickyItemBottomPosition;
+    }
+    return {
+      sticky,
+      top,
+      left,
+      width
+    };
+  }
+  updateStuckItems(item, sticky) {
+    const {
+      stickyNode
+    } = item;
+    if (sticky && !this.isNodeStuck(stickyNode)) {
+      this.addStuckItem(item);
+    } else if (!sticky && this.isNodeStuck(stickyNode)) {
+      this.removeStuckItem(item);
+    }
+  }
+  addStuckItem(stickyItem) {
+    this.stuckItems.push(stickyItem);
+  }
+  removeStuckItem(stickyItem) {
+    const {
+      stickyNode: nodeToRemove
+    } = stickyItem;
+    const nodeIndex = this.stuckItems.findIndex(({
+      stickyNode
+    }) => nodeToRemove === stickyNode);
+    this.stuckItems.splice(nodeIndex, 1);
+  }
+  getOffset(node) {
+    if (this.stuckItems.length === 0) {
+      return 0;
+    }
+    let offset = 0;
+    let count = 0;
+    const stuckNodesLength = this.stuckItems.length;
+    const nodeRect = getRectForNode(node);
+    while (count < stuckNodesLength) {
+      const stuckNode = this.stuckItems[count].stickyNode;
+      if (stuckNode !== node) {
+        const stuckNodeRect = getRectForNode(stuckNode);
+        if (!horizontallyOverlaps(nodeRect, stuckNodeRect)) {
+          offset += getRectForNode(stuckNode).height;
+        }
+      } else {
+        break;
+      }
+      count++;
+    }
+    return offset;
+  }
+  isNodeStuck(node) {
+    const nodeFound = this.stuckItems.findIndex(({
+      stickyNode
+    }) => node === stickyNode);
+    return nodeFound >= 0;
+  }
+  setTopBarOffset(container) {
+    const topbarElement = container.querySelector(`:not(${scrollable.selector}) ${dataPolarisTopBar.selector}`);
+    this.topBarOffset = topbarElement ? topbarElement.clientHeight : 0;
+  }
+}
+function isDocument$1(node) {
+  return node === document;
+}
+function scrollTopFor(container) {
+  return isDocument$1(container) ? document.body.scrollTop || document.documentElement.scrollTop : container.scrollTop;
+}
+function horizontallyOverlaps(rect1, rect2) {
+  const rect1Left = rect1.left;
+  const rect1Right = rect1.left + rect1.width;
+  const rect2Left = rect2.left;
+  const rect2Right = rect2.left + rect2.width;
+  return rect2Right < rect1Left || rect1Right < rect2Left;
+}
+const SCROLL_LOCKING_ATTRIBUTE = "data-lock-scrolling";
+const SCROLL_LOCKING_HIDDEN_ATTRIBUTE = "data-lock-scrolling-hidden";
+const SCROLL_LOCKING_WRAPPER_ATTRIBUTE = "data-lock-scrolling-wrapper";
+let scrollPosition = 0;
+function isScrollBarVisible() {
+  const {
+    body
+  } = document;
+  return body.scrollHeight > body.clientHeight;
+}
+class ScrollLockManager {
+  constructor() {
+    this.scrollLocks = 0;
+    this.locked = false;
+  }
+  registerScrollLock() {
+    this.scrollLocks += 1;
+    this.handleScrollLocking();
+  }
+  unregisterScrollLock() {
+    this.scrollLocks -= 1;
+    this.handleScrollLocking();
+  }
+  handleScrollLocking() {
+    if (isServer) return;
+    const {
+      scrollLocks
+    } = this;
+    const {
+      body
+    } = document;
+    const wrapper = body.firstElementChild;
+    if (scrollLocks === 0) {
+      body.removeAttribute(SCROLL_LOCKING_ATTRIBUTE);
+      body.removeAttribute(SCROLL_LOCKING_HIDDEN_ATTRIBUTE);
+      if (wrapper) {
+        wrapper.removeAttribute(SCROLL_LOCKING_WRAPPER_ATTRIBUTE);
+      }
+      window.scroll(0, scrollPosition);
+      this.locked = false;
+    } else if (scrollLocks > 0 && !this.locked) {
+      scrollPosition = window.pageYOffset;
+      body.setAttribute(SCROLL_LOCKING_ATTRIBUTE, "");
+      if (!isScrollBarVisible()) {
+        body.setAttribute(SCROLL_LOCKING_HIDDEN_ATTRIBUTE, "");
+      }
+      if (wrapper) {
+        wrapper.setAttribute(SCROLL_LOCKING_WRAPPER_ATTRIBUTE, "");
+        wrapper.scrollTop = scrollPosition;
+      }
+      this.locked = true;
+    }
+  }
+  resetScrollPosition() {
+    scrollPosition = 0;
+  }
+}
+const OBJECT_NOTATION_MATCHER = /\[(.*?)\]|(\w+)/g;
+function get(obj, keypath, defaultValue) {
+  if (obj == null) return void 0;
+  const keys = Array.isArray(keypath) ? keypath : getKeypath(keypath);
+  let acc = obj;
+  for (let i = 0; i < keys.length; i++) {
+    const val = acc[keys[i]];
+    if (val === void 0) return defaultValue;
+    acc = val;
+  }
+  return acc;
+}
+function getKeypath(str) {
+  const path = [];
+  let result;
+  while (result = OBJECT_NOTATION_MATCHER.exec(str)) {
+    const [, first, second] = result;
+    path.push(first || second);
+  }
+  return path;
+}
+function merge(...objs) {
+  let final = {};
+  for (const obj of objs) {
+    final = mergeRecursively(final, obj);
+  }
+  return final;
+}
+function mergeRecursively(inputObjA, objB) {
+  const objA = Array.isArray(inputObjA) ? [...inputObjA] : {
+    ...inputObjA
+  };
+  for (const key in objB) {
+    if (!Object.prototype.hasOwnProperty.call(objB, key)) {
+      continue;
+    } else if (isMergeableValue(objB[key]) && isMergeableValue(objA[key])) {
+      objA[key] = mergeRecursively(objA[key], objB[key]);
+    } else {
+      objA[key] = objB[key];
+    }
+  }
+  return objA;
+}
+function isMergeableValue(value) {
+  return value !== null && typeof value === "object";
+}
+const REPLACE_REGEX$1 = /{([^}]*)}/g;
+class I18n {
+  /**
+   * @param translation A locale object or array of locale objects that overrides default translations. If specifying an array then your desired language dictionary should come first, followed by your fallback language dictionaries
+   */
+  constructor(translation) {
+    this.translation = {};
+    this.translation = Array.isArray(translation) ? merge(...translation.slice().reverse()) : translation;
+  }
+  translate(id, replacements) {
+    const text2 = get(this.translation, id, "");
+    if (!text2) {
+      return "";
+    }
+    if (replacements) {
+      return text2.replace(REPLACE_REGEX$1, (match) => {
+        const replacement = match.substring(1, match.length - 1);
+        if (replacements[replacement] === void 0) {
+          const replacementData = JSON.stringify(replacements);
+          throw new Error(`Error in translation for key '${id}'. No replacement found for key '${replacement}'. The following replacements were passed: '${replacementData}'`);
+        }
+        return replacements[replacement];
+      });
+    }
+    return text2;
+  }
+  translationKeyExists(path) {
+    return Boolean(get(this.translation, path));
+  }
+}
+const FeaturesContext = /* @__PURE__ */ createContext(void 0);
+const I18nContext = /* @__PURE__ */ createContext(void 0);
+const ScrollLockManagerContext = /* @__PURE__ */ createContext(void 0);
+const StickyManagerContext = /* @__PURE__ */ createContext(void 0);
+const LinkContext = /* @__PURE__ */ createContext(void 0);
+const MediaQueryContext = /* @__PURE__ */ createContext(void 0);
+class EventListener extends PureComponent {
+  componentDidMount() {
+    this.attachListener();
+  }
+  componentDidUpdate({
+    passive,
+    ...detachProps
+  }) {
+    this.detachListener(detachProps);
+    this.attachListener();
+  }
+  componentWillUnmount() {
+    this.detachListener();
+  }
+  render() {
+    return null;
+  }
+  attachListener() {
+    const {
+      event,
+      handler: handler2,
+      capture,
+      passive
+    } = this.props;
+    window.addEventListener(event, handler2, {
+      capture,
+      passive
+    });
+  }
+  detachListener(prevProps) {
+    const {
+      event,
+      handler: handler2,
+      capture
+    } = prevProps || this.props;
+    window.removeEventListener(event, handler2, capture);
+  }
+}
+const MediaQueryProvider = function MediaQueryProvider2({
+  children
+}) {
+  const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(navigationBarCollapsed().matches);
+  const handleResize = useCallback(debounce(() => {
+    if (isNavigationCollapsed !== navigationBarCollapsed().matches) {
+      setIsNavigationCollapsed(!isNavigationCollapsed);
+    }
+  }, 40, {
+    trailing: true,
+    leading: true,
+    maxWait: 40
+  }), [isNavigationCollapsed]);
+  useEffect(() => {
+    setIsNavigationCollapsed(navigationBarCollapsed().matches);
+  }, []);
+  const context = useMemo(() => ({
+    isNavigationCollapsed
+  }), [isNavigationCollapsed]);
+  return /* @__PURE__ */ React.createElement(MediaQueryContext.Provider, {
+    value: context
+  }, /* @__PURE__ */ React.createElement(EventListener, {
+    event: "resize",
+    handler: handleResize
+  }), children);
+};
+function useIsAfterInitialMount() {
+  const [isAfterInitialMount, setIsAfterInitialMount] = useState(false);
+  useEffect(() => {
+    setIsAfterInitialMount(true);
+  }, []);
+  return isAfterInitialMount;
+}
+const PortalsManagerContext = /* @__PURE__ */ createContext(void 0);
+function PortalsContainerComponent(_props, ref) {
+  return /* @__PURE__ */ React.createElement("div", {
+    id: "PolarisPortalsContainer",
+    ref
+  });
+}
+const PortalsContainer = /* @__PURE__ */ forwardRef(PortalsContainerComponent);
+function PortalsManager({
+  children,
+  container
+}) {
+  const isMounted = useIsAfterInitialMount();
+  const ref = useRef(null);
+  const contextValue = useMemo(() => {
+    if (container) {
+      return {
+        container
+      };
+    } else if (isMounted) {
+      return {
+        container: ref.current
+      };
+    } else {
+      return {
+        container: null
+      };
+    }
+  }, [container, isMounted]);
+  return /* @__PURE__ */ React.createElement(PortalsManagerContext.Provider, {
+    value: contextValue
+  }, children, container ? null : /* @__PURE__ */ React.createElement(PortalsContainer, {
+    ref
+  }));
+}
+const FocusManagerContext = /* @__PURE__ */ createContext(void 0);
+function FocusManager({
+  children
+}) {
+  const [trapFocusList, setTrapFocusList] = useState([]);
+  const add = useCallback((id) => {
+    setTrapFocusList((list2) => [...list2, id]);
+  }, []);
+  const remove = useCallback((id) => {
+    let removed = true;
+    setTrapFocusList((list2) => {
+      const clone = [...list2];
+      const index2 = clone.indexOf(id);
+      if (index2 === -1) {
+        removed = false;
+      } else {
+        clone.splice(index2, 1);
+      }
+      return clone;
+    });
+    return removed;
+  }, []);
+  const value = useMemo(() => ({
+    trapFocusList,
+    add,
+    remove
+  }), [add, trapFocusList, remove]);
+  return /* @__PURE__ */ React.createElement(FocusManagerContext.Provider, {
+    value
+  }, children);
+}
+const EphemeralPresenceManagerContext = /* @__PURE__ */ createContext(void 0);
+const defaultState = {
+  tooltip: 0,
+  hovercard: 0
+};
+function EphemeralPresenceManager({
+  children
+}) {
+  const [presenceCounter, setPresenceCounter] = useState(defaultState);
+  const addPresence = useCallback((key) => {
+    setPresenceCounter((prevList) => ({
+      ...prevList,
+      [key]: prevList[key] + 1
+    }));
+  }, []);
+  const removePresence = useCallback((key) => {
+    setPresenceCounter((prevList) => ({
+      ...prevList,
+      [key]: prevList[key] - 1
+    }));
+  }, []);
+  const value = useMemo(() => ({
+    presenceList: Object.entries(presenceCounter).reduce((previousValue, currentValue) => {
+      const [key, value2] = currentValue;
+      return {
+        ...previousValue,
+        [key]: value2 >= 1
+      };
+    }, {}),
+    presenceCounter,
+    addPresence,
+    removePresence
+  }), [addPresence, removePresence, presenceCounter]);
+  return /* @__PURE__ */ React.createElement(EphemeralPresenceManagerContext.Provider, {
+    value
+  }, children);
+}
+const MAX_SCROLLBAR_WIDTH = 20;
+const SCROLLBAR_TEST_ELEMENT_PARENT_SIZE = 30;
+const SCROLLBAR_TEST_ELEMENT_CHILD_SIZE = SCROLLBAR_TEST_ELEMENT_PARENT_SIZE + 10;
+function measureScrollbars() {
+  var _a2;
+  const parentEl = document.createElement("div");
+  parentEl.setAttribute("style", `position: absolute; opacity: 0; transform: translate3d(-9999px, -9999px, 0); pointer-events: none; width:${SCROLLBAR_TEST_ELEMENT_PARENT_SIZE}px; height:${SCROLLBAR_TEST_ELEMENT_PARENT_SIZE}px;`);
+  const child = document.createElement("div");
+  child.setAttribute("style", `width:100%; height: ${SCROLLBAR_TEST_ELEMENT_CHILD_SIZE}; overflow:scroll; scrollbar-width: thin;`);
+  parentEl.appendChild(child);
+  document.body.appendChild(parentEl);
+  const scrollbarWidth = SCROLLBAR_TEST_ELEMENT_PARENT_SIZE - (((_a2 = parentEl.firstElementChild) == null ? void 0 : _a2.clientWidth) ?? 0);
+  const scrollbarWidthWithSafetyHatch = Math.min(scrollbarWidth, MAX_SCROLLBAR_WIDTH);
+  document.documentElement.style.setProperty("--pc-app-provider-scrollbar-width", `${scrollbarWidthWithSafetyHatch}px`);
+  document.body.removeChild(parentEl);
+}
+class AppProvider extends Component {
+  constructor(props) {
+    super(props);
+    this.setBodyStyles = () => {
+      document.body.style.backgroundColor = "var(--p-color-bg)";
+      document.body.style.color = "var(--p-color-text)";
+    };
+    this.setRootAttributes = () => {
+      const activeThemeName = this.getThemeName();
+      themeNames.forEach((themeName) => {
+        document.documentElement.classList.toggle(createThemeClassName(themeName), themeName === activeThemeName);
+      });
+    };
+    this.getThemeName = () => this.props.theme ?? themeNameDefault;
+    this.stickyManager = new StickyManager();
+    this.scrollLockManager = new ScrollLockManager();
+    const {
+      i18n,
+      linkComponent
+    } = this.props;
+    this.state = {
+      link: linkComponent,
+      intl: new I18n(i18n)
+    };
+  }
+  componentDidMount() {
+    if (document != null) {
+      this.stickyManager.setContainer(document);
+      this.setBodyStyles();
+      this.setRootAttributes();
+      const isSafari16 = navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome") && (navigator.userAgent.includes("Version/16.1") || navigator.userAgent.includes("Version/16.2") || navigator.userAgent.includes("Version/16.3"));
+      const isMobileApp16 = navigator.userAgent.includes("Shopify Mobile/iOS") && (navigator.userAgent.includes("OS 16_1") || navigator.userAgent.includes("OS 16_2") || navigator.userAgent.includes("OS 16_3"));
+      if (isSafari16 || isMobileApp16) {
+        document.documentElement.classList.add("Polaris-Safari-16-Font-Optical-Sizing-Patch");
+      }
+    }
+    measureScrollbars();
+  }
+  componentDidUpdate({
+    i18n: prevI18n,
+    linkComponent: prevLinkComponent
+  }) {
+    const {
+      i18n,
+      linkComponent
+    } = this.props;
+    this.setRootAttributes();
+    if (i18n === prevI18n && linkComponent === prevLinkComponent) {
+      return;
+    }
+    this.setState({
+      link: linkComponent,
+      intl: new I18n(i18n)
+    });
+  }
+  render() {
+    const {
+      children,
+      features
+    } = this.props;
+    const themeName = this.getThemeName();
+    const {
+      intl,
+      link
+    } = this.state;
+    return /* @__PURE__ */ React.createElement(ThemeNameContext.Provider, {
+      value: themeName
+    }, /* @__PURE__ */ React.createElement(ThemeContext.Provider, {
+      value: getTheme(themeName)
+    }, /* @__PURE__ */ React.createElement(FeaturesContext.Provider, {
+      value: features
+    }, /* @__PURE__ */ React.createElement(I18nContext.Provider, {
+      value: intl
+    }, /* @__PURE__ */ React.createElement(ScrollLockManagerContext.Provider, {
+      value: this.scrollLockManager
+    }, /* @__PURE__ */ React.createElement(StickyManagerContext.Provider, {
+      value: this.stickyManager
+    }, /* @__PURE__ */ React.createElement(LinkContext.Provider, {
+      value: link
+    }, /* @__PURE__ */ React.createElement(MediaQueryProvider, null, /* @__PURE__ */ React.createElement(PortalsManager, null, /* @__PURE__ */ React.createElement(FocusManager, null, /* @__PURE__ */ React.createElement(EphemeralPresenceManager, null, children)))))))))));
+  }
+}
+function isElementInViewport(element) {
+  const {
+    top,
+    left,
+    bottom,
+    right
+  } = element.getBoundingClientRect();
+  return top >= 0 && right <= window.innerWidth && bottom <= window.innerHeight && left >= 0;
+}
+const FOCUSABLE_SELECTOR = 'a,frame,iframe,input:not([type=hidden]):not(:disabled),select:not(:disabled),textarea:not(:disabled),button:not([aria-disabled="true"]):not([tabindex="-1"]):not(:disabled),*[tabindex]';
+const KEYBOARD_FOCUSABLE_SELECTORS = 'a,frame,iframe,input:not([type=hidden]):not(:disabled),select:not(:disabled),textarea:not(:disabled),button:not([aria-disabled="true"]):not([tabindex="-1"]):not(:disabled),*[tabindex]:not([tabindex="-1"])';
+const MENUITEM_FOCUSABLE_SELECTORS = 'a[role="menuitem"],frame[role="menuitem"],iframe[role="menuitem"],input[role="menuitem"]:not([type=hidden]):not(:disabled),select[role="menuitem"]:not(:disabled),textarea[role="menuitem"]:not(:disabled),button[role="menuitem"]:not(:disabled),*[tabindex]:not([tabindex="-1"])';
+const handleMouseUpByBlurring = ({
+  currentTarget
+}) => currentTarget.blur();
+function nextFocusableNode(node, filter) {
+  const allFocusableElements = [...document.querySelectorAll(FOCUSABLE_SELECTOR)];
+  const sliceLocation = allFocusableElements.indexOf(node) + 1;
+  const focusableElementsAfterNode = allFocusableElements.slice(sliceLocation);
+  for (const focusableElement of focusableElementsAfterNode) {
+    if (isElementInViewport(focusableElement) && (!filter || filter && filter(focusableElement))) {
+      return focusableElement;
+    }
+  }
+  return null;
+}
+function findFirstFocusableNode(element, onlyDescendants = true) {
+  if (!onlyDescendants && matches(element, FOCUSABLE_SELECTOR)) {
+    return element;
+  }
+  return element.querySelector(FOCUSABLE_SELECTOR);
+}
+function findFirstFocusableNodeIncludingDisabled(element) {
+  const focusableSelector = `a,button,frame,iframe,input:not([type=hidden]),select,textarea,*[tabindex]`;
+  if (matches(element, focusableSelector)) {
+    return element;
+  }
+  return element.querySelector(focusableSelector);
+}
+function focusFirstFocusableNode(element, onlyDescendants = true) {
+  var _a2;
+  (_a2 = findFirstFocusableNode(element, onlyDescendants)) == null ? void 0 : _a2.focus();
+}
+function focusNextFocusableNode(node, filter) {
+  const nextFocusable = nextFocusableNode(node, filter);
+  if (nextFocusable && nextFocusable instanceof HTMLElement) {
+    nextFocusable.focus();
+    return true;
+  }
+  return false;
+}
+function findFirstKeyboardFocusableNode(element, onlyDescendants = true) {
+  if (!onlyDescendants && matches(element, KEYBOARD_FOCUSABLE_SELECTORS)) {
+    return element;
+  }
+  return element.querySelector(KEYBOARD_FOCUSABLE_SELECTORS);
+}
+function focusFirstKeyboardFocusableNode(element, onlyDescendants = true) {
+  const firstFocusable = findFirstKeyboardFocusableNode(element, onlyDescendants);
+  if (firstFocusable) {
+    firstFocusable.focus();
+    return true;
+  }
+  return false;
+}
+function findLastKeyboardFocusableNode(element, onlyDescendants = true) {
+  if (!onlyDescendants && matches(element, KEYBOARD_FOCUSABLE_SELECTORS)) {
+    return element;
+  }
+  const allFocusable = element.querySelectorAll(KEYBOARD_FOCUSABLE_SELECTORS);
+  return allFocusable[allFocusable.length - 1];
+}
+function focusLastKeyboardFocusableNode(element, onlyDescendants = true) {
+  const lastFocusable = findLastKeyboardFocusableNode(element, onlyDescendants);
+  if (lastFocusable) {
+    lastFocusable.focus();
+    return true;
+  }
+  return false;
+}
+function wrapFocusPreviousFocusableMenuItem(parentElement, currentFocusedElement) {
+  const allFocusableChildren = getMenuFocusableDescendants(parentElement);
+  const currentItemIdx = getCurrentFocusedElementIndex(allFocusableChildren, currentFocusedElement);
+  if (currentItemIdx === -1) {
+    allFocusableChildren[0].focus();
+  } else {
+    allFocusableChildren[(currentItemIdx - 1 + allFocusableChildren.length) % allFocusableChildren.length].focus();
+  }
+}
+function wrapFocusNextFocusableMenuItem(parentElement, currentFocusedElement) {
+  const allFocusableChildren = getMenuFocusableDescendants(parentElement);
+  const currentItemIdx = getCurrentFocusedElementIndex(allFocusableChildren, currentFocusedElement);
+  if (currentItemIdx === -1) {
+    allFocusableChildren[0].focus();
+  } else {
+    allFocusableChildren[(currentItemIdx + 1) % allFocusableChildren.length].focus();
+  }
+}
+function getMenuFocusableDescendants(element) {
+  return element.querySelectorAll(MENUITEM_FOCUSABLE_SELECTORS);
+}
+function getCurrentFocusedElementIndex(allFocusableChildren, currentFocusedElement) {
+  let currentItemIdx = 0;
+  for (const focusableChild of allFocusableChildren) {
+    if (focusableChild === currentFocusedElement) {
+      break;
+    }
+    currentItemIdx++;
+  }
+  return currentItemIdx === allFocusableChildren.length ? -1 : currentItemIdx;
+}
+function matches(node, selector) {
+  if (node.matches) {
+    return node.matches(selector);
+  }
+  const matches2 = (node.ownerDocument || document).querySelectorAll(selector);
+  let i = matches2.length;
+  while (--i >= 0 && matches2.item(i) !== node) return i > -1;
+}
+var styles$12 = {
+  "Button": "Polaris-Button",
+  "disabled": "Polaris-Button--disabled",
+  "pressed": "Polaris-Button--pressed",
+  "variantPrimary": "Polaris-Button--variantPrimary",
+  "variantSecondary": "Polaris-Button--variantSecondary",
+  "variantTertiary": "Polaris-Button--variantTertiary",
+  "variantPlain": "Polaris-Button--variantPlain",
+  "removeUnderline": "Polaris-Button--removeUnderline",
+  "variantMonochromePlain": "Polaris-Button--variantMonochromePlain",
+  "toneSuccess": "Polaris-Button--toneSuccess",
+  "toneCritical": "Polaris-Button--toneCritical",
+  "sizeMicro": "Polaris-Button--sizeMicro",
+  "sizeSlim": "Polaris-Button--sizeSlim",
+  "sizeMedium": "Polaris-Button--sizeMedium",
+  "sizeLarge": "Polaris-Button--sizeLarge",
+  "textAlignCenter": "Polaris-Button--textAlignCenter",
+  "textAlignStart": "Polaris-Button--textAlignStart",
+  "textAlignLeft": "Polaris-Button--textAlignLeft",
+  "textAlignEnd": "Polaris-Button--textAlignEnd",
+  "textAlignRight": "Polaris-Button--textAlignRight",
+  "fullWidth": "Polaris-Button--fullWidth",
+  "iconOnly": "Polaris-Button--iconOnly",
+  "iconWithText": "Polaris-Button--iconWithText",
+  "disclosure": "Polaris-Button--disclosure",
+  "loading": "Polaris-Button--loading",
+  "pressable": "Polaris-Button--pressable",
+  "hidden": "Polaris-Button--hidden",
+  "Icon": "Polaris-Button__Icon",
+  "Spinner": "Polaris-Button__Spinner"
+};
+var styles$11 = {
+  "Icon": "Polaris-Icon",
+  "toneInherit": "Polaris-Icon--toneInherit",
+  "toneBase": "Polaris-Icon--toneBase",
+  "toneSubdued": "Polaris-Icon--toneSubdued",
+  "toneCaution": "Polaris-Icon--toneCaution",
+  "toneWarning": "Polaris-Icon--toneWarning",
+  "toneCritical": "Polaris-Icon--toneCritical",
+  "toneInteractive": "Polaris-Icon--toneInteractive",
+  "toneInfo": "Polaris-Icon--toneInfo",
+  "toneSuccess": "Polaris-Icon--toneSuccess",
+  "tonePrimary": "Polaris-Icon--tonePrimary",
+  "toneEmphasis": "Polaris-Icon--toneEmphasis",
+  "toneMagic": "Polaris-Icon--toneMagic",
+  "toneTextCaution": "Polaris-Icon--toneTextCaution",
+  "toneTextWarning": "Polaris-Icon--toneTextWarning",
+  "toneTextCritical": "Polaris-Icon--toneTextCritical",
+  "toneTextInfo": "Polaris-Icon--toneTextInfo",
+  "toneTextPrimary": "Polaris-Icon--toneTextPrimary",
+  "toneTextSuccess": "Polaris-Icon--toneTextSuccess",
+  "toneTextMagic": "Polaris-Icon--toneTextMagic",
+  "Svg": "Polaris-Icon__Svg",
+  "Img": "Polaris-Icon__Img",
+  "Placeholder": "Polaris-Icon__Placeholder"
+};
+var styles$10 = {
+  "root": "Polaris-Text--root",
+  "block": "Polaris-Text--block",
+  "truncate": "Polaris-Text--truncate",
+  "visuallyHidden": "Polaris-Text--visuallyHidden",
+  "start": "Polaris-Text--start",
+  "center": "Polaris-Text--center",
+  "end": "Polaris-Text--end",
+  "justify": "Polaris-Text--justify",
+  "base": "Polaris-Text--base",
+  "inherit": "Polaris-Text--inherit",
+  "disabled": "Polaris-Text--disabled",
+  "success": "Polaris-Text--success",
+  "critical": "Polaris-Text--critical",
+  "caution": "Polaris-Text--caution",
+  "subdued": "Polaris-Text--subdued",
+  "magic": "Polaris-Text--magic",
+  "magic-subdued": "Polaris-Text__magic--subdued",
+  "text-inverse": "Polaris-Text__text--inverse",
+  "text-inverse-secondary": "Polaris-Text--textInverseSecondary",
+  "headingXs": "Polaris-Text--headingXs",
+  "headingSm": "Polaris-Text--headingSm",
+  "headingMd": "Polaris-Text--headingMd",
+  "headingLg": "Polaris-Text--headingLg",
+  "headingXl": "Polaris-Text--headingXl",
+  "heading2xl": "Polaris-Text--heading2xl",
+  "heading3xl": "Polaris-Text--heading3xl",
+  "bodyXs": "Polaris-Text--bodyXs",
+  "bodySm": "Polaris-Text--bodySm",
+  "bodyMd": "Polaris-Text--bodyMd",
+  "bodyLg": "Polaris-Text--bodyLg",
+  "regular": "Polaris-Text--regular",
+  "medium": "Polaris-Text--medium",
+  "semibold": "Polaris-Text--semibold",
+  "bold": "Polaris-Text--bold",
+  "break": "Polaris-Text--break",
+  "numeric": "Polaris-Text--numeric",
+  "line-through": "Polaris-Text__line--through"
+};
+const deprecatedVariants = {
+  heading3xl: "heading2xl"
+};
+const Text = ({
+  alignment,
+  as,
+  breakWord,
+  children,
+  tone,
+  fontWeight,
+  id,
+  numeric = false,
+  truncate = false,
+  variant,
+  visuallyHidden = false,
+  textDecorationLine
+}) => {
+  if (process.env.NODE_ENV === "development" && variant && Object.prototype.hasOwnProperty.call(deprecatedVariants, variant)) {
+    console.warn(`Deprecation: <Text variant="${variant}" />. The value "${variant}" will be removed in a future major version of Polaris. Use "${deprecatedVariants[variant]}" instead.`);
+  }
+  const Component2 = as || (visuallyHidden ? "span" : "p");
+  const className = classNames(styles$10.root, variant && styles$10[variant], fontWeight && styles$10[fontWeight], (alignment || truncate) && styles$10.block, alignment && styles$10[alignment], breakWord && styles$10.break, tone && styles$10[tone], numeric && styles$10.numeric, truncate && styles$10.truncate, visuallyHidden && styles$10.visuallyHidden, textDecorationLine && styles$10[textDecorationLine]);
+  return /* @__PURE__ */ React.createElement(Component2, Object.assign({
+    className
+  }, id && {
+    id
+  }), children);
+};
+function Icon({
+  source,
+  tone,
+  accessibilityLabel
+}) {
+  let sourceType;
+  if (typeof source === "function") {
+    sourceType = "function";
+  } else if (source === "placeholder") {
+    sourceType = "placeholder";
+  } else {
+    sourceType = "external";
+  }
+  if (tone && sourceType === "external" && process.env.NODE_ENV === "development") {
+    console.warn("Recoloring external SVGs is not supported. Set the intended color on your SVG instead.");
+  }
+  const className = classNames(styles$11.Icon, tone && styles$11[variationName("tone", tone)]);
+  const {
+    mdDown
+  } = useBreakpoints();
+  const SourceComponent = source;
+  const contentMarkup = {
+    function: /* @__PURE__ */ React.createElement(SourceComponent, Object.assign({
+      className: styles$11.Svg,
+      focusable: "false",
+      "aria-hidden": "true"
+      // On Mobile we're scaling the viewBox to 18x18 to make the icons bigger
+      // Also, we're setting the viewport origin to 1x1 to center the icon
+      // We use this syntax so we don't override the existing viewBox value if we don't need to.
+    }, mdDown ? {
+      viewBox: "1 1 18 18"
+    } : {})),
+    placeholder: /* @__PURE__ */ React.createElement("div", {
+      className: styles$11.Placeholder
+    }),
+    external: /* @__PURE__ */ React.createElement("img", {
+      className: styles$11.Img,
+      src: `data:image/svg+xml;utf8,${source}`,
+      alt: "",
+      "aria-hidden": "true"
+    })
+  };
+  return /* @__PURE__ */ React.createElement("span", {
+    className
+  }, accessibilityLabel && /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, accessibilityLabel), contentMarkup[sourceType]);
+}
+var styles$$ = {
+  "Spinner": "Polaris-Spinner",
+  "sizeSmall": "Polaris-Spinner--sizeSmall",
+  "sizeLarge": "Polaris-Spinner--sizeLarge"
+};
+function Spinner$1({
+  size = "large",
+  accessibilityLabel,
+  hasFocusableParent
+}) {
+  const isAfterInitialMount = useIsAfterInitialMount();
+  const className = classNames(styles$$.Spinner, size && styles$$[variationName("size", size)]);
+  const spinnerSVGMarkup = size === "large" ? /* @__PURE__ */ React.createElement("svg", {
+    viewBox: "0 0 44 44",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /* @__PURE__ */ React.createElement("path", {
+    d: "M15.542 1.487A21.507 21.507 0 00.5 22c0 11.874 9.626 21.5 21.5 21.5 9.847 0 18.364-6.675 20.809-16.072a1.5 1.5 0 00-2.904-.756C37.803 34.755 30.473 40.5 22 40.5 11.783 40.5 3.5 32.217 3.5 22c0-8.137 5.3-15.247 12.942-17.65a1.5 1.5 0 10-.9-2.863z"
+  })) : /* @__PURE__ */ React.createElement("svg", {
+    viewBox: "0 0 20 20",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /* @__PURE__ */ React.createElement("path", {
+    d: "M7.229 1.173a9.25 9.25 0 1011.655 11.412 1.25 1.25 0 10-2.4-.698 6.75 6.75 0 11-8.506-8.329 1.25 1.25 0 10-.75-2.385z"
+  }));
+  const spanAttributes = {
+    ...!hasFocusableParent && {
+      role: "status"
+    }
+  };
+  const accessibilityLabelMarkup = (isAfterInitialMount || !hasFocusableParent) && /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, accessibilityLabel);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+    className
+  }, spinnerSVGMarkup), /* @__PURE__ */ React.createElement("span", spanAttributes, accessibilityLabelMarkup));
+}
+function useDisableClick(disabled, handleClick) {
+  const handleClickWrapper = useCallback((event) => {
+    if (disabled) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, [disabled]);
+  if (!disabled) {
+    return handleClick;
+  }
+  return handleClickWrapper;
+}
+function useLink() {
+  return useContext(LinkContext);
+}
+const UnstyledLink = /* @__PURE__ */ memo(/* @__PURE__ */ forwardRef(function UnstyledLink2(props, _ref) {
+  const LinkComponent = useLink();
+  if (LinkComponent) {
+    return /* @__PURE__ */ React.createElement(LinkComponent, Object.assign({}, unstyled.props, props, {
+      ref: _ref
+    }));
+  }
+  const {
+    external,
+    url,
+    target: targetProp,
+    ...rest
+  } = props;
+  let target;
+  if (external) {
+    target = "_blank";
+  } else {
+    target = targetProp ?? void 0;
+  }
+  const rel = target === "_blank" ? "noopener noreferrer" : void 0;
+  return /* @__PURE__ */ React.createElement("a", Object.assign({
+    target
+  }, rest, {
+    href: url,
+    rel
+  }, unstyled.props, {
+    ref: _ref
+  }));
+}));
+function UnstyledButton({
+  id,
+  children,
+  className,
+  url,
+  external,
+  target,
+  download,
+  submit,
+  disabled,
+  loading,
+  pressed,
+  accessibilityLabel,
+  role,
+  ariaControls,
+  ariaExpanded,
+  ariaDescribedBy,
+  ariaChecked,
+  onClick,
+  onFocus,
+  onBlur,
+  onKeyDown,
+  onKeyPress,
+  onKeyUp,
+  onMouseEnter,
+  onTouchStart,
+  ...rest
+}) {
+  let buttonMarkup;
+  const commonProps = {
+    id,
+    className,
+    "aria-label": accessibilityLabel
+  };
+  const interactiveProps = {
+    ...commonProps,
+    role,
+    onClick,
+    onFocus,
+    onBlur,
+    onMouseUp: handleMouseUpByBlurring,
+    onMouseEnter,
+    onTouchStart
+  };
+  const handleClick = useDisableClick(disabled, onClick);
+  if (url) {
+    buttonMarkup = disabled ? (
+      // Render an `<a>` so toggling disabled/enabled state changes only the
+      // `href` attribute instead of replacing the whole element.
+      /* @__PURE__ */ React.createElement("a", commonProps, children)
+    ) : /* @__PURE__ */ React.createElement(UnstyledLink, Object.assign({}, interactiveProps, {
+      url,
+      external,
+      target,
+      download
+    }, rest), children);
+  } else {
+    buttonMarkup = /* @__PURE__ */ React.createElement("button", Object.assign({}, interactiveProps, {
+      "aria-disabled": disabled,
+      type: submit ? "submit" : "button",
+      "aria-busy": loading ? true : void 0,
+      "aria-controls": ariaControls,
+      "aria-expanded": ariaExpanded,
+      "aria-describedby": ariaDescribedBy,
+      "aria-checked": ariaChecked,
+      "aria-pressed": pressed,
+      onKeyDown,
+      onKeyUp,
+      onKeyPress,
+      onClick: handleClick,
+      tabIndex: disabled ? -1 : void 0
+    }, rest), children);
+  }
+  return buttonMarkup;
+}
+class MissingAppProviderError extends Error {
+  constructor(message = "") {
+    super(`${message ? `${message} ` : message}Your application must be wrapped in an <AppProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.`);
+    this.name = "MissingAppProviderError";
+  }
+}
+function useI18n() {
+  const i18n = useContext(I18nContext);
+  if (!i18n) {
+    throw new MissingAppProviderError("No i18n was provided.");
+  }
+  return i18n;
+}
+function Button({
+  id,
+  children,
+  url,
+  disabled,
+  external,
+  download,
+  target,
+  submit,
+  loading,
+  pressed,
+  accessibilityLabel,
+  role,
+  ariaControls,
+  ariaExpanded,
+  ariaDescribedBy,
+  ariaChecked,
+  onClick,
+  onFocus,
+  onBlur,
+  onKeyDown,
+  onKeyPress,
+  onKeyUp,
+  onMouseEnter,
+  onTouchStart,
+  onPointerDown,
+  icon,
+  disclosure,
+  removeUnderline,
+  size = "medium",
+  textAlign = "center",
+  fullWidth,
+  dataPrimaryLink,
+  tone,
+  variant = "secondary"
+}) {
+  const i18n = useI18n();
+  const isDisabled = disabled || loading;
+  const {
+    mdUp
+  } = useBreakpoints();
+  const className = classNames(styles$12.Button, styles$12.pressable, styles$12[variationName("variant", variant)], styles$12[variationName("size", size)], styles$12[variationName("textAlign", textAlign)], fullWidth && styles$12.fullWidth, disclosure && styles$12.disclosure, icon && children && styles$12.iconWithText, icon && children == null && styles$12.iconOnly, isDisabled && styles$12.disabled, loading && styles$12.loading, pressed && !disabled && !url && styles$12.pressed, removeUnderline && styles$12.removeUnderline, tone && styles$12[variationName("tone", tone)]);
+  const disclosureMarkup = disclosure ? /* @__PURE__ */ React.createElement("span", {
+    className: loading ? styles$12.hidden : styles$12.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: loading ? "placeholder" : getDisclosureIconSource(disclosure, ChevronUpIcon, ChevronDownIcon)
+  })) : null;
+  const iconSource = isIconSource(icon) ? /* @__PURE__ */ React.createElement(Icon, {
+    source: loading ? "placeholder" : icon
+  }) : icon;
+  const iconMarkup = iconSource ? /* @__PURE__ */ React.createElement("span", {
+    className: loading ? styles$12.hidden : styles$12.Icon
+  }, iconSource) : null;
+  const hasPlainText = ["plain", "monochromePlain"].includes(variant);
+  let textFontWeight = "medium";
+  if (hasPlainText) {
+    textFontWeight = "regular";
+  } else if (variant === "primary") {
+    textFontWeight = mdUp ? "medium" : "semibold";
+  }
+  let textVariant = "bodySm";
+  if (size === "large" || hasPlainText && size !== "micro") {
+    textVariant = "bodyMd";
+  }
+  const childMarkup = children ? /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: textVariant,
+    fontWeight: textFontWeight,
+    key: disabled ? "text-disabled" : "text"
+  }, children) : null;
+  const spinnerSVGMarkup = loading ? /* @__PURE__ */ React.createElement("span", {
+    className: styles$12.Spinner
+  }, /* @__PURE__ */ React.createElement(Spinner$1, {
+    size: "small",
+    accessibilityLabel: i18n.translate("Polaris.Button.spinnerAccessibilityLabel")
+  })) : null;
+  const commonProps = {
+    id,
+    className,
+    accessibilityLabel,
+    ariaDescribedBy,
+    role,
+    onClick,
+    onFocus,
+    onBlur,
+    onMouseUp: handleMouseUpByBlurring,
+    onMouseEnter,
+    onTouchStart,
+    "data-primary-link": dataPrimaryLink
+  };
+  const linkProps = {
+    url,
+    external,
+    download,
+    target
+  };
+  const actionProps = {
+    submit,
+    disabled: isDisabled,
+    loading,
+    ariaControls,
+    ariaExpanded,
+    ariaChecked,
+    pressed,
+    onKeyDown,
+    onKeyUp,
+    onKeyPress,
+    onPointerDown
+  };
+  const buttonMarkup = /* @__PURE__ */ React.createElement(UnstyledButton, Object.assign({}, commonProps, linkProps, actionProps), spinnerSVGMarkup, iconMarkup, childMarkup, disclosureMarkup);
+  return buttonMarkup;
+}
+function isIconSource(x) {
+  return typeof x === "string" || typeof x === "object" && x.body || typeof x === "function";
+}
+function getDisclosureIconSource(disclosure, upIcon, downIcon) {
+  if (disclosure === "select") {
+    return SelectIcon;
+  }
+  return disclosure === "up" ? upIcon : downIcon;
+}
+function buttonsFrom(actions, overrides = {}) {
+  if (Array.isArray(actions)) {
+    return actions.map((action2, index2) => buttonFrom(action2, overrides, index2));
+  } else {
+    const action2 = actions;
+    return buttonFrom(action2, overrides);
+  }
+}
+function buttonFrom({
+  content: content2,
+  onAction,
+  plain,
+  destructive,
+  ...action2
+}, overrides, key) {
+  const plainVariant = plain ? "plain" : void 0;
+  const destructiveVariant = destructive ? "primary" : void 0;
+  const tone = !(overrides == null ? void 0 : overrides.tone) && destructive ? "critical" : overrides == null ? void 0 : overrides.tone;
+  return /* @__PURE__ */ React.createElement(Button, Object.assign({
+    key,
+    onClick: onAction,
+    tone,
+    variant: plainVariant || destructiveVariant
+  }, action2, overrides), content2);
+}
+var styles$_ = {
+  "ShadowBevel": "Polaris-ShadowBevel"
+};
+function ShadowBevel(props) {
+  const {
+    as = "div",
+    bevel = true,
+    borderRadius,
+    boxShadow,
+    children,
+    zIndex = "0"
+  } = props;
+  const Component2 = as;
+  return /* @__PURE__ */ React.createElement(Component2, {
+    className: styles$_.ShadowBevel,
+    style: {
+      "--pc-shadow-bevel-z-index": zIndex,
+      ...getResponsiveValue("shadow-bevel", "content", mapResponsiveProp(bevel, (bevel2) => bevel2 ? '""' : "none")),
+      ...getResponsiveValue("shadow-bevel", "box-shadow", mapResponsiveProp(bevel, (bevel2) => bevel2 ? `var(--p-shadow-${boxShadow})` : "none")),
+      ...getResponsiveValue("shadow-bevel", "border-radius", mapResponsiveProp(bevel, (bevel2) => bevel2 ? `var(--p-border-radius-${borderRadius})` : "var(--p-border-radius-0)"))
+    }
+  }, children);
+}
+function mapResponsiveProp(responsiveProp, callback) {
+  if (typeof responsiveProp === "boolean") {
+    return callback(responsiveProp);
+  }
+  return Object.fromEntries(Object.entries(responsiveProp).map(([breakpointsAlias, value]) => [breakpointsAlias, callback(value)]));
+}
+var styles$Z = {
+  "listReset": "Polaris-Box--listReset",
+  "Box": "Polaris-Box",
+  "visuallyHidden": "Polaris-Box--visuallyHidden",
+  "printHidden": "Polaris-Box--printHidden"
+};
+const Box = /* @__PURE__ */ forwardRef(({
+  as = "div",
+  background,
+  borderColor,
+  borderStyle,
+  borderWidth,
+  borderBlockStartWidth,
+  borderBlockEndWidth,
+  borderInlineStartWidth,
+  borderInlineEndWidth,
+  borderRadius,
+  borderEndStartRadius,
+  borderEndEndRadius,
+  borderStartStartRadius,
+  borderStartEndRadius,
+  children,
+  color,
+  id,
+  minHeight,
+  minWidth,
+  maxWidth,
+  overflowX,
+  overflowY,
+  outlineColor,
+  outlineStyle,
+  outlineWidth,
+  padding,
+  paddingBlock,
+  paddingBlockStart,
+  paddingBlockEnd,
+  paddingInline,
+  paddingInlineStart,
+  paddingInlineEnd,
+  role,
+  shadow,
+  tabIndex,
+  width,
+  printHidden,
+  visuallyHidden,
+  position,
+  insetBlockStart,
+  insetBlockEnd,
+  insetInlineStart,
+  insetInlineEnd,
+  zIndex,
+  opacity,
+  ...restProps
+}, ref) => {
+  const borderStyleValue = borderStyle ? borderStyle : borderColor || borderWidth || borderBlockStartWidth || borderBlockEndWidth || borderInlineStartWidth || borderInlineEndWidth ? "solid" : void 0;
+  const outlineStyleValue = outlineStyle ? outlineStyle : outlineColor || outlineWidth ? "solid" : void 0;
+  const style = {
+    "--pc-box-color": color ? `var(--p-color-${color})` : void 0,
+    "--pc-box-background": background ? `var(--p-color-${background})` : void 0,
+    // eslint-disable-next-line no-nested-ternary
+    "--pc-box-border-color": borderColor ? borderColor === "transparent" ? "transparent" : `var(--p-color-${borderColor})` : void 0,
+    "--pc-box-border-style": borderStyleValue,
+    "--pc-box-border-radius": borderRadius ? `var(--p-border-radius-${borderRadius})` : void 0,
+    "--pc-box-border-end-start-radius": borderEndStartRadius ? `var(--p-border-radius-${borderEndStartRadius})` : void 0,
+    "--pc-box-border-end-end-radius": borderEndEndRadius ? `var(--p-border-radius-${borderEndEndRadius})` : void 0,
+    "--pc-box-border-start-start-radius": borderStartStartRadius ? `var(--p-border-radius-${borderStartStartRadius})` : void 0,
+    "--pc-box-border-start-end-radius": borderStartEndRadius ? `var(--p-border-radius-${borderStartEndRadius})` : void 0,
+    "--pc-box-border-width": borderWidth ? `var(--p-border-width-${borderWidth})` : void 0,
+    "--pc-box-border-block-start-width": borderBlockStartWidth ? `var(--p-border-width-${borderBlockStartWidth})` : void 0,
+    "--pc-box-border-block-end-width": borderBlockEndWidth ? `var(--p-border-width-${borderBlockEndWidth})` : void 0,
+    "--pc-box-border-inline-start-width": borderInlineStartWidth ? `var(--p-border-width-${borderInlineStartWidth})` : void 0,
+    "--pc-box-border-inline-end-width": borderInlineEndWidth ? `var(--p-border-width-${borderInlineEndWidth})` : void 0,
+    "--pc-box-min-height": minHeight,
+    "--pc-box-min-width": minWidth,
+    "--pc-box-max-width": maxWidth,
+    "--pc-box-outline-color": outlineColor ? `var(--p-color-${outlineColor})` : void 0,
+    "--pc-box-outline-style": outlineStyleValue,
+    "--pc-box-outline-width": outlineWidth ? `var(--p-border-width-${outlineWidth})` : void 0,
+    "--pc-box-overflow-x": overflowX,
+    "--pc-box-overflow-y": overflowY,
+    ...getResponsiveProps("box", "padding-block-start", "space", paddingBlockStart || paddingBlock || padding),
+    ...getResponsiveProps("box", "padding-block-end", "space", paddingBlockEnd || paddingBlock || padding),
+    ...getResponsiveProps("box", "padding-inline-start", "space", paddingInlineStart || paddingInline || padding),
+    ...getResponsiveProps("box", "padding-inline-end", "space", paddingInlineEnd || paddingInline || padding),
+    "--pc-box-shadow": shadow ? `var(--p-shadow-${shadow})` : void 0,
+    "--pc-box-width": width,
+    position,
+    "--pc-box-inset-block-start": insetBlockStart ? `var(--p-space-${insetBlockStart})` : void 0,
+    "--pc-box-inset-block-end": insetBlockEnd ? `var(--p-space-${insetBlockEnd})` : void 0,
+    "--pc-box-inset-inline-start": insetInlineStart ? `var(--p-space-${insetInlineStart})` : void 0,
+    "--pc-box-inset-inline-end": insetInlineEnd ? `var(--p-space-${insetInlineEnd})` : void 0,
+    zIndex,
+    opacity
+  };
+  const className = classNames(styles$Z.Box, visuallyHidden && styles$Z.visuallyHidden, printHidden && styles$Z.printHidden, as === "ul" && styles$Z.listReset);
+  return /* @__PURE__ */ React.createElement(as, {
+    className,
+    id,
+    ref,
+    style: sanitizeCustomProperties(style),
+    role,
+    tabIndex,
+    ...restProps
+  }, children);
+});
+Box.displayName = "Box";
+const Card = ({
+  children,
+  background = "bg-surface",
+  padding = {
+    xs: "400"
+  },
+  roundedAbove = "sm"
+}) => {
+  const breakpoints = useBreakpoints();
+  const defaultBorderRadius = "300";
+  const hasBorderRadius = Boolean(breakpoints[`${roundedAbove}Up`]);
+  return /* @__PURE__ */ React.createElement(WithinContentContext.Provider, {
+    value: true
+  }, /* @__PURE__ */ React.createElement(ShadowBevel, {
+    boxShadow: "100",
+    borderRadius: hasBorderRadius ? defaultBorderRadius : "0",
+    zIndex: "32"
+  }, /* @__PURE__ */ React.createElement(Box, {
+    background,
+    padding,
+    overflowX: "clip",
+    overflowY: "clip",
+    minHeight: "100%"
+  }, children)));
+};
+var styles$Y = {
+  "InlineStack": "Polaris-InlineStack"
+};
+const InlineStack = function InlineStack2({
+  as: Element2 = "div",
+  align,
+  direction = "row",
+  blockAlign,
+  gap,
+  wrap = true,
+  children
+}) {
+  const style = {
+    "--pc-inline-stack-align": align,
+    "--pc-inline-stack-block-align": blockAlign,
+    "--pc-inline-stack-wrap": wrap ? "wrap" : "nowrap",
+    ...getResponsiveProps("inline-stack", "gap", "space", gap),
+    ...getResponsiveValue("inline-stack", "flex-direction", direction)
+  };
+  return /* @__PURE__ */ React.createElement(Element2, {
+    className: styles$Y.InlineStack,
+    style
+  }, children);
+};
+var styles$X = {
+  "BlockStack": "Polaris-BlockStack",
+  "listReset": "Polaris-BlockStack--listReset",
+  "fieldsetReset": "Polaris-BlockStack--fieldsetReset"
+};
+const BlockStack = ({
+  as = "div",
+  children,
+  align,
+  inlineAlign,
+  gap,
+  id,
+  reverseOrder = false,
+  ...restProps
+}) => {
+  const className = classNames(styles$X.BlockStack, (as === "ul" || as === "ol") && styles$X.listReset, as === "fieldset" && styles$X.fieldsetReset);
+  const style = {
+    "--pc-block-stack-align": align ? `${align}` : null,
+    "--pc-block-stack-inline-align": inlineAlign ? `${inlineAlign}` : null,
+    "--pc-block-stack-order": reverseOrder ? "column-reverse" : "column",
+    ...getResponsiveProps("block-stack", "gap", "space", gap)
+  };
+  return /* @__PURE__ */ React.createElement(as, {
+    className,
+    id,
+    style: sanitizeCustomProperties(style),
+    ...restProps
+  }, children);
+};
+var styles$W = {
+  "Avatar": "Polaris-Avatar",
+  "imageHasLoaded": "Polaris-Avatar--imageHasLoaded",
+  "Text": "Polaris-Avatar__Text",
+  "long": "Polaris-Avatar--long",
+  "hidden": "Polaris-Avatar--hidden",
+  "sizeXs": "Polaris-Avatar--sizeXs",
+  "sizeSm": "Polaris-Avatar--sizeSm",
+  "sizeMd": "Polaris-Avatar--sizeMd",
+  "sizeLg": "Polaris-Avatar--sizeLg",
+  "sizeXl": "Polaris-Avatar--sizeXl",
+  "styleOne": "Polaris-Avatar--styleOne",
+  "styleTwo": "Polaris-Avatar--styleTwo",
+  "styleThree": "Polaris-Avatar--styleThree",
+  "styleFour": "Polaris-Avatar--styleFour",
+  "styleFive": "Polaris-Avatar--styleFive",
+  "styleSix": "Polaris-Avatar--styleSix",
+  "styleSeven": "Polaris-Avatar--styleSeven",
+  "Image": "Polaris-Avatar__Image",
+  "Initials": "Polaris-Avatar__Initials",
+  "Svg": "Polaris-Avatar__Svg"
+};
+function Image({
+  alt,
+  sourceSet,
+  source,
+  crossOrigin,
+  onLoad,
+  className,
+  ...rest
+}) {
+  const finalSourceSet = sourceSet ? sourceSet.map(({
+    source: subSource,
+    descriptor
+  }) => `${subSource} ${descriptor}`).join(",") : null;
+  const handleLoad = useCallback(() => {
+    if (onLoad) onLoad();
+  }, [onLoad]);
+  return /* @__PURE__ */ React.createElement("img", Object.assign({
+    alt,
+    src: source,
+    crossOrigin,
+    className,
+    onLoad: handleLoad
+  }, finalSourceSet ? {
+    srcSet: finalSourceSet
+  } : {}, rest));
+}
+var Status;
+(function(Status2) {
+  Status2["Pending"] = "PENDING";
+  Status2["Loaded"] = "LOADED";
+  Status2["Errored"] = "ERRORED";
+})(Status || (Status = {}));
+const STYLE_CLASSES = ["one", "two", "three", "four", "five", "six", "seven"];
+const avatarStrokeWidth = {
+  xs: "3",
+  sm: "2.5",
+  md: "2.5",
+  lg: "2.5",
+  xl: "2"
+};
+function xorHash(str) {
+  let hash = 0;
+  for (const char of str) {
+    hash ^= char.charCodeAt(0);
+  }
+  return hash;
+}
+function styleClass(name) {
+  return name ? STYLE_CLASSES[xorHash(name) % STYLE_CLASSES.length] : STYLE_CLASSES[0];
+}
+function Avatar({
+  name,
+  source,
+  onError,
+  initials,
+  customer,
+  size = "md",
+  accessibilityLabel
+}) {
+  const i18n = useI18n();
+  const isAfterInitialMount = useIsAfterInitialMount();
+  const [status, setStatus] = useState(Status.Pending);
+  useEffect(() => {
+    setStatus(Status.Pending);
+  }, [source]);
+  const handleError = useCallback(() => {
+    setStatus(Status.Errored);
+    if (onError) {
+      onError();
+    }
+  }, [onError]);
+  const handleLoad = useCallback(() => {
+    setStatus(Status.Loaded);
+  }, []);
+  const hasImage = source && status !== Status.Errored;
+  const nameString = name || initials;
+  let label2;
+  if (accessibilityLabel) {
+    label2 = accessibilityLabel;
+  } else if (name) {
+    label2 = name;
+  } else if (initials) {
+    const splitInitials = initials.split("").join(" ");
+    label2 = i18n.translate("Polaris.Avatar.labelWithInitials", {
+      initials: splitInitials
+    });
+  }
+  const className = classNames(styles$W.Avatar, size && styles$W[variationName("size", size)], hasImage && status === Status.Loaded && styles$W.imageHasLoaded, !customer && !hasImage && styles$W[variationName("style", styleClass(nameString))]);
+  const textClassName = classNames(styles$W.Text, ((initials == null ? void 0 : initials.length) || 0) > 2 && styles$W.long);
+  const imageClassName = classNames(styles$W.Image, status !== Status.Loaded && styles$W.hidden);
+  const imageMarkUp = source && isAfterInitialMount && status !== Status.Errored ? /* @__PURE__ */ React.createElement(Image, {
+    className: imageClassName,
+    source,
+    alt: "",
+    role: "presentation",
+    onLoad: handleLoad,
+    onError: handleError
+  }) : null;
+  const verticalOffset = "0.35em";
+  const avatarPath = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("path", {
+    fill: "none",
+    d: "M25.5 13.5C25.5 16.5376 23.0376 19 20 19C16.9624 19 14.5 16.5376 14.5 13.5C14.5 10.4624 16.9624 8 20 8C23.0376 8 25.5 10.4624 25.5 13.5Z",
+    stroke: "currentColor",
+    strokeWidth: avatarStrokeWidth[size]
+  }), /* @__PURE__ */ React.createElement("path", {
+    fill: "none",
+    d: "M10.3433 29.682L9.47 31.254C9.03481 32.0373 9.60125 33 10.4974 33H29.5026C30.3988 33 30.9652 32.0373 30.53 31.254L29.6567 29.682C27.7084 26.175 24.0119 24 20 24C15.9882 24 12.2916 26.175 10.3433 29.682Z",
+    stroke: "currentColor",
+    strokeWidth: avatarStrokeWidth[size],
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }));
+  const avatarBody = customer || !initials ? avatarPath : /* @__PURE__ */ React.createElement("text", {
+    className: textClassName,
+    x: "50%",
+    y: "50%",
+    dy: verticalOffset,
+    fill: "currentColor",
+    textAnchor: "middle"
+  }, initials);
+  const svgMarkup = hasImage ? null : /* @__PURE__ */ React.createElement("span", {
+    className: styles$W.Initials
+  }, /* @__PURE__ */ React.createElement("svg", {
+    className: styles$W.Svg,
+    viewBox: "0 0 40 40"
+  }, avatarBody));
+  return /* @__PURE__ */ React.createElement("span", {
+    "aria-label": label2,
+    role: label2 ? "img" : "presentation",
+    className
+  }, svgMarkup, imageMarkUp);
+}
+const FilterActionsContext = /* @__PURE__ */ createContext(false);
+function FilterActionsProvider({
+  children,
+  filterActions
+}) {
+  return /* @__PURE__ */ React.createElement(FilterActionsContext.Provider, {
+    value: filterActions
+  }, children);
+}
+var styles$V = {
+  "Item": "Polaris-ActionList__Item",
+  "default": "Polaris-ActionList--default",
+  "active": "Polaris-ActionList--active",
+  "destructive": "Polaris-ActionList--destructive",
+  "disabled": "Polaris-ActionList--disabled",
+  "Prefix": "Polaris-ActionList__Prefix",
+  "Suffix": "Polaris-ActionList__Suffix",
+  "indented": "Polaris-ActionList--indented",
+  "menu": "Polaris-ActionList--menu",
+  "Text": "Polaris-ActionList__Text"
+};
+const WithinFilterContext = /* @__PURE__ */ createContext(false);
+var styles$U = {
+  "Badge": "Polaris-Badge",
+  "toneSuccess": "Polaris-Badge--toneSuccess",
+  "toneSuccess-strong": "Polaris-Badge__toneSuccess--strong",
+  "toneInfo": "Polaris-Badge--toneInfo",
+  "toneInfo-strong": "Polaris-Badge__toneInfo--strong",
+  "toneAttention": "Polaris-Badge--toneAttention",
+  "toneAttention-strong": "Polaris-Badge__toneAttention--strong",
+  "toneWarning": "Polaris-Badge--toneWarning",
+  "toneWarning-strong": "Polaris-Badge__toneWarning--strong",
+  "toneCritical": "Polaris-Badge--toneCritical",
+  "toneCritical-strong": "Polaris-Badge__toneCritical--strong",
+  "toneNew": "Polaris-Badge--toneNew",
+  "toneMagic": "Polaris-Badge--toneMagic",
+  "toneRead-only": "Polaris-Badge__toneRead--only",
+  "toneEnabled": "Polaris-Badge--toneEnabled",
+  "sizeLarge": "Polaris-Badge--sizeLarge",
+  "withinFilter": "Polaris-Badge--withinFilter",
+  "Icon": "Polaris-Badge__Icon",
+  "PipContainer": "Polaris-Badge__PipContainer"
+};
+let ToneValue;
+(function(ToneValue2) {
+  ToneValue2["Info"] = "info";
+  ToneValue2["Success"] = "success";
+  ToneValue2["Warning"] = "warning";
+  ToneValue2["Critical"] = "critical";
+  ToneValue2["Attention"] = "attention";
+  ToneValue2["New"] = "new";
+  ToneValue2["Magic"] = "magic";
+  ToneValue2["InfoStrong"] = "info-strong";
+  ToneValue2["SuccessStrong"] = "success-strong";
+  ToneValue2["WarningStrong"] = "warning-strong";
+  ToneValue2["CriticalStrong"] = "critical-strong";
+  ToneValue2["AttentionStrong"] = "attention-strong";
+  ToneValue2["ReadOnly"] = "read-only";
+  ToneValue2["Enabled"] = "enabled";
+})(ToneValue || (ToneValue = {}));
+let ProgressValue;
+(function(ProgressValue2) {
+  ProgressValue2["Incomplete"] = "incomplete";
+  ProgressValue2["PartiallyComplete"] = "partiallyComplete";
+  ProgressValue2["Complete"] = "complete";
+})(ProgressValue || (ProgressValue = {}));
+function getDefaultAccessibilityLabel(i18n, progress, tone) {
+  let progressLabel = "";
+  let toneLabel = "";
+  if (!progress && !tone) {
+    return "";
+  }
+  switch (progress) {
+    case ProgressValue.Incomplete:
+      progressLabel = i18n.translate("Polaris.Badge.PROGRESS_LABELS.incomplete");
+      break;
+    case ProgressValue.PartiallyComplete:
+      progressLabel = i18n.translate("Polaris.Badge.PROGRESS_LABELS.partiallyComplete");
+      break;
+    case ProgressValue.Complete:
+      progressLabel = i18n.translate("Polaris.Badge.PROGRESS_LABELS.complete");
+      break;
+  }
+  switch (tone) {
+    case ToneValue.Info:
+    case ToneValue.InfoStrong:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.info");
+      break;
+    case ToneValue.Success:
+    case ToneValue.SuccessStrong:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.success");
+      break;
+    case ToneValue.Warning:
+    case ToneValue.WarningStrong:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.warning");
+      break;
+    case ToneValue.Critical:
+    case ToneValue.CriticalStrong:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.critical");
+      break;
+    case ToneValue.Attention:
+    case ToneValue.AttentionStrong:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.attention");
+      break;
+    case ToneValue.New:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.new");
+      break;
+    case ToneValue.ReadOnly:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.readOnly");
+      break;
+    case ToneValue.Enabled:
+      toneLabel = i18n.translate("Polaris.Badge.TONE_LABELS.enabled");
+      break;
+  }
+  if (!tone && progress) {
+    return progressLabel;
+  } else if (tone && !progress) {
+    return toneLabel;
+  } else {
+    return i18n.translate("Polaris.Badge.progressAndTone", {
+      progressLabel,
+      toneLabel
+    });
+  }
+}
+var styles$T = {
+  "Pip": "Polaris-Badge-Pip",
+  "toneInfo": "Polaris-Badge-Pip--toneInfo",
+  "toneSuccess": "Polaris-Badge-Pip--toneSuccess",
+  "toneNew": "Polaris-Badge-Pip--toneNew",
+  "toneAttention": "Polaris-Badge-Pip--toneAttention",
+  "toneWarning": "Polaris-Badge-Pip--toneWarning",
+  "toneCritical": "Polaris-Badge-Pip--toneCritical",
+  "progressIncomplete": "Polaris-Badge-Pip--progressIncomplete",
+  "progressPartiallyComplete": "Polaris-Badge-Pip--progressPartiallyComplete",
+  "progressComplete": "Polaris-Badge-Pip--progressComplete"
+};
+function Pip({
+  tone,
+  progress = "complete",
+  accessibilityLabelOverride
+}) {
+  const i18n = useI18n();
+  const className = classNames(styles$T.Pip, tone && styles$T[variationName("tone", tone)], progress && styles$T[variationName("progress", progress)]);
+  const accessibilityLabel = accessibilityLabelOverride ? accessibilityLabelOverride : getDefaultAccessibilityLabel(i18n, progress, tone);
+  return /* @__PURE__ */ React.createElement("span", {
+    className
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, accessibilityLabel));
+}
+const DEFAULT_SIZE = "medium";
+const progressIconMap = {
+  complete: () => /* @__PURE__ */ React.createElement("svg", {
+    viewBox: "0 0 20 20"
+  }, /* @__PURE__ */ React.createElement("path", {
+    d: "M6 10c0-.93 0-1.395.102-1.776a3 3 0 0 1 2.121-2.122C8.605 6 9.07 6 10 6c.93 0 1.395 0 1.776.102a3 3 0 0 1 2.122 2.122C14 8.605 14 9.07 14 10s0 1.395-.102 1.777a3 3 0 0 1-2.122 2.12C11.395 14 10.93 14 10 14s-1.395 0-1.777-.102a3 3 0 0 1-2.12-2.121C6 11.395 6 10.93 6 10Z"
+  })),
+  partiallyComplete: () => /* @__PURE__ */ React.createElement("svg", {
+    viewBox: "0 0 20 20"
+  }, /* @__PURE__ */ React.createElement("path", {
+    fillRule: "evenodd",
+    d: "m8.888 6.014-.017-.018-.02.02c-.253.013-.45.038-.628.086a3 3 0 0 0-2.12 2.122C6 8.605 6 9.07 6 10s0 1.395.102 1.777a3 3 0 0 0 2.121 2.12C8.605 14 9.07 14 10 14c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C14 11.395 14 10.93 14 10c0-.93 0-1.395-.102-1.776a3 3 0 0 0-2.122-2.122C11.395 6 10.93 6 10 6c-.475 0-.829 0-1.112.014ZM8.446 7.34a1.75 1.75 0 0 0-1.041.94l4.314 4.315c.443-.2.786-.576.941-1.042L8.446 7.34Zm4.304 2.536L10.124 7.25c.908.001 1.154.013 1.329.06a1.75 1.75 0 0 1 1.237 1.237c.047.175.059.42.06 1.329ZM8.547 12.69c.182.05.442.06 1.453.06h.106L7.25 9.894V10c0 1.01.01 1.27.06 1.453a1.75 1.75 0 0 0 1.237 1.237Z"
+  })),
+  incomplete: () => /* @__PURE__ */ React.createElement("svg", {
+    viewBox: "0 0 20 20"
+  }, /* @__PURE__ */ React.createElement("path", {
+    fillRule: "evenodd",
+    d: "M8.547 12.69c.183.05.443.06 1.453.06s1.27-.01 1.453-.06a1.75 1.75 0 0 0 1.237-1.237c.05-.182.06-.443.06-1.453s-.01-1.27-.06-1.453a1.75 1.75 0 0 0-1.237-1.237c-.182-.05-.443-.06-1.453-.06s-1.27.01-1.453.06A1.75 1.75 0 0 0 7.31 8.547c-.05.183-.06.443-.06 1.453s.01 1.27.06 1.453a1.75 1.75 0 0 0 1.237 1.237ZM6.102 8.224C6 8.605 6 9.07 6 10s0 1.395.102 1.777a3 3 0 0 0 2.122 2.12C8.605 14 9.07 14 10 14s1.395 0 1.777-.102a3 3 0 0 0 2.12-2.121C14 11.395 14 10.93 14 10c0-.93 0-1.395-.102-1.776a3 3 0 0 0-2.121-2.122C11.395 6 10.93 6 10 6c-.93 0-1.395 0-1.776.102a3 3 0 0 0-2.122 2.122Z"
+  }))
+};
+function Badge({
+  children,
+  tone,
+  progress,
+  icon,
+  size = DEFAULT_SIZE,
+  toneAndProgressLabelOverride
+}) {
+  const i18n = useI18n();
+  const withinFilter = useContext(WithinFilterContext);
+  const className = classNames(styles$U.Badge, tone && styles$U[variationName("tone", tone)], size && size !== DEFAULT_SIZE && styles$U[variationName("size", size)], withinFilter && styles$U.withinFilter);
+  const accessibilityLabel = toneAndProgressLabelOverride ? toneAndProgressLabelOverride : getDefaultAccessibilityLabel(i18n, progress, tone);
+  let accessibilityMarkup = Boolean(accessibilityLabel) && /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, accessibilityLabel);
+  if (progress && !icon) {
+    accessibilityMarkup = /* @__PURE__ */ React.createElement("span", {
+      className: styles$U.Icon
+    }, /* @__PURE__ */ React.createElement(Icon, {
+      accessibilityLabel,
+      source: progressIconMap[progress]
+    }));
+  }
+  return /* @__PURE__ */ React.createElement("span", {
+    className
+  }, accessibilityMarkup, icon && /* @__PURE__ */ React.createElement("span", {
+    className: styles$U.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: icon
+  })), children && /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    fontWeight: tone === "new" ? "medium" : void 0
+  }, children));
+}
+Badge.Pip = Pip;
+function useToggle(initialState) {
+  const [value, setState] = useState(initialState);
+  return {
+    value,
+    toggle: useCallback(() => setState((state) => !state), []),
+    setTrue: useCallback(() => setState(true), []),
+    setFalse: useCallback(() => setState(false), [])
+  };
+}
+var styles$S = {
+  "TooltipContainer": "Polaris-Tooltip__TooltipContainer",
+  "HasUnderline": "Polaris-Tooltip__HasUnderline"
+};
+function useEphemeralPresenceManager() {
+  const ephemeralPresenceManager = useContext(EphemeralPresenceManagerContext);
+  if (!ephemeralPresenceManager) {
+    throw new Error("No ephemeral presence manager was provided. Your application must be wrapped in an <AppProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.");
+  }
+  return ephemeralPresenceManager;
+}
+function usePortalsManager() {
+  const portalsManager = useContext(PortalsManagerContext);
+  if (!portalsManager) {
+    throw new Error("No portals manager was provided. Your application must be wrapped in an <AppProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.");
+  }
+  return portalsManager;
+}
+function Portal({
+  children,
+  idPrefix = "",
+  onPortalCreated = noop$5
+}) {
+  const themeName = useThemeName();
+  const {
+    container
+  } = usePortalsManager();
+  const uniqueId = useId();
+  const portalId = idPrefix !== "" ? `${idPrefix}-${uniqueId}` : uniqueId;
+  useEffect(() => {
+    onPortalCreated();
+  }, [onPortalCreated]);
+  return container ? /* @__PURE__ */ createPortal(/* @__PURE__ */ React.createElement(ThemeProvider, {
+    theme: isThemeNameLocal(themeName) ? themeName : themeNameDefault,
+    "data-portal-id": portalId
+  }, children), container) : null;
+}
+function noop$5() {
+}
+var styles$R = {
+  "TooltipOverlay": "Polaris-Tooltip-TooltipOverlay",
+  "Tail": "Polaris-Tooltip-TooltipOverlay__Tail",
+  "positionedAbove": "Polaris-Tooltip-TooltipOverlay--positionedAbove",
+  "measuring": "Polaris-Tooltip-TooltipOverlay--measuring",
+  "measured": "Polaris-Tooltip-TooltipOverlay--measured",
+  "instant": "Polaris-Tooltip-TooltipOverlay--instant",
+  "Content": "Polaris-Tooltip-TooltipOverlay__Content",
+  "default": "Polaris-Tooltip-TooltipOverlay--default",
+  "wide": "Polaris-Tooltip-TooltipOverlay--wide"
+};
+function calculateVerticalPosition(activatorRect, overlayRect, overlayMargins, scrollableContainerRect, containerRect, preferredPosition, fixed, topBarOffset = 0) {
+  const activatorTop = activatorRect.top;
+  const activatorBottom = activatorTop + activatorRect.height;
+  const spaceAbove = activatorRect.top - topBarOffset;
+  const spaceBelow = containerRect.height - activatorRect.top - activatorRect.height;
+  const desiredHeight = overlayRect.height;
+  const verticalMargins = overlayMargins.activator + overlayMargins.container;
+  const minimumSpaceToScroll = overlayMargins.container;
+  const distanceToTopScroll = activatorRect.top - Math.max(scrollableContainerRect.top, 0);
+  const distanceToBottomScroll = containerRect.top + Math.min(containerRect.height, scrollableContainerRect.top + scrollableContainerRect.height) - (activatorRect.top + activatorRect.height);
+  const enoughSpaceFromTopScroll = distanceToTopScroll >= minimumSpaceToScroll;
+  const enoughSpaceFromBottomScroll = distanceToBottomScroll >= minimumSpaceToScroll;
+  const heightIfAbove = Math.min(spaceAbove, desiredHeight);
+  const heightIfBelow = Math.min(spaceBelow, desiredHeight);
+  const heightIfAboveCover = Math.min(spaceAbove + activatorRect.height, desiredHeight);
+  const heightIfBelowCover = Math.min(spaceBelow + activatorRect.height, desiredHeight);
+  const containerRectTop = fixed ? 0 : containerRect.top;
+  const positionIfAbove = {
+    height: heightIfAbove - verticalMargins,
+    top: activatorTop + containerRectTop - heightIfAbove,
+    positioning: "above"
+  };
+  const positionIfBelow = {
+    height: heightIfBelow - verticalMargins,
+    top: activatorBottom + containerRectTop,
+    positioning: "below"
+  };
+  const positionIfCoverBelow = {
+    height: heightIfBelowCover - verticalMargins,
+    top: activatorTop + containerRectTop,
+    positioning: "cover"
+  };
+  const positionIfCoverAbove = {
+    height: heightIfAboveCover - verticalMargins,
+    top: activatorTop + containerRectTop - heightIfAbove + activatorRect.height + verticalMargins,
+    positioning: "cover"
+  };
+  if (preferredPosition === "above") {
+    return (enoughSpaceFromTopScroll || distanceToTopScroll >= distanceToBottomScroll && !enoughSpaceFromBottomScroll) && (spaceAbove > desiredHeight || spaceAbove > spaceBelow) ? positionIfAbove : positionIfBelow;
+  }
+  if (preferredPosition === "below") {
+    return (enoughSpaceFromBottomScroll || distanceToBottomScroll >= distanceToTopScroll && !enoughSpaceFromTopScroll) && (spaceBelow > desiredHeight || spaceBelow > spaceAbove) ? positionIfBelow : positionIfAbove;
+  }
+  if (preferredPosition === "cover") {
+    return (enoughSpaceFromBottomScroll || distanceToBottomScroll >= distanceToTopScroll && !enoughSpaceFromTopScroll) && (spaceBelow + activatorRect.height > desiredHeight || spaceBelow > spaceAbove) ? positionIfCoverBelow : positionIfCoverAbove;
+  }
+  if (enoughSpaceFromTopScroll && enoughSpaceFromBottomScroll) {
+    return spaceAbove > spaceBelow ? positionIfAbove : positionIfBelow;
+  }
+  return distanceToTopScroll > minimumSpaceToScroll ? positionIfAbove : positionIfBelow;
+}
+function calculateHorizontalPosition(activatorRect, overlayRect, containerRect, overlayMargins, preferredAlignment) {
+  const maximum = containerRect.width - overlayRect.width;
+  if (preferredAlignment === "left") {
+    return Math.min(maximum, Math.max(0, activatorRect.left - overlayMargins.horizontal));
+  } else if (preferredAlignment === "right") {
+    const activatorRight = containerRect.width - (activatorRect.left + activatorRect.width);
+    return Math.min(maximum, Math.max(0, activatorRight - overlayMargins.horizontal));
+  }
+  return Math.min(maximum, Math.max(0, activatorRect.center.x - overlayRect.width / 2));
+}
+function rectIsOutsideOfRect(inner, outer) {
+  const {
+    center
+  } = inner;
+  return center.y < outer.top || center.y > outer.top + outer.height;
+}
+function intersectionWithViewport(rect, viewport = windowRect()) {
+  const top = Math.max(rect.top, 0);
+  const left = Math.max(rect.left, 0);
+  const bottom = Math.min(rect.top + rect.height, viewport.height);
+  const right = Math.min(rect.left + rect.width, viewport.width);
+  return new Rect({
+    top,
+    left,
+    height: bottom - top,
+    width: right - left
+  });
+}
+function windowRect() {
+  return new Rect({
+    top: window.scrollY,
+    left: window.scrollX,
+    height: window.innerHeight,
+    width: document.body.clientWidth
+  });
+}
+var styles$Q = {
+  "PositionedOverlay": "Polaris-PositionedOverlay",
+  "fixed": "Polaris-PositionedOverlay--fixed",
+  "preventInteraction": "Polaris-PositionedOverlay--preventInteraction"
+};
+const UNIQUE_IDENTIFIER = Symbol("unique_identifier");
+function useLazyRef(initialValue) {
+  const lazyRef = useRef(UNIQUE_IDENTIFIER);
+  if (lazyRef.current === UNIQUE_IDENTIFIER) {
+    lazyRef.current = initialValue();
+  }
+  return lazyRef;
+}
+function useComponentDidMount(callback) {
+  const isAfterInitialMount = useIsAfterInitialMount();
+  const hasInvokedLifeCycle = useRef(false);
+  if (isAfterInitialMount && !hasInvokedLifeCycle.current) {
+    hasInvokedLifeCycle.current = true;
+    return callback();
+  }
+}
+const ScrollableContext = /* @__PURE__ */ createContext(void 0);
+var styles$P = {
+  "Scrollable": "Polaris-Scrollable",
+  "hasTopShadow": "Polaris-Scrollable--hasTopShadow",
+  "hasBottomShadow": "Polaris-Scrollable--hasBottomShadow",
+  "horizontal": "Polaris-Scrollable--horizontal",
+  "vertical": "Polaris-Scrollable--vertical",
+  "scrollbarWidthThin": "Polaris-Scrollable--scrollbarWidthThin",
+  "scrollbarWidthNone": "Polaris-Scrollable--scrollbarWidthNone",
+  "scrollbarWidthAuto": "Polaris-Scrollable--scrollbarWidthAuto",
+  "scrollbarGutterStable": "Polaris-Scrollable--scrollbarGutterStable",
+  "scrollbarGutterStableboth-edges": "Polaris-Scrollable__scrollbarGutterStableboth--edges"
+};
+function ScrollTo() {
+  const anchorNode = useRef(null);
+  const scrollToPosition = useContext(ScrollableContext);
+  useEffect(() => {
+    if (!scrollToPosition || !anchorNode.current) {
+      return;
+    }
+    scrollToPosition(anchorNode.current.offsetTop);
+  }, [scrollToPosition]);
+  const id = useId();
+  return /* @__PURE__ */ React.createElement("a", {
+    id,
+    ref: anchorNode
+  });
+}
+const MAX_SCROLL_HINT_DISTANCE = 100;
+const LOW_RES_BUFFER = 2;
+const ScrollableComponent = /* @__PURE__ */ forwardRef(({
+  children,
+  className,
+  horizontal = true,
+  vertical = true,
+  shadow,
+  hint,
+  focusable,
+  scrollbarWidth = "thin",
+  scrollbarGutter,
+  onScrolledToBottom,
+  ...rest
+}, forwardedRef) => {
+  const [topShadow, setTopShadow] = useState(false);
+  const [bottomShadow, setBottomShadow] = useState(false);
+  const stickyManager = useLazyRef(() => new StickyManager());
+  const scrollArea = useRef(null);
+  const scrollTo = useCallback((scrollY, options2 = {}) => {
+    var _a2;
+    const optionsBehavior = options2.behavior || "smooth";
+    const behavior = prefersReducedMotion() ? "auto" : optionsBehavior;
+    (_a2 = scrollArea.current) == null ? void 0 : _a2.scrollTo({
+      top: scrollY,
+      behavior
+    });
+  }, []);
+  const defaultRef = useRef();
+  useImperativeHandle(forwardedRef || defaultRef, () => ({
+    scrollTo
+  }));
+  const handleScroll = useCallback(() => {
+    const currentScrollArea = scrollArea.current;
+    if (!currentScrollArea) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      const {
+        scrollTop,
+        clientHeight,
+        scrollHeight
+      } = currentScrollArea;
+      const canScroll = Boolean(scrollHeight > clientHeight);
+      const isBelowTopOfScroll = Boolean(scrollTop > 0);
+      const isAtBottomOfScroll = Boolean(scrollTop + clientHeight >= scrollHeight - LOW_RES_BUFFER);
+      setTopShadow(isBelowTopOfScroll);
+      setBottomShadow(!isAtBottomOfScroll);
+      if (canScroll && isAtBottomOfScroll && onScrolledToBottom) {
+        onScrolledToBottom();
+      }
+    });
+  }, [onScrolledToBottom]);
+  useComponentDidMount(() => {
+    handleScroll();
+    if (hint) {
+      requestAnimationFrame(() => performScrollHint(scrollArea.current));
+    }
+  });
+  useEffect(() => {
+    var _a2;
+    const currentScrollArea = scrollArea.current;
+    if (!currentScrollArea) {
+      return;
+    }
+    const handleResize = debounce(handleScroll, 50, {
+      trailing: true
+    });
+    (_a2 = stickyManager.current) == null ? void 0 : _a2.setContainer(currentScrollArea);
+    currentScrollArea.addEventListener("scroll", handleScroll);
+    globalThis.addEventListener("resize", handleResize);
+    return () => {
+      currentScrollArea.removeEventListener("scroll", handleScroll);
+      globalThis.removeEventListener("resize", handleResize);
+    };
+  }, [stickyManager, handleScroll]);
+  const finalClassName = classNames(className, styles$P.Scrollable, vertical && styles$P.vertical, horizontal && styles$P.horizontal, shadow && topShadow && styles$P.hasTopShadow, shadow && bottomShadow && styles$P.hasBottomShadow, scrollbarWidth && styles$P[variationName("scrollbarWidth", scrollbarWidth)], scrollbarGutter && styles$P[variationName("scrollbarGutter", scrollbarGutter.replace(" ", ""))]);
+  return /* @__PURE__ */ React.createElement(ScrollableContext.Provider, {
+    value: scrollTo
+  }, /* @__PURE__ */ React.createElement(StickyManagerContext.Provider, {
+    value: stickyManager.current
+  }, /* @__PURE__ */ React.createElement("div", Object.assign({
+    className: finalClassName
+  }, scrollable.props, rest, {
+    ref: scrollArea,
+    tabIndex: focusable ? 0 : void 0
+  }), children)));
+});
+ScrollableComponent.displayName = "Scrollable";
+function prefersReducedMotion() {
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch (err) {
+    return false;
+  }
+}
+function performScrollHint(elem) {
+  if (!elem || prefersReducedMotion()) {
+    return;
+  }
+  const scrollableDistance = elem.scrollHeight - elem.clientHeight;
+  const distanceToPeek = Math.min(MAX_SCROLL_HINT_DISTANCE, scrollableDistance) - LOW_RES_BUFFER;
+  const goBackToTop = () => {
+    requestAnimationFrame(() => {
+      if (elem.scrollTop >= distanceToPeek) {
+        elem.removeEventListener("scroll", goBackToTop);
+        elem.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+    });
+  };
+  elem.addEventListener("scroll", goBackToTop);
+  elem.scrollTo({
+    top: MAX_SCROLL_HINT_DISTANCE,
+    behavior: "smooth"
+  });
+}
+const forNode = (node) => {
+  const closestElement = node.closest(scrollable.selector);
+  return closestElement instanceof HTMLElement ? closestElement : document;
+};
+const Scrollable = ScrollableComponent;
+Scrollable.ScrollTo = ScrollTo;
+Scrollable.forNode = forNode;
+const OBSERVER_CONFIG = {
+  childList: true,
+  subtree: true,
+  characterData: true,
+  attributeFilter: ["style"]
+};
+class PositionedOverlay extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      measuring: true,
+      activatorRect: getRectForNode(this.props.activator),
+      right: void 0,
+      left: void 0,
+      top: 0,
+      height: 0,
+      width: null,
+      positioning: "below",
+      zIndex: null,
+      outsideScrollableContainer: false,
+      lockPosition: false,
+      chevronOffset: 0
+    };
+    this.overlay = null;
+    this.scrollableContainers = [];
+    this.overlayDetails = () => {
+      const {
+        measuring,
+        left,
+        right,
+        positioning,
+        height,
+        activatorRect,
+        chevronOffset
+      } = this.state;
+      return {
+        measuring,
+        left,
+        right,
+        desiredHeight: height,
+        positioning,
+        activatorRect,
+        chevronOffset
+      };
+    };
+    this.setOverlay = (node) => {
+      this.overlay = node;
+    };
+    this.setScrollableContainers = () => {
+      const containers = [];
+      let scrollableContainer = Scrollable.forNode(this.props.activator);
+      if (scrollableContainer) {
+        containers.push(scrollableContainer);
+        while (scrollableContainer == null ? void 0 : scrollableContainer.parentElement) {
+          scrollableContainer = Scrollable.forNode(scrollableContainer.parentElement);
+          containers.push(scrollableContainer);
+        }
+      }
+      this.scrollableContainers = containers;
+    };
+    this.registerScrollHandlers = () => {
+      this.scrollableContainers.forEach((node) => {
+        node.addEventListener("scroll", this.handleMeasurement);
+      });
+    };
+    this.unregisterScrollHandlers = () => {
+      this.scrollableContainers.forEach((node) => {
+        node.removeEventListener("scroll", this.handleMeasurement);
+      });
+    };
+    this.handleMeasurement = () => {
+      const {
+        lockPosition,
+        top
+      } = this.state;
+      this.observer.disconnect();
+      this.setState(({
+        left,
+        top: top2,
+        right
+      }) => ({
+        left,
+        right,
+        top: top2,
+        height: 0,
+        positioning: "below",
+        measuring: true
+      }), () => {
+        if (this.overlay == null || this.firstScrollableContainer == null) {
+          return;
+        }
+        const {
+          activator,
+          preferredPosition = "below",
+          preferredAlignment = "center",
+          onScrollOut,
+          fullWidth,
+          fixed,
+          preferInputActivator = true
+        } = this.props;
+        const preferredActivator = preferInputActivator ? activator.querySelector("input") || activator : activator;
+        const activatorRect = getRectForNode(preferredActivator);
+        const currentOverlayRect = getRectForNode(this.overlay);
+        const scrollableElement = isDocument(this.firstScrollableContainer) ? document.body : this.firstScrollableContainer;
+        const scrollableContainerRect = getRectForNode(scrollableElement);
+        const overlayRect = fullWidth || preferredPosition === "cover" ? new Rect({
+          ...currentOverlayRect,
+          width: activatorRect.width
+        }) : currentOverlayRect;
+        if (scrollableElement === document.body) {
+          scrollableContainerRect.height = document.body.scrollHeight;
+        }
+        let topBarOffset = 0;
+        const topBarElement = scrollableElement.querySelector(`${dataPolarisTopBar.selector}`);
+        if (topBarElement) {
+          topBarOffset = topBarElement.clientHeight;
+        }
+        const overlayMargins = this.overlay.firstElementChild && this.overlay.firstChild instanceof HTMLElement ? getMarginsForNode(this.overlay.firstElementChild) : {
+          activator: 0,
+          container: 0,
+          horizontal: 0
+        };
+        const containerRect = windowRect();
+        const zIndexForLayer = getZIndexForLayerFromNode(activator);
+        const zIndex = zIndexForLayer == null ? zIndexForLayer : zIndexForLayer + 1;
+        const verticalPosition = calculateVerticalPosition(activatorRect, overlayRect, overlayMargins, scrollableContainerRect, containerRect, preferredPosition, fixed, topBarOffset);
+        const horizontalPosition = calculateHorizontalPosition(activatorRect, overlayRect, containerRect, overlayMargins, preferredAlignment);
+        const chevronOffset = activatorRect.center.x - horizontalPosition + overlayMargins.horizontal * 2;
+        this.setState({
+          measuring: false,
+          activatorRect: getRectForNode(activator),
+          left: preferredAlignment !== "right" ? horizontalPosition : void 0,
+          right: preferredAlignment === "right" ? horizontalPosition : void 0,
+          top: lockPosition ? top : verticalPosition.top,
+          lockPosition: Boolean(fixed),
+          height: verticalPosition.height || 0,
+          width: fullWidth || preferredPosition === "cover" ? overlayRect.width : null,
+          positioning: verticalPosition.positioning,
+          outsideScrollableContainer: onScrollOut != null && rectIsOutsideOfRect(activatorRect, intersectionWithViewport(scrollableContainerRect)),
+          zIndex,
+          chevronOffset
+        }, () => {
+          if (!this.overlay) return;
+          this.observer.observe(this.overlay, OBSERVER_CONFIG);
+          this.observer.observe(activator, OBSERVER_CONFIG);
+        });
+      });
+    };
+    this.observer = new MutationObserver(this.handleMeasurement);
+  }
+  componentDidMount() {
+    this.setScrollableContainers();
+    if (this.scrollableContainers.length && !this.props.fixed) {
+      this.registerScrollHandlers();
+    }
+    this.handleMeasurement();
+  }
+  componentWillUnmount() {
+    this.observer.disconnect();
+    if (this.scrollableContainers.length && !this.props.fixed) {
+      this.unregisterScrollHandlers();
+    }
+  }
+  componentDidUpdate() {
+    const {
+      outsideScrollableContainer,
+      top
+    } = this.state;
+    const {
+      onScrollOut,
+      active
+    } = this.props;
+    if (active && onScrollOut != null && top !== 0 && outsideScrollableContainer) {
+      onScrollOut();
+    }
+  }
+  render() {
+    const {
+      left,
+      right,
+      top,
+      zIndex,
+      width
+    } = this.state;
+    const {
+      render,
+      fixed,
+      preventInteraction,
+      classNames: propClassNames,
+      zIndexOverride
+    } = this.props;
+    const style = {
+      top: top == null || isNaN(top) ? void 0 : top,
+      left: left == null || isNaN(left) ? void 0 : left,
+      right: right == null || isNaN(right) ? void 0 : right,
+      width: width == null || isNaN(width) ? void 0 : width,
+      zIndex: zIndexOverride || zIndex || void 0
+    };
+    const className = classNames(styles$Q.PositionedOverlay, fixed && styles$Q.fixed, preventInteraction && styles$Q.preventInteraction, propClassNames);
+    return /* @__PURE__ */ React.createElement("div", {
+      className,
+      style,
+      ref: this.setOverlay
+    }, /* @__PURE__ */ React.createElement(EventListener, {
+      event: "resize",
+      handler: this.handleMeasurement
+    }), render(this.overlayDetails()));
+  }
+  get firstScrollableContainer() {
+    return this.scrollableContainers[0] ?? null;
+  }
+  forceUpdatePosition() {
+    requestAnimationFrame(this.handleMeasurement);
+  }
+}
+function getMarginsForNode(node) {
+  const nodeStyles = window.getComputedStyle(node);
+  return {
+    activator: parseFloat(nodeStyles.marginTop || "0"),
+    container: parseFloat(nodeStyles.marginBottom || "0"),
+    horizontal: parseFloat(nodeStyles.marginLeft || "0")
+  };
+}
+function getZIndexForLayerFromNode(node) {
+  const layerNode = node.closest(layer.selector) || document.body;
+  const zIndex = layerNode === document.body ? "auto" : parseInt(window.getComputedStyle(layerNode).zIndex || "0", 10);
+  return zIndex === "auto" || isNaN(zIndex) ? null : zIndex;
+}
+function isDocument(node) {
+  return node === document;
+}
+const tailUpPaths = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("path", {
+  d: "M18.829 8.171 11.862.921A3 3 0 0 0 7.619.838L0 8.171h1.442l6.87-6.612a2 2 0 0 1 2.83.055l6.3 6.557h1.387Z",
+  fill: "var(--p-color-tooltip-tail-up-border-experimental)"
+}), /* @__PURE__ */ React.createElement("path", {
+  d: "M17.442 10.171h-16v-2l6.87-6.612a2 2 0 0 1 2.83.055l6.3 6.557v2Z",
+  fill: "var(--p-color-bg-surface)"
+}));
+const tailDownPaths = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("path", {
+  d: "m0 2 6.967 7.25a3 3 0 0 0 4.243.083L18.829 2h-1.442l-6.87 6.612a2 2 0 0 1-2.83-.055L1.387 2H0Z",
+  fill: "var(--p-color-tooltip-tail-down-border-experimental)"
+}), /* @__PURE__ */ React.createElement("path", {
+  d: "M1.387 0h16v2l-6.87 6.612a2 2 0 0 1-2.83-.055L1.387 2V0Z",
+  fill: "var(--p-color-bg-surface)"
+}));
+function TooltipOverlay({
+  active,
+  activator,
+  preferredPosition = "above",
+  preventInteraction,
+  id,
+  children,
+  accessibilityLabel,
+  width,
+  padding,
+  borderRadius,
+  zIndexOverride,
+  instant
+}) {
+  const i18n = useI18n();
+  const markup = active ? /* @__PURE__ */ React.createElement(PositionedOverlay, {
+    active,
+    activator,
+    preferredPosition,
+    preventInteraction,
+    render: renderTooltip,
+    zIndexOverride
+  }) : null;
+  return markup;
+  function renderTooltip(overlayDetails) {
+    const {
+      measuring,
+      desiredHeight,
+      positioning,
+      chevronOffset
+    } = overlayDetails;
+    const containerClassName = classNames(styles$R.TooltipOverlay, measuring && styles$R.measuring, !measuring && styles$R.measured, instant && styles$R.instant, positioning === "above" && styles$R.positionedAbove);
+    const contentClassName = classNames(styles$R.Content, width && styles$R[width]);
+    const contentStyles = measuring ? void 0 : {
+      minHeight: desiredHeight
+    };
+    const style = {
+      "--pc-tooltip-chevron-x-pos": `${chevronOffset}px`,
+      "--pc-tooltip-border-radius": borderRadius ? `var(--p-border-radius-${borderRadius})` : void 0,
+      "--pc-tooltip-padding": padding && padding === "default" ? "var(--p-space-100) var(--p-space-200)" : `var(--p-space-${padding})`
+    };
+    return /* @__PURE__ */ React.createElement("div", Object.assign({
+      style,
+      className: containerClassName
+    }, layer.props), /* @__PURE__ */ React.createElement("svg", {
+      className: styles$R.Tail,
+      width: "19",
+      height: "11",
+      fill: "none"
+    }, positioning === "above" ? tailDownPaths : tailUpPaths), /* @__PURE__ */ React.createElement("div", {
+      id,
+      role: "tooltip",
+      className: contentClassName,
+      style: {
+        ...contentStyles,
+        ...style
+      },
+      "aria-label": accessibilityLabel ? i18n.translate("Polaris.TooltipOverlay.accessibilityLabel", {
+        label: accessibilityLabel
+      }) : void 0
+    }, children));
+  }
+}
+const HOVER_OUT_TIMEOUT = 150;
+function Tooltip({
+  children,
+  content: content2,
+  dismissOnMouseOut,
+  active: originalActive,
+  hoverDelay,
+  preferredPosition = "above",
+  activatorWrapper = "span",
+  accessibilityLabel,
+  width = "default",
+  padding = "default",
+  borderRadius: borderRadiusProp,
+  zIndexOverride,
+  hasUnderline,
+  persistOnClick,
+  onOpen,
+  onClose
+}) {
+  const borderRadius = borderRadiusProp || "200";
+  const WrapperComponent = activatorWrapper;
+  const {
+    value: active,
+    setTrue: setActiveTrue,
+    setFalse: handleBlur
+  } = useToggle(Boolean(originalActive));
+  const {
+    value: persist,
+    toggle: togglePersisting
+  } = useToggle(Boolean(originalActive) && Boolean(persistOnClick));
+  const [activatorNode, setActivatorNode] = useState(null);
+  const {
+    presenceList,
+    addPresence,
+    removePresence
+  } = useEphemeralPresenceManager();
+  const id = useId();
+  const activatorContainer = useRef(null);
+  const mouseEntered = useRef(false);
+  const [shouldAnimate, setShouldAnimate] = useState(Boolean(!originalActive));
+  const hoverDelayTimeout = useRef(null);
+  const hoverOutTimeout = useRef(null);
+  const handleFocus = useCallback(() => {
+    if (originalActive !== false) {
+      setActiveTrue();
+    }
+  }, [originalActive, setActiveTrue]);
+  useEffect(() => {
+    const firstFocusable = activatorContainer.current ? findFirstFocusableNode(activatorContainer.current) : null;
+    const accessibilityNode = firstFocusable || activatorContainer.current;
+    if (!accessibilityNode) return;
+    accessibilityNode.tabIndex = 0;
+    accessibilityNode.setAttribute("aria-describedby", id);
+    accessibilityNode.setAttribute("data-polaris-tooltip-activator", "true");
+  }, [id, children]);
+  useEffect(() => {
+    return () => {
+      if (hoverDelayTimeout.current) {
+        clearTimeout(hoverDelayTimeout.current);
+      }
+      if (hoverOutTimeout.current) {
+        clearTimeout(hoverOutTimeout.current);
+      }
+    };
+  }, []);
+  const handleOpen = useCallback(() => {
+    setShouldAnimate(!presenceList.tooltip && !active);
+    onOpen == null ? void 0 : onOpen();
+    addPresence("tooltip");
+  }, [addPresence, presenceList.tooltip, onOpen, active]);
+  const handleClose = useCallback(() => {
+    onClose == null ? void 0 : onClose();
+    setShouldAnimate(false);
+    hoverOutTimeout.current = setTimeout(() => {
+      removePresence("tooltip");
+    }, HOVER_OUT_TIMEOUT);
+  }, [removePresence, onClose]);
+  const handleKeyUp = useCallback((event) => {
+    if (event.key !== "Escape") return;
+    handleClose == null ? void 0 : handleClose();
+    handleBlur();
+    persistOnClick && togglePersisting();
+  }, [handleBlur, handleClose, persistOnClick, togglePersisting]);
+  useEffect(() => {
+    if (originalActive === false && active) {
+      handleClose();
+      handleBlur();
+    }
+  }, [originalActive, active, handleClose, handleBlur]);
+  const portal2 = activatorNode ? /* @__PURE__ */ React.createElement(Portal, {
+    idPrefix: "tooltip"
+  }, /* @__PURE__ */ React.createElement(TooltipOverlay, {
+    id,
+    preferredPosition,
+    activator: activatorNode,
+    active,
+    accessibilityLabel,
+    onClose: noop$4,
+    preventInteraction: dismissOnMouseOut,
+    width,
+    padding,
+    borderRadius,
+    zIndexOverride,
+    instant: !shouldAnimate
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd"
+  }, content2))) : null;
+  const wrapperClassNames = classNames(activatorWrapper === "div" && styles$S.TooltipContainer, hasUnderline && styles$S.HasUnderline);
+  return /* @__PURE__ */ React.createElement(WrapperComponent, {
+    onFocus: () => {
+      handleOpen();
+      handleFocus();
+    },
+    onBlur: () => {
+      handleClose();
+      handleBlur();
+      if (persistOnClick) {
+        togglePersisting();
+      }
+    },
+    onMouseLeave: handleMouseLeave,
+    onMouseOver: handleMouseEnterFix,
+    onMouseDown: persistOnClick ? togglePersisting : void 0,
+    ref: setActivator,
+    onKeyUp: handleKeyUp,
+    className: wrapperClassNames
+  }, children, portal2);
+  function setActivator(node) {
+    const activatorContainerRef = activatorContainer;
+    if (node == null) {
+      activatorContainerRef.current = null;
+      setActivatorNode(null);
+      return;
+    }
+    node.firstElementChild instanceof HTMLElement && setActivatorNode(node.firstElementChild);
+    activatorContainerRef.current = node;
+  }
+  function handleMouseEnter() {
+    mouseEntered.current = true;
+    if (hoverDelay && !presenceList.tooltip) {
+      hoverDelayTimeout.current = setTimeout(() => {
+        handleOpen();
+        handleFocus();
+      }, hoverDelay);
+    } else {
+      handleOpen();
+      handleFocus();
+    }
+  }
+  function handleMouseLeave() {
+    if (hoverDelayTimeout.current) {
+      clearTimeout(hoverDelayTimeout.current);
+      hoverDelayTimeout.current = null;
+    }
+    mouseEntered.current = false;
+    handleClose();
+    if (!persist) {
+      handleBlur();
+    }
+  }
+  function handleMouseEnterFix() {
+    !mouseEntered.current && handleMouseEnter();
+  }
+}
+function noop$4() {
+}
+function Item$7({
+  id,
+  badge,
+  content: content2,
+  accessibilityLabel,
+  helpText,
+  url,
+  onAction,
+  onMouseEnter,
+  icon,
+  image,
+  prefix,
+  suffix,
+  disabled,
+  external,
+  destructive,
+  ellipsis,
+  truncate,
+  active,
+  role,
+  variant = "default"
+}) {
+  const className = classNames(styles$V.Item, disabled && styles$V.disabled, destructive && styles$V.destructive, active && styles$V.active, variant === "default" && styles$V.default, variant === "indented" && styles$V.indented, variant === "menu" && styles$V.menu);
+  let prefixMarkup = null;
+  if (prefix) {
+    prefixMarkup = /* @__PURE__ */ React.createElement("span", {
+      className: styles$V.Prefix
+    }, prefix);
+  } else if (icon) {
+    prefixMarkup = /* @__PURE__ */ React.createElement("span", {
+      className: styles$V.Prefix
+    }, /* @__PURE__ */ React.createElement(Icon, {
+      source: icon
+    }));
+  } else if (image) {
+    prefixMarkup = /* @__PURE__ */ React.createElement("span", {
+      role: "presentation",
+      className: styles$V.Prefix,
+      style: {
+        backgroundImage: `url(${image}`
+      }
+    });
+  }
+  let contentText = content2 || "";
+  if (truncate && content2) {
+    contentText = /* @__PURE__ */ React.createElement(TruncateText, null, content2);
+  } else if (ellipsis) {
+    contentText = `${content2}…`;
+  }
+  const contentMarkup = helpText ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Box, null, contentText), /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    tone: active || disabled ? void 0 : "subdued"
+  }, helpText)) : /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd",
+    fontWeight: active ? "semibold" : "regular"
+  }, contentText);
+  const badgeMarkup = badge && /* @__PURE__ */ React.createElement("span", {
+    className: styles$V.Suffix
+  }, /* @__PURE__ */ React.createElement(Badge, {
+    tone: badge.tone
+  }, badge.content));
+  const suffixMarkup = suffix && /* @__PURE__ */ React.createElement(Box, null, /* @__PURE__ */ React.createElement("span", {
+    className: styles$V.Suffix
+  }, suffix));
+  const textMarkup = /* @__PURE__ */ React.createElement("span", {
+    className: styles$V.Text
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd",
+    fontWeight: active ? "semibold" : "regular"
+  }, contentMarkup));
+  const contentElement = /* @__PURE__ */ React.createElement(InlineStack, {
+    blockAlign: "center",
+    gap: "150",
+    wrap: false
+  }, prefixMarkup, textMarkup, badgeMarkup, suffixMarkup);
+  const contentWrapper = /* @__PURE__ */ React.createElement(Box, {
+    width: "100%"
+  }, contentElement);
+  const scrollMarkup = active ? /* @__PURE__ */ React.createElement(Scrollable.ScrollTo, null) : null;
+  const control = url ? /* @__PURE__ */ React.createElement(UnstyledLink, {
+    id,
+    url: disabled ? null : url,
+    className,
+    external,
+    "aria-label": accessibilityLabel,
+    onClick: disabled ? null : onAction,
+    role
+  }, contentWrapper) : /* @__PURE__ */ React.createElement("button", {
+    id,
+    type: "button",
+    className,
+    disabled,
+    "aria-label": accessibilityLabel,
+    onClick: onAction,
+    onMouseUp: handleMouseUpByBlurring,
+    role,
+    onMouseEnter
+  }, contentWrapper);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, scrollMarkup, control);
+}
+const TruncateText = ({
+  children
+}) => {
+  const theme = useTheme();
+  const textRef = useRef(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  useIsomorphicLayoutEffect(() => {
+    if (textRef.current) {
+      setIsOverflowing(textRef.current.scrollWidth > textRef.current.offsetWidth);
+    }
+  }, [children]);
+  const text2 = /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    truncate: true
+  }, /* @__PURE__ */ React.createElement(Box, {
+    width: "100%",
+    ref: textRef
+  }, children));
+  return isOverflowing ? /* @__PURE__ */ React.createElement(Tooltip, {
+    zIndexOverride: Number(theme.zIndex["z-index-11"]),
+    preferredPosition: "above",
+    hoverDelay: 1e3,
+    content: children,
+    dismissOnMouseOut: true
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    truncate: true
+  }, children)) : text2;
+};
+function Section$4({
+  section,
+  hasMultipleSections,
+  isFirst,
+  actionRole,
+  onActionAnyItem
+}) {
+  const handleAction = (itemOnAction) => {
+    return () => {
+      if (itemOnAction) {
+        itemOnAction();
+      }
+      if (onActionAnyItem) {
+        onActionAnyItem();
+      }
+    };
+  };
+  const actionMarkup = section.items.map(({
+    content: content2,
+    helpText,
+    onAction,
+    ...item
+  }, index2) => {
+    const itemMarkup = /* @__PURE__ */ React.createElement(Item$7, Object.assign({
+      content: content2,
+      helpText,
+      role: actionRole,
+      onAction: handleAction(onAction)
+    }, item));
+    return /* @__PURE__ */ React.createElement(Box, {
+      as: "li",
+      key: `${content2}-${index2}`,
+      role: actionRole === "menuitem" ? "presentation" : void 0
+    }, /* @__PURE__ */ React.createElement(InlineStack, {
+      wrap: false
+    }, itemMarkup));
+  });
+  let titleMarkup = null;
+  if (section.title) {
+    titleMarkup = typeof section.title === "string" ? /* @__PURE__ */ React.createElement(Box, {
+      paddingBlockStart: "300",
+      paddingBlockEnd: "100",
+      paddingInlineStart: "300",
+      paddingInlineEnd: "300"
+    }, /* @__PURE__ */ React.createElement(Text, {
+      as: "p",
+      variant: "headingSm"
+    }, section.title)) : /* @__PURE__ */ React.createElement(Box, {
+      padding: "200",
+      paddingInlineEnd: "150"
+    }, section.title);
+  }
+  let sectionRole;
+  switch (actionRole) {
+    case "option":
+      sectionRole = "presentation";
+      break;
+    case "menuitem":
+      sectionRole = !hasMultipleSections ? "menu" : "presentation";
+      break;
+    default:
+      sectionRole = void 0;
+      break;
+  }
+  const sectionMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, titleMarkup, /* @__PURE__ */ React.createElement(Box, Object.assign({
+    as: "div",
+    padding: "150"
+  }, hasMultipleSections && {
+    paddingBlockStart: "0"
+  }, {
+    tabIndex: !hasMultipleSections ? -1 : void 0
+  }), /* @__PURE__ */ React.createElement(BlockStack, Object.assign({
+    gap: "050",
+    as: "ul"
+  }, sectionRole && {
+    role: sectionRole
+  }), actionMarkup)));
+  return hasMultipleSections ? /* @__PURE__ */ React.createElement(Box, Object.assign({
+    as: "li",
+    role: "presentation",
+    borderColor: "border-secondary"
+  }, !isFirst && {
+    borderBlockStartWidth: "025"
+  }, !section.title && {
+    paddingBlockStart: "150"
+  }), sectionMarkup) : sectionMarkup;
+}
+function KeypressListener({
+  keyCode,
+  handler: handler2,
+  keyEvent = "keyup",
+  options: options2,
+  useCapture
+}) {
+  const tracked = useRef({
+    handler: handler2,
+    keyCode
+  });
+  useIsomorphicLayoutEffect(() => {
+    tracked.current = {
+      handler: handler2,
+      keyCode
+    };
+  }, [handler2, keyCode]);
+  const handleKeyEvent = useCallback((event) => {
+    const {
+      handler: handler3,
+      keyCode: keyCode2
+    } = tracked.current;
+    if (event.keyCode === keyCode2) {
+      handler3(event);
+    }
+  }, []);
+  useEffect(() => {
+    document.addEventListener(keyEvent, handleKeyEvent, useCapture || options2);
+    return () => {
+      document.removeEventListener(keyEvent, handleKeyEvent, useCapture || options2);
+    };
+  }, [keyEvent, handleKeyEvent, useCapture, options2]);
+  return null;
+}
+var styles$O = {
+  "TextField": "Polaris-TextField",
+  "ClearButton": "Polaris-TextField__ClearButton",
+  "Loading": "Polaris-TextField__Loading",
+  "disabled": "Polaris-TextField--disabled",
+  "error": "Polaris-TextField--error",
+  "readOnly": "Polaris-TextField--readOnly",
+  "Input": "Polaris-TextField__Input",
+  "Backdrop": "Polaris-TextField__Backdrop",
+  "multiline": "Polaris-TextField--multiline",
+  "hasValue": "Polaris-TextField--hasValue",
+  "focus": "Polaris-TextField--focus",
+  "VerticalContent": "Polaris-TextField__VerticalContent",
+  "InputAndSuffixWrapper": "Polaris-TextField__InputAndSuffixWrapper",
+  "toneMagic": "Polaris-TextField--toneMagic",
+  "Prefix": "Polaris-TextField__Prefix",
+  "Suffix": "Polaris-TextField__Suffix",
+  "AutoSizeWrapper": "Polaris-TextField__AutoSizeWrapper",
+  "AutoSizeWrapperWithSuffix": "Polaris-TextField__AutoSizeWrapperWithSuffix",
+  "suggestion": "Polaris-TextField--suggestion",
+  "borderless": "Polaris-TextField--borderless",
+  "slim": "Polaris-TextField--slim",
+  "Input-hasClearButton": "Polaris-TextField__Input--hasClearButton",
+  "Input-suffixed": "Polaris-TextField__Input--suffixed",
+  "Input-alignRight": "Polaris-TextField__Input--alignRight",
+  "Input-alignLeft": "Polaris-TextField__Input--alignLeft",
+  "Input-alignCenter": "Polaris-TextField__Input--alignCenter",
+  "Input-autoSize": "Polaris-TextField__Input--autoSize",
+  "PrefixIcon": "Polaris-TextField__PrefixIcon",
+  "CharacterCount": "Polaris-TextField__CharacterCount",
+  "AlignFieldBottom": "Polaris-TextField__AlignFieldBottom",
+  "Spinner": "Polaris-TextField__Spinner",
+  "SpinnerIcon": "Polaris-TextField__SpinnerIcon",
+  "Resizer": "Polaris-TextField__Resizer",
+  "DummyInput": "Polaris-TextField__DummyInput",
+  "Segment": "Polaris-TextField__Segment",
+  "monospaced": "Polaris-TextField--monospaced"
+};
+const Spinner = /* @__PURE__ */ React.forwardRef(function Spinner2({
+  onChange,
+  onClick,
+  onMouseDown,
+  onMouseUp,
+  onBlur
+}, ref) {
+  function handleStep(step) {
+    return () => onChange(step);
+  }
+  function handleMouseDown(onChange2) {
+    return (event) => {
+      if (event.button !== 0) return;
+      onMouseDown == null ? void 0 : onMouseDown(onChange2);
+    };
+  }
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.Spinner,
+    onClick,
+    "aria-hidden": true,
+    ref
+  }, /* @__PURE__ */ React.createElement("div", {
+    role: "button",
+    className: styles$O.Segment,
+    tabIndex: -1,
+    onClick: handleStep(1),
+    onMouseDown: handleMouseDown(handleStep(1)),
+    onMouseUp,
+    onBlur
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.SpinnerIcon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: ChevronUpIcon
+  }))), /* @__PURE__ */ React.createElement("div", {
+    role: "button",
+    className: styles$O.Segment,
+    tabIndex: -1,
+    onClick: handleStep(-1),
+    onMouseDown: handleMouseDown(handleStep(-1)),
+    onMouseUp,
+    onBlur
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.SpinnerIcon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: ChevronDownIcon
+  }))));
+});
+var styles$N = {
+  "hidden": "Polaris-Labelled--hidden",
+  "LabelWrapper": "Polaris-Labelled__LabelWrapper",
+  "disabled": "Polaris-Labelled--disabled",
+  "HelpText": "Polaris-Labelled__HelpText",
+  "readOnly": "Polaris-Labelled--readOnly",
+  "Error": "Polaris-Labelled__Error",
+  "Action": "Polaris-Labelled__Action"
+};
+var styles$M = {
+  "InlineError": "Polaris-InlineError",
+  "Icon": "Polaris-InlineError__Icon"
+};
+function InlineError({
+  message,
+  fieldID
+}) {
+  if (!message) {
+    return null;
+  }
+  return /* @__PURE__ */ React.createElement("div", {
+    id: errorTextID(fieldID),
+    className: styles$M.InlineError
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$M.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: AlertCircleIcon
+  })), /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd"
+  }, message));
+}
+function errorTextID(id) {
+  return `${id}Error`;
+}
+var styles$L = {
+  "Label": "Polaris-Label",
+  "hidden": "Polaris-Label--hidden",
+  "Text": "Polaris-Label__Text",
+  "RequiredIndicator": "Polaris-Label__RequiredIndicator"
+};
+function labelID(id) {
+  return `${id}Label`;
+}
+function Label({
+  children,
+  id,
+  hidden,
+  requiredIndicator
+}) {
+  const className = classNames(styles$L.Label, hidden && styles$L.hidden);
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, /* @__PURE__ */ React.createElement("label", {
+    id: labelID(id),
+    htmlFor: id,
+    className: classNames(styles$L.Text, requiredIndicator && styles$L.RequiredIndicator)
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd"
+  }, children)));
+}
+function Labelled({
+  id,
+  label: label2,
+  error,
+  action: action2,
+  helpText,
+  children,
+  labelHidden,
+  requiredIndicator,
+  disabled,
+  readOnly,
+  ...rest
+}) {
+  const className = classNames(labelHidden && styles$N.hidden, disabled && styles$N.disabled, readOnly && styles$N.readOnly);
+  const actionMarkup = action2 ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$N.Action
+  }, buttonFrom(action2, {
+    variant: "plain"
+  })) : null;
+  const helpTextMarkup = helpText ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$N.HelpText,
+    id: helpTextID(id),
+    "aria-disabled": disabled
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    tone: "subdued",
+    variant: "bodyMd",
+    breakWord: true
+  }, helpText)) : null;
+  const errorMarkup = error && typeof error !== "boolean" && /* @__PURE__ */ React.createElement("div", {
+    className: styles$N.Error
+  }, /* @__PURE__ */ React.createElement(InlineError, {
+    message: error,
+    fieldID: id
+  }));
+  const labelMarkup = label2 ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$N.LabelWrapper
+  }, /* @__PURE__ */ React.createElement(Label, Object.assign({
+    id,
+    requiredIndicator
+  }, rest, {
+    hidden: false
+  }), label2), actionMarkup) : null;
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, labelMarkup, children, errorMarkup, helpTextMarkup);
+}
+function helpTextID(id) {
+  return `${id}HelpText`;
+}
+var styles$K = {
+  "Connected": "Polaris-Connected",
+  "Item": "Polaris-Connected__Item",
+  "Item-primary": "Polaris-Connected__Item--primary",
+  "Item-focused": "Polaris-Connected__Item--focused"
+};
+function Item$6({
+  children,
+  position
+}) {
+  const {
+    value: focused,
+    setTrue: forceTrueFocused,
+    setFalse: forceFalseFocused
+  } = useToggle(false);
+  const className = classNames(styles$K.Item, focused && styles$K["Item-focused"], position === "primary" ? styles$K["Item-primary"] : styles$K["Item-connection"]);
+  return /* @__PURE__ */ React.createElement("div", {
+    onBlur: forceFalseFocused,
+    onFocus: forceTrueFocused,
+    className
+  }, children);
+}
+function Connected({
+  children,
+  left,
+  right
+}) {
+  const leftConnectionMarkup = left ? /* @__PURE__ */ React.createElement(Item$6, {
+    position: "left"
+  }, left) : null;
+  const rightConnectionMarkup = right ? /* @__PURE__ */ React.createElement(Item$6, {
+    position: "right"
+  }, right) : null;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$K.Connected
+  }, leftConnectionMarkup, /* @__PURE__ */ React.createElement(Item$6, {
+    position: "primary"
+  }, children), rightConnectionMarkup);
+}
+function Resizer({
+  contents,
+  currentHeight: currentHeightProp = null,
+  minimumLines,
+  onHeightChange
+}) {
+  const contentNode = useRef(null);
+  const minimumLinesNode = useRef(null);
+  const animationFrame = useRef();
+  const currentHeight = useRef(currentHeightProp);
+  if (currentHeightProp !== currentHeight.current) {
+    currentHeight.current = currentHeightProp;
+  }
+  useEffect(() => {
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    };
+  }, []);
+  const minimumLinesMarkup = minimumLines ? /* @__PURE__ */ React.createElement("div", {
+    ref: minimumLinesNode,
+    className: styles$O.DummyInput,
+    dangerouslySetInnerHTML: {
+      __html: getContentsForMinimumLines(minimumLines)
+    }
+  }) : null;
+  const handleHeightCheck = useCallback(() => {
+    if (animationFrame.current) {
+      cancelAnimationFrame(animationFrame.current);
+    }
+    animationFrame.current = requestAnimationFrame(() => {
+      if (!contentNode.current || !minimumLinesNode.current) {
+        return;
+      }
+      const newHeight = Math.max(contentNode.current.offsetHeight, minimumLinesNode.current.offsetHeight);
+      if (newHeight !== currentHeight.current) {
+        onHeightChange(newHeight);
+      }
+    });
+  }, [onHeightChange]);
+  useIsomorphicLayoutEffect(() => {
+    handleHeightCheck();
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    "aria-hidden": true,
+    className: styles$O.Resizer
+  }, /* @__PURE__ */ React.createElement(EventListener, {
+    event: "resize",
+    handler: handleHeightCheck
+  }), /* @__PURE__ */ React.createElement("div", {
+    ref: contentNode,
+    className: styles$O.DummyInput,
+    dangerouslySetInnerHTML: {
+      __html: getFinalContents(contents)
+    }
+  }), minimumLinesMarkup);
+}
+const ENTITIES_TO_REPLACE = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  "\n": "<br>",
+  "\r": ""
+};
+const REPLACE_REGEX = new RegExp(`[${Object.keys(ENTITIES_TO_REPLACE).join()}]`, "g");
+function replaceEntity(entity) {
+  return ENTITIES_TO_REPLACE[entity];
+}
+function getContentsForMinimumLines(minimumLines) {
+  let content2 = "";
+  for (let line = 0; line < minimumLines; line++) {
+    content2 += "<br>";
+  }
+  return content2;
+}
+function getFinalContents(contents) {
+  return contents ? `${contents.replace(REPLACE_REGEX, replaceEntity)}<br>` : "<br>";
+}
+function TextField({
+  prefix,
+  suffix,
+  verticalContent,
+  placeholder,
+  value = "",
+  helpText,
+  label: label2,
+  labelAction,
+  labelHidden,
+  disabled,
+  clearButton,
+  readOnly,
+  autoFocus,
+  focused,
+  multiline,
+  error,
+  connectedRight,
+  connectedLeft,
+  type = "text",
+  name,
+  id: idProp,
+  role,
+  step,
+  largeStep,
+  autoComplete,
+  max,
+  maxLength,
+  maxHeight,
+  min,
+  minLength,
+  pattern,
+  inputMode,
+  spellCheck,
+  ariaOwns,
+  ariaControls,
+  ariaExpanded,
+  ariaActiveDescendant,
+  ariaAutocomplete,
+  showCharacterCount,
+  align,
+  requiredIndicator,
+  monospaced,
+  selectTextOnFocus,
+  suggestion,
+  variant = "inherit",
+  size = "medium",
+  onClearButtonClick,
+  onChange,
+  onSpinnerChange,
+  onFocus,
+  onBlur,
+  tone,
+  autoSize,
+  loading
+}) {
+  const i18n = useI18n();
+  const [height, setHeight] = useState(null);
+  const [focus, setFocus] = useState(Boolean(focused));
+  const isAfterInitial = useIsAfterInitialMount();
+  const uniqId = useId();
+  const id = idProp ?? uniqId;
+  const textFieldRef = useRef(null);
+  const inputRef = useRef(null);
+  const textAreaRef = useRef(null);
+  const prefixRef = useRef(null);
+  const suffixRef = useRef(null);
+  const loadingRef = useRef(null);
+  const verticalContentRef = useRef(null);
+  const buttonPressTimer = useRef();
+  const spinnerRef = useRef(null);
+  const getInputRef = useCallback(() => {
+    return multiline ? textAreaRef.current : inputRef.current;
+  }, [multiline]);
+  useEffect(() => {
+    const input3 = getInputRef();
+    if (!input3 || focused === void 0) return;
+    focused ? input3.focus() : input3.blur();
+  }, [focused, verticalContent, getInputRef]);
+  useEffect(() => {
+    const input3 = inputRef.current;
+    const isSupportedInputType = type === "text" || type === "tel" || type === "search" || type === "url" || type === "password";
+    if (!input3 || !isSupportedInputType || !suggestion) {
+      return;
+    }
+    input3.setSelectionRange(value.length, suggestion.length);
+  }, [focus, value, type, suggestion]);
+  const normalizedValue = suggestion ? suggestion : value;
+  const normalizedStep = step != null ? step : 1;
+  const normalizedMax = max != null ? max : Infinity;
+  const normalizedMin = min != null ? min : -Infinity;
+  const className = classNames(styles$O.TextField, Boolean(normalizedValue) && styles$O.hasValue, disabled && styles$O.disabled, readOnly && styles$O.readOnly, error && styles$O.error, tone && styles$O[variationName("tone", tone)], multiline && styles$O.multiline, focus && !disabled && styles$O.focus, variant !== "inherit" && styles$O[variant], size === "slim" && styles$O.slim);
+  const inputType = type === "currency" ? "text" : type;
+  const isNumericType = type === "number" || type === "integer";
+  const iconPrefix = /* @__PURE__ */ React.isValidElement(prefix) && prefix.type === Icon;
+  const prefixMarkup = prefix ? /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$O.Prefix, iconPrefix && styles$O.PrefixIcon),
+    id: `${id}-Prefix`,
+    ref: prefixRef
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd"
+  }, prefix)) : null;
+  const suffixMarkup = suffix ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.Suffix,
+    id: `${id}-Suffix`,
+    ref: suffixRef
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd"
+  }, suffix)) : null;
+  const loadingMarkup = loading ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.Loading,
+    id: `${id}-Loading`,
+    ref: loadingRef
+  }, /* @__PURE__ */ React.createElement(Spinner$1, {
+    size: "small"
+  })) : null;
+  let characterCountMarkup = null;
+  if (showCharacterCount) {
+    const characterCount = normalizedValue.length;
+    const characterCountLabel = maxLength ? i18n.translate("Polaris.TextField.characterCountWithMaxLength", {
+      count: characterCount,
+      limit: maxLength
+    }) : i18n.translate("Polaris.TextField.characterCount", {
+      count: characterCount
+    });
+    const characterCountClassName = classNames(styles$O.CharacterCount, multiline && styles$O.AlignFieldBottom);
+    const characterCountText = !maxLength ? characterCount : `${characterCount}/${maxLength}`;
+    characterCountMarkup = /* @__PURE__ */ React.createElement("div", {
+      id: `${id}-CharacterCounter`,
+      className: characterCountClassName,
+      "aria-label": characterCountLabel,
+      "aria-live": focus ? "polite" : "off",
+      "aria-atomic": "true",
+      onClick: handleClickChild
+    }, /* @__PURE__ */ React.createElement(Text, {
+      as: "span",
+      variant: "bodyMd"
+    }, characterCountText));
+  }
+  const clearButtonVisible = normalizedValue !== "";
+  const clearButtonMarkup = clearButton && clearButtonVisible ? /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    className: styles$O.ClearButton,
+    onClick: handleClearButtonPress,
+    disabled
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, i18n.translate("Polaris.Common.clear")), /* @__PURE__ */ React.createElement(Icon, {
+    source: XCircleIcon,
+    tone: "base"
+  })) : null;
+  const handleNumberChange = useCallback((steps, stepAmount = normalizedStep) => {
+    if (onChange == null && onSpinnerChange == null) {
+      return;
+    }
+    const dpl = (num) => (num.toString().split(".")[1] || []).length;
+    const numericValue = value ? parseFloat(value) : 0;
+    if (isNaN(numericValue)) {
+      return;
+    }
+    const decimalPlaces = type === "integer" ? 0 : Math.max(dpl(numericValue), dpl(stepAmount));
+    const newValue = Math.min(Number(normalizedMax), Math.max(numericValue + steps * stepAmount, Number(normalizedMin)));
+    if (onSpinnerChange != null) {
+      onSpinnerChange(String(newValue.toFixed(decimalPlaces)), id);
+    } else if (onChange != null) {
+      onChange(String(newValue.toFixed(decimalPlaces)), id);
+    }
+  }, [id, normalizedMax, normalizedMin, onChange, onSpinnerChange, normalizedStep, type, value]);
+  const handleSpinnerButtonRelease = useCallback(() => {
+    clearTimeout(buttonPressTimer.current);
+  }, []);
+  const handleSpinnerButtonPress = useCallback((onChange2) => {
+    const minInterval = 50;
+    const decrementBy = 10;
+    let interval = 200;
+    const onChangeInterval = () => {
+      if (interval > minInterval) interval -= decrementBy;
+      onChange2(0);
+      buttonPressTimer.current = window.setTimeout(onChangeInterval, interval);
+    };
+    buttonPressTimer.current = window.setTimeout(onChangeInterval, interval);
+    document.addEventListener("mouseup", handleSpinnerButtonRelease, {
+      once: true
+    });
+  }, [handleSpinnerButtonRelease]);
+  const spinnerMarkup = isNumericType && step !== 0 && !disabled && !readOnly ? /* @__PURE__ */ React.createElement(Spinner, {
+    onClick: handleClickChild,
+    onChange: handleNumberChange,
+    onMouseDown: handleSpinnerButtonPress,
+    onMouseUp: handleSpinnerButtonRelease,
+    ref: spinnerRef,
+    onBlur: handleOnBlur
+  }) : null;
+  const style = multiline && height ? {
+    height,
+    maxHeight
+  } : null;
+  const handleExpandingResize = useCallback((height2) => {
+    setHeight(height2);
+  }, []);
+  const resizer = multiline && isAfterInitial ? /* @__PURE__ */ React.createElement(Resizer, {
+    contents: normalizedValue || placeholder,
+    currentHeight: height,
+    minimumLines: typeof multiline === "number" ? multiline : 1,
+    onHeightChange: handleExpandingResize
+  }) : null;
+  const describedBy = [];
+  if (error) {
+    describedBy.push(`${id}Error`);
+  }
+  if (helpText) {
+    describedBy.push(helpTextID(id));
+  }
+  if (showCharacterCount) {
+    describedBy.push(`${id}-CharacterCounter`);
+  }
+  const labelledBy = [];
+  if (prefix) {
+    labelledBy.push(`${id}-Prefix`);
+  }
+  if (suffix) {
+    labelledBy.push(`${id}-Suffix`);
+  }
+  if (verticalContent) {
+    labelledBy.push(`${id}-VerticalContent`);
+  }
+  labelledBy.unshift(labelID(id));
+  const inputClassName = classNames(styles$O.Input, align && styles$O[variationName("Input-align", align)], suffix && styles$O["Input-suffixed"], clearButton && styles$O["Input-hasClearButton"], monospaced && styles$O.monospaced, suggestion && styles$O.suggestion, autoSize && styles$O["Input-autoSize"]);
+  const handleOnFocus = (event) => {
+    setFocus(true);
+    if (selectTextOnFocus && !suggestion) {
+      const input3 = getInputRef();
+      input3 == null ? void 0 : input3.select();
+    }
+    if (onFocus) {
+      onFocus(event);
+    }
+  };
+  useEventListener("wheel", handleOnWheel, inputRef);
+  function handleOnWheel(event) {
+    if (document.activeElement === event.target && isNumericType) {
+      event.stopPropagation();
+    }
+  }
+  const input2 = /* @__PURE__ */ createElement(multiline ? "textarea" : "input", {
+    name,
+    id,
+    disabled,
+    readOnly,
+    role,
+    autoFocus,
+    value: normalizedValue,
+    placeholder,
+    style,
+    autoComplete,
+    className: inputClassName,
+    ref: multiline ? textAreaRef : inputRef,
+    min,
+    max,
+    step,
+    minLength,
+    maxLength,
+    spellCheck,
+    pattern,
+    inputMode,
+    type: inputType,
+    rows: getRows(multiline),
+    size: autoSize ? 1 : void 0,
+    "aria-describedby": describedBy.length ? describedBy.join(" ") : void 0,
+    "aria-labelledby": labelledBy.join(" "),
+    "aria-invalid": Boolean(error),
+    "aria-owns": ariaOwns,
+    "aria-activedescendant": ariaActiveDescendant,
+    "aria-autocomplete": ariaAutocomplete,
+    "aria-controls": ariaControls,
+    "aria-expanded": ariaExpanded,
+    "aria-required": requiredIndicator,
+    ...normalizeAriaMultiline(multiline),
+    onFocus: handleOnFocus,
+    onBlur: handleOnBlur,
+    onClick: handleClickChild,
+    onKeyPress: handleKeyPress,
+    onKeyDown: handleKeyDown2,
+    onChange: !suggestion ? handleChange : void 0,
+    onInput: suggestion ? handleChange : void 0,
+    // 1Password disable data attribute
+    "data-1p-ignore": autoComplete === "off" || void 0,
+    // LastPass disable data attribute
+    "data-lpignore": autoComplete === "off" || void 0,
+    // Dashlane disable data attribute
+    "data-form-type": autoComplete === "off" ? "other" : void 0
+  });
+  const inputWithVerticalContentMarkup = verticalContent ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.VerticalContent,
+    id: `${id}-VerticalContent`,
+    ref: verticalContentRef,
+    onClick: handleClickChild
+  }, verticalContent, input2) : null;
+  const inputMarkup = verticalContent ? inputWithVerticalContentMarkup : input2;
+  const backdropMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$O.Backdrop, connectedLeft && styles$O["Backdrop-connectedLeft"], connectedRight && styles$O["Backdrop-connectedRight"])
+  });
+  const inputAndSuffixMarkup = autoSize ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$O.InputAndSuffixWrapper
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$O.AutoSizeWrapper, suffix && styles$O.AutoSizeWrapperWithSuffix),
+    "data-auto-size-value": value || placeholder
+  }, inputMarkup), suffixMarkup) : /* @__PURE__ */ React.createElement(React.Fragment, null, inputMarkup, suffixMarkup);
+  return /* @__PURE__ */ React.createElement(Labelled, {
+    label: label2,
+    id,
+    error,
+    action: labelAction,
+    labelHidden,
+    helpText,
+    requiredIndicator,
+    disabled,
+    readOnly
+  }, /* @__PURE__ */ React.createElement(Connected, {
+    left: connectedLeft,
+    right: connectedRight
+  }, /* @__PURE__ */ React.createElement("div", {
+    className,
+    onClick: handleClick,
+    ref: textFieldRef
+  }, prefixMarkup, inputAndSuffixMarkup, characterCountMarkup, loadingMarkup, clearButtonMarkup, spinnerMarkup, backdropMarkup, resizer)));
+  function handleChange(event) {
+    onChange && onChange(event.currentTarget.value, id);
+  }
+  function handleClick(event) {
+    var _a2, _b, _c;
+    const {
+      target
+    } = event;
+    const inputRefRole = (_a2 = inputRef == null ? void 0 : inputRef.current) == null ? void 0 : _a2.getAttribute("role");
+    if (target === inputRef.current && inputRefRole === "combobox") {
+      (_b = inputRef.current) == null ? void 0 : _b.focus();
+      handleOnFocus(event);
+      return;
+    }
+    if (isPrefixOrSuffix(target) || isVerticalContent(target) || isInput(target) || isSpinner(target) || isLoadingSpinner(target) || focus) {
+      return;
+    }
+    (_c = getInputRef()) == null ? void 0 : _c.focus();
+  }
+  function handleClickChild(event) {
+    var _a2;
+    if (!isSpinner(event.target) && !isInput(event.target)) {
+      event.stopPropagation();
+    }
+    if (isPrefixOrSuffix(event.target) || isVerticalContent(event.target) || isInput(event.target) || isLoadingSpinner(event.target) || focus) {
+      return;
+    }
+    setFocus(true);
+    (_a2 = getInputRef()) == null ? void 0 : _a2.focus();
+  }
+  function handleClearButtonPress() {
+    onClearButtonClick && onClearButtonClick(id);
+  }
+  function handleKeyPress(event) {
+    const {
+      key,
+      which
+    } = event;
+    const numbersSpec = /[\d.,eE+-]$/;
+    const integerSpec = /[\deE+-]$/;
+    if (!isNumericType || which === Key.Enter || type === "number" && numbersSpec.test(key) || type === "integer" && integerSpec.test(key)) {
+      return;
+    }
+    event.preventDefault();
+  }
+  function handleKeyDown2(event) {
+    if (!isNumericType) {
+      return;
+    }
+    const {
+      key,
+      which
+    } = event;
+    if (type === "integer" && (key === "ArrowUp" || which === Key.UpArrow)) {
+      handleNumberChange(1);
+      event.preventDefault();
+    }
+    if (type === "integer" && (key === "ArrowDown" || which === Key.DownArrow)) {
+      handleNumberChange(-1);
+      event.preventDefault();
+    }
+    if ((which === Key.Home || key === "Home") && min !== void 0) {
+      if (onSpinnerChange != null) {
+        onSpinnerChange(String(min), id);
+      } else if (onChange != null) {
+        onChange(String(min), id);
+      }
+    }
+    if ((which === Key.End || key === "End") && max !== void 0) {
+      if (onSpinnerChange != null) {
+        onSpinnerChange(String(max), id);
+      } else if (onChange != null) {
+        onChange(String(max), id);
+      }
+    }
+    if ((which === Key.PageUp || key === "PageUp") && largeStep !== void 0) {
+      handleNumberChange(1, largeStep);
+    }
+    if ((which === Key.PageDown || key === "PageDown") && largeStep !== void 0) {
+      handleNumberChange(-1, largeStep);
+    }
+  }
+  function handleOnBlur(event) {
+    var _a2;
+    setFocus(false);
+    if ((_a2 = textFieldRef.current) == null ? void 0 : _a2.contains(event == null ? void 0 : event.relatedTarget)) {
+      return;
+    }
+    if (onBlur) {
+      onBlur(event);
+    }
+  }
+  function isInput(target) {
+    const input3 = getInputRef();
+    return target instanceof HTMLElement && input3 && (input3.contains(target) || input3.contains(document.activeElement));
+  }
+  function isPrefixOrSuffix(target) {
+    return target instanceof Element && (prefixRef.current && prefixRef.current.contains(target) || suffixRef.current && suffixRef.current.contains(target));
+  }
+  function isSpinner(target) {
+    return target instanceof Element && spinnerRef.current && spinnerRef.current.contains(target);
+  }
+  function isLoadingSpinner(target) {
+    return target instanceof Element && loadingRef.current && loadingRef.current.contains(target);
+  }
+  function isVerticalContent(target) {
+    return target instanceof Element && verticalContentRef.current && (verticalContentRef.current.contains(target) || verticalContentRef.current.contains(document.activeElement));
+  }
+}
+function getRows(multiline) {
+  if (!multiline) return void 0;
+  return typeof multiline === "number" ? multiline : 1;
+}
+function normalizeAriaMultiline(multiline) {
+  if (!multiline) return void 0;
+  return Boolean(multiline) || typeof multiline === "number" && multiline > 0 ? {
+    "aria-multiline": true
+  } : void 0;
+}
+const FILTER_ACTIONS_THRESHOLD = 8;
+function ActionList({
+  items,
+  sections = [],
+  actionRole,
+  allowFiltering,
+  onActionAnyItem
+}) {
+  const i18n = useI18n();
+  const filterActions = useContext(FilterActionsContext);
+  let finalSections = [];
+  const actionListRef = useRef(null);
+  const [searchText, setSearchText] = useState("");
+  if (items) {
+    finalSections = [{
+      items
+    }, ...sections];
+  } else if (sections) {
+    finalSections = sections;
+  }
+  const isFilterable = finalSections == null ? void 0 : finalSections.some((section) => section.items.some((item) => typeof item.content === "string"));
+  const hasMultipleSections = finalSections.length > 1;
+  const elementRole = hasMultipleSections && actionRole === "menuitem" ? "menu" : void 0;
+  const elementTabIndex = hasMultipleSections && actionRole === "menuitem" ? -1 : void 0;
+  const filteredSections = finalSections == null ? void 0 : finalSections.map((section) => ({
+    ...section,
+    items: section.items.filter(({
+      content: content2
+    }) => typeof content2 === "string" ? content2 == null ? void 0 : content2.toLowerCase().includes(searchText.toLowerCase()) : content2)
+  }));
+  const sectionMarkup = filteredSections.map((section, index2) => {
+    return section.items.length > 0 ? /* @__PURE__ */ React.createElement(Section$4, {
+      key: typeof section.title === "string" ? section.title : index2,
+      section,
+      hasMultipleSections,
+      actionRole,
+      onActionAnyItem,
+      isFirst: index2 === 0
+    }) : null;
+  });
+  const handleFocusPreviousItem = (evt) => {
+    evt.preventDefault();
+    if (actionListRef.current && evt.target) {
+      if (actionListRef.current.contains(evt.target)) {
+        wrapFocusPreviousFocusableMenuItem(actionListRef.current, evt.target);
+      }
+    }
+  };
+  const handleFocusNextItem = (evt) => {
+    evt.preventDefault();
+    if (actionListRef.current && evt.target) {
+      if (actionListRef.current.contains(evt.target)) {
+        wrapFocusNextFocusableMenuItem(actionListRef.current, evt.target);
+      }
+    }
+  };
+  const listeners = actionRole === "menuitem" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyEvent: "keydown",
+    keyCode: Key.DownArrow,
+    handler: handleFocusNextItem
+  }), /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyEvent: "keydown",
+    keyCode: Key.UpArrow,
+    handler: handleFocusPreviousItem
+  })) : null;
+  const totalFilteredActions = useMemo(() => {
+    const totalSectionItems = (filteredSections == null ? void 0 : filteredSections.reduce((acc, section) => acc + section.items.length, 0)) || 0;
+    return totalSectionItems;
+  }, [filteredSections]);
+  const totalActions = (finalSections == null ? void 0 : finalSections.reduce((acc, section) => acc + section.items.length, 0)) || 0;
+  const hasManyActions = totalActions >= FILTER_ACTIONS_THRESHOLD;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, (allowFiltering || filterActions) && hasManyActions && isFilterable && /* @__PURE__ */ React.createElement(Box, {
+    padding: "200",
+    paddingBlockEnd: totalFilteredActions > 0 ? "0" : "200"
+  }, /* @__PURE__ */ React.createElement(TextField, {
+    clearButton: true,
+    labelHidden: true,
+    label: i18n.translate("Polaris.ActionList.SearchField.placeholder"),
+    placeholder: i18n.translate("Polaris.ActionList.SearchField.placeholder"),
+    autoComplete: "off",
+    value: searchText,
+    onChange: (value) => setSearchText(value),
+    prefix: /* @__PURE__ */ React.createElement(Icon, {
+      source: SearchIcon
+    }),
+    onClearButtonClick: () => setSearchText("")
+  })), /* @__PURE__ */ React.createElement(Box, {
+    as: hasMultipleSections ? "ul" : "div",
+    ref: actionListRef,
+    role: elementRole,
+    tabIndex: elementTabIndex
+  }, listeners, sectionMarkup));
+}
+ActionList.Item = Item$7;
+var styles$J = {
+  "ActionMenu": "Polaris-ActionMenu"
+};
+var styles$I = {
+  "RollupActivator": "Polaris-ActionMenu-RollupActions__RollupActivator"
+};
+function setActivatorAttributes(activator, {
+  id,
+  active = false,
+  ariaHaspopup,
+  activatorDisabled = false
+}) {
+  if (!activatorDisabled) {
+    activator.tabIndex = activator.tabIndex || 0;
+  }
+  activator.setAttribute("aria-controls", id);
+  activator.setAttribute("aria-owns", id);
+  activator.setAttribute("aria-expanded", String(active));
+  activator.setAttribute("data-state", active ? "open" : "closed");
+  if (ariaHaspopup != null) {
+    activator.setAttribute("aria-haspopup", String(ariaHaspopup));
+  }
+}
+function wrapWithComponent(element, Component2, props) {
+  if (element == null) {
+    return null;
+  }
+  return isElementOfType(element, Component2) ? element : /* @__PURE__ */ React.createElement(Component2, props, element);
+}
+const isComponent = process.env.NODE_ENV === "development" ? hotReloadComponentCheck : (AComponent, AnotherComponent) => AComponent === AnotherComponent;
+function isElementOfType(element, Component2) {
+  var _a2;
+  if (element == null || !/* @__PURE__ */ isValidElement(element) || typeof element.type === "string") {
+    return false;
+  }
+  const {
+    type: defaultType
+  } = element;
+  const overrideType = (_a2 = element.props) == null ? void 0 : _a2.__type__;
+  const type = overrideType || defaultType;
+  const Components = Array.isArray(Component2) ? Component2 : [Component2];
+  return Components.some((AComponent) => typeof type !== "string" && isComponent(AComponent, type));
+}
+function elementChildren(children, predicate = () => true) {
+  return Children.toArray(children).filter((child) => /* @__PURE__ */ isValidElement(child) && predicate(child));
+}
+function ConditionalWrapper({
+  condition,
+  wrapper,
+  children
+}) {
+  return condition ? wrapper(children) : children;
+}
+function ConditionalRender({
+  condition,
+  children
+}) {
+  return condition ? children : null;
+}
+function hotReloadComponentCheck(AComponent, AnotherComponent) {
+  const componentName = AComponent.name;
+  const anotherComponentName = AnotherComponent.displayName;
+  return AComponent === AnotherComponent || Boolean(componentName) && componentName === anotherComponentName;
+}
+var styles$H = {
+  "Popover": "Polaris-Popover",
+  "PopoverOverlay": "Polaris-Popover__PopoverOverlay",
+  "PopoverOverlay-noAnimation": "Polaris-Popover__PopoverOverlay--noAnimation",
+  "PopoverOverlay-entering": "Polaris-Popover__PopoverOverlay--entering",
+  "PopoverOverlay-open": "Polaris-Popover__PopoverOverlay--open",
+  "measuring": "Polaris-Popover--measuring",
+  "PopoverOverlay-exiting": "Polaris-Popover__PopoverOverlay--exiting",
+  "fullWidth": "Polaris-Popover--fullWidth",
+  "Content": "Polaris-Popover__Content",
+  "positionedAbove": "Polaris-Popover--positionedAbove",
+  "positionedCover": "Polaris-Popover--positionedCover",
+  "ContentContainer": "Polaris-Popover__ContentContainer",
+  "Content-fullHeight": "Polaris-Popover__Content--fullHeight",
+  "Content-fluidContent": "Polaris-Popover__Content--fluidContent",
+  "Pane": "Polaris-Popover__Pane",
+  "Pane-fixed": "Polaris-Popover__Pane--fixed",
+  "Pane-subdued": "Polaris-Popover__Pane--subdued",
+  "Pane-captureOverscroll": "Polaris-Popover__Pane--captureOverscroll",
+  "Section": "Polaris-Popover__Section",
+  "FocusTracker": "Polaris-Popover__FocusTracker",
+  "PopoverOverlay-hideOnPrint": "Polaris-Popover__PopoverOverlay--hideOnPrint"
+};
+function Section$3({
+  children
+}) {
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$H.Section
+  }, /* @__PURE__ */ React.createElement(Box, {
+    paddingInlineStart: "300",
+    paddingInlineEnd: "300",
+    paddingBlockStart: "200",
+    paddingBlockEnd: "150"
+  }, children));
+}
+function Pane({
+  captureOverscroll = false,
+  fixed,
+  sectioned,
+  children,
+  height,
+  subdued,
+  onScrolledToBottom
+}) {
+  const className = classNames(styles$H.Pane, fixed && styles$H["Pane-fixed"], subdued && styles$H["Pane-subdued"], captureOverscroll && styles$H["Pane-captureOverscroll"]);
+  const content2 = sectioned ? wrapWithComponent(children, Section$3, {}) : children;
+  const style = height ? {
+    height,
+    maxHeight: height,
+    minHeight: height
+  } : void 0;
+  return fixed ? /* @__PURE__ */ React.createElement("div", {
+    style,
+    className
+  }, content2) : /* @__PURE__ */ React.createElement(Scrollable, {
+    shadow: true,
+    className,
+    style,
+    onScrolledToBottom,
+    scrollbarWidth: "thin"
+  }, content2);
+}
+let PopoverCloseSource;
+(function(PopoverCloseSource2) {
+  PopoverCloseSource2[PopoverCloseSource2["Click"] = 0] = "Click";
+  PopoverCloseSource2[PopoverCloseSource2["EscapeKeypress"] = 1] = "EscapeKeypress";
+  PopoverCloseSource2[PopoverCloseSource2["FocusOut"] = 2] = "FocusOut";
+  PopoverCloseSource2[PopoverCloseSource2["ScrollOut"] = 3] = "ScrollOut";
+})(PopoverCloseSource || (PopoverCloseSource = {}));
+var TransitionStatus$1;
+(function(TransitionStatus2) {
+  TransitionStatus2["Entering"] = "entering";
+  TransitionStatus2["Entered"] = "entered";
+  TransitionStatus2["Exiting"] = "exiting";
+  TransitionStatus2["Exited"] = "exited";
+})(TransitionStatus$1 || (TransitionStatus$1 = {}));
+class PopoverOverlay extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      transitionStatus: this.props.active ? TransitionStatus$1.Entering : TransitionStatus$1.Exited
+    };
+    this.contentNode = /* @__PURE__ */ createRef();
+    this.renderPopover = (overlayDetails) => {
+      const {
+        measuring,
+        desiredHeight,
+        positioning
+      } = overlayDetails;
+      const {
+        id,
+        children,
+        sectioned,
+        fullWidth,
+        fullHeight,
+        fluidContent,
+        hideOnPrint,
+        autofocusTarget,
+        captureOverscroll
+      } = this.props;
+      const isCovering = positioning === "cover";
+      const className = classNames(styles$H.Popover, measuring && styles$H.measuring, (fullWidth || isCovering) && styles$H.fullWidth, hideOnPrint && styles$H["PopoverOverlay-hideOnPrint"], positioning && styles$H[variationName("positioned", positioning)]);
+      const contentStyles = measuring ? void 0 : {
+        height: desiredHeight
+      };
+      const contentClassNames = classNames(styles$H.Content, fullHeight && styles$H["Content-fullHeight"], fluidContent && styles$H["Content-fluidContent"]);
+      return /* @__PURE__ */ React.createElement("div", Object.assign({
+        className
+      }, overlay.props), /* @__PURE__ */ React.createElement(EventListener, {
+        event: "click",
+        handler: this.handleClick
+      }), /* @__PURE__ */ React.createElement(EventListener, {
+        event: "touchstart",
+        handler: this.handleClick
+      }), /* @__PURE__ */ React.createElement(KeypressListener, {
+        keyCode: Key.Escape,
+        handler: this.handleEscape
+      }), /* @__PURE__ */ React.createElement("div", {
+        className: styles$H.FocusTracker,
+        tabIndex: 0,
+        onFocus: this.handleFocusFirstItem
+      }), /* @__PURE__ */ React.createElement("div", {
+        className: styles$H.ContentContainer
+      }, /* @__PURE__ */ React.createElement("div", {
+        id,
+        tabIndex: autofocusTarget === "none" ? void 0 : -1,
+        className: contentClassNames,
+        style: contentStyles,
+        ref: this.contentNode
+      }, renderPopoverContent(children, {
+        captureOverscroll,
+        sectioned
+      }))), /* @__PURE__ */ React.createElement("div", {
+        className: styles$H.FocusTracker,
+        tabIndex: 0,
+        onFocus: this.handleFocusLastItem
+      }));
+    };
+    this.handleClick = (event) => {
+      const target = event.target;
+      const {
+        contentNode,
+        props: {
+          activator,
+          onClose,
+          preventCloseOnChildOverlayClick
+        }
+      } = this;
+      const composedPath = event.composedPath();
+      const wasDescendant = preventCloseOnChildOverlayClick ? wasPolarisPortalDescendant(composedPath, this.context.container) : wasContentNodeDescendant(composedPath, contentNode);
+      const isActivatorDescendant = nodeContainsDescendant(activator, target);
+      if (wasDescendant || isActivatorDescendant || this.state.transitionStatus !== TransitionStatus$1.Entered) {
+        return;
+      }
+      onClose(PopoverCloseSource.Click);
+    };
+    this.handleScrollOut = () => {
+      this.props.onClose(PopoverCloseSource.ScrollOut);
+    };
+    this.handleEscape = (event) => {
+      const target = event.target;
+      const {
+        contentNode,
+        props: {
+          activator
+        }
+      } = this;
+      const composedPath = event.composedPath();
+      const wasDescendant = wasContentNodeDescendant(composedPath, contentNode);
+      const isActivatorDescendant = nodeContainsDescendant(activator, target);
+      if (wasDescendant || isActivatorDescendant) {
+        this.props.onClose(PopoverCloseSource.EscapeKeypress);
+      }
+    };
+    this.handleFocusFirstItem = () => {
+      this.props.onClose(PopoverCloseSource.FocusOut);
+    };
+    this.handleFocusLastItem = () => {
+      this.props.onClose(PopoverCloseSource.FocusOut);
+    };
+    this.overlayRef = /* @__PURE__ */ createRef();
+  }
+  forceUpdatePosition() {
+    var _a2;
+    (_a2 = this.overlayRef.current) == null ? void 0 : _a2.forceUpdatePosition();
+  }
+  changeTransitionStatus(transitionStatus, cb) {
+    this.setState({
+      transitionStatus
+    }, cb);
+    this.contentNode.current && this.contentNode.current.getBoundingClientRect();
+  }
+  componentDidMount() {
+    if (this.props.active) {
+      this.focusContent();
+      this.changeTransitionStatus(TransitionStatus$1.Entered);
+    }
+  }
+  componentDidUpdate(oldProps) {
+    if (this.props.active && !oldProps.active) {
+      this.focusContent();
+      this.changeTransitionStatus(TransitionStatus$1.Entering, () => {
+        this.clearTransitionTimeout();
+        this.enteringTimer = window.setTimeout(() => {
+          this.setState({
+            transitionStatus: TransitionStatus$1.Entered
+          });
+        }, parseInt(themeDefault.motion["motion-duration-100"], 10));
+      });
+    }
+    if (!this.props.active && oldProps.active) {
+      this.clearTransitionTimeout();
+      this.setState({
+        transitionStatus: TransitionStatus$1.Exited
+      });
+    }
+  }
+  componentWillUnmount() {
+    this.clearTransitionTimeout();
+  }
+  render() {
+    const {
+      active,
+      activator,
+      fullWidth,
+      preferredPosition = "below",
+      preferredAlignment = "center",
+      preferInputActivator = true,
+      fixed,
+      zIndexOverride
+    } = this.props;
+    const {
+      transitionStatus
+    } = this.state;
+    if (transitionStatus === TransitionStatus$1.Exited && !active) return null;
+    const className = classNames(styles$H.PopoverOverlay, transitionStatus === TransitionStatus$1.Entering && styles$H["PopoverOverlay-entering"], transitionStatus === TransitionStatus$1.Entered && styles$H["PopoverOverlay-open"], transitionStatus === TransitionStatus$1.Exiting && styles$H["PopoverOverlay-exiting"], preferredPosition === "cover" && styles$H["PopoverOverlay-noAnimation"]);
+    return /* @__PURE__ */ React.createElement(PositionedOverlay, {
+      ref: this.overlayRef,
+      fullWidth,
+      active,
+      activator,
+      preferInputActivator,
+      preferredPosition,
+      preferredAlignment,
+      render: this.renderPopover.bind(this),
+      fixed,
+      onScrollOut: this.handleScrollOut,
+      classNames: className,
+      zIndexOverride
+    });
+  }
+  clearTransitionTimeout() {
+    if (this.enteringTimer) {
+      window.clearTimeout(this.enteringTimer);
+    }
+  }
+  focusContent() {
+    const {
+      autofocusTarget = "container"
+    } = this.props;
+    if (autofocusTarget === "none" || this.contentNode == null) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      if (this.contentNode.current == null) {
+        return;
+      }
+      const focusableChild = findFirstKeyboardFocusableNode(this.contentNode.current);
+      if (focusableChild && autofocusTarget === "first-node") {
+        focusableChild.focus({
+          preventScroll: process.env.NODE_ENV === "development"
+        });
+      } else {
+        this.contentNode.current.focus({
+          preventScroll: process.env.NODE_ENV === "development"
+        });
+      }
+    });
+  }
+  // eslint-disable-next-line @shopify/react-no-multiple-render-methods
+}
+PopoverOverlay.contextType = PortalsManagerContext;
+function renderPopoverContent(children, props) {
+  const childrenArray = Children.toArray(children);
+  if (isElementOfType(childrenArray[0], Pane)) {
+    return childrenArray;
+  }
+  return wrapWithComponent(childrenArray, Pane, props);
+}
+function nodeContainsDescendant(rootNode, descendant) {
+  if (rootNode === descendant) {
+    return true;
+  }
+  let parent = descendant.parentNode;
+  while (parent != null) {
+    if (parent === rootNode) {
+      return true;
+    }
+    parent = parent.parentNode;
+  }
+  return false;
+}
+function wasContentNodeDescendant(composedPath, contentNode) {
+  return contentNode.current != null && composedPath.includes(contentNode.current);
+}
+function wasPolarisPortalDescendant(composedPath, portalsContainerElement) {
+  return composedPath.some((eventTarget) => eventTarget instanceof Node && (portalsContainerElement == null ? void 0 : portalsContainerElement.contains(eventTarget)));
+}
+const PopoverComponent = /* @__PURE__ */ forwardRef(function Popover({
+  activatorWrapper = "div",
+  children,
+  onClose,
+  activator,
+  preventFocusOnClose,
+  active,
+  fixed,
+  ariaHaspopup,
+  preferInputActivator = true,
+  zIndexOverride,
+  ...rest
+}, ref) {
+  const [activatorNode, setActivatorNode] = useState();
+  const overlayRef = useRef(null);
+  const activatorContainer = useRef(null);
+  const WrapperComponent = activatorWrapper;
+  const id = useId();
+  function forceUpdatePosition() {
+    var _a2;
+    (_a2 = overlayRef.current) == null ? void 0 : _a2.forceUpdatePosition();
+  }
+  useImperativeHandle(ref, () => {
+    return {
+      forceUpdatePosition
+    };
+  });
+  const setAccessibilityAttributes = useCallback(() => {
+    if (activatorContainer.current == null) {
+      return;
+    }
+    const firstFocusable = findFirstFocusableNodeIncludingDisabled(activatorContainer.current);
+    const focusableActivator = firstFocusable || activatorContainer.current;
+    const activatorDisabled = "disabled" in focusableActivator && Boolean(focusableActivator.disabled);
+    setActivatorAttributes(focusableActivator, {
+      id,
+      active,
+      ariaHaspopup,
+      activatorDisabled
+    });
+  }, [id, active, ariaHaspopup]);
+  const handleClose = (source) => {
+    onClose(source);
+    if (activatorContainer.current == null || preventFocusOnClose) {
+      return;
+    }
+    if (source === PopoverCloseSource.FocusOut && activatorNode) {
+      const focusableActivator = findFirstFocusableNodeIncludingDisabled(activatorNode) || findFirstFocusableNodeIncludingDisabled(activatorContainer.current) || activatorContainer.current;
+      if (!focusNextFocusableNode(focusableActivator, isInPortal)) {
+        focusableActivator.focus();
+      }
+    } else if (source === PopoverCloseSource.EscapeKeypress && activatorNode) {
+      const focusableActivator = findFirstFocusableNodeIncludingDisabled(activatorNode) || findFirstFocusableNodeIncludingDisabled(activatorContainer.current) || activatorContainer.current;
+      if (focusableActivator) {
+        focusableActivator.focus();
+      } else {
+        focusNextFocusableNode(focusableActivator, isInPortal);
+      }
+    }
+  };
+  useEffect(() => {
+    if (!activatorNode && activatorContainer.current) {
+      setActivatorNode(activatorContainer.current.firstElementChild);
+    } else if (activatorNode && activatorContainer.current && !activatorContainer.current.contains(activatorNode)) {
+      setActivatorNode(activatorContainer.current.firstElementChild);
+    }
+    setAccessibilityAttributes();
+  }, [activatorNode, setAccessibilityAttributes]);
+  useEffect(() => {
+    if (activatorNode && activatorContainer.current) {
+      setActivatorNode(activatorContainer.current.firstElementChild);
+    }
+    setAccessibilityAttributes();
+  }, [activatorNode, setAccessibilityAttributes]);
+  const portal2 = activatorNode ? /* @__PURE__ */ React.createElement(Portal, {
+    idPrefix: "popover"
+  }, /* @__PURE__ */ React.createElement(PopoverOverlay, Object.assign({
+    ref: overlayRef,
+    id,
+    activator: activatorNode,
+    preferInputActivator,
+    onClose: handleClose,
+    active,
+    fixed,
+    zIndexOverride
+  }, rest), children)) : null;
+  return /* @__PURE__ */ React.createElement(WrapperComponent, {
+    ref: activatorContainer
+  }, Children.only(activator), portal2);
+});
+function isInPortal(element) {
+  let parentElement = element.parentElement;
+  while (parentElement) {
+    if (parentElement.matches(portal.selector)) return false;
+    parentElement = parentElement.parentElement;
+  }
+  return true;
+}
+const Popover2 = Object.assign(PopoverComponent, {
+  Pane,
+  Section: Section$3
+});
+function RollupActions({
+  accessibilityLabel,
+  items = [],
+  sections = []
+}) {
+  const i18n = useI18n();
+  const {
+    value: rollupOpen,
+    toggle: toggleRollupOpen
+  } = useToggle(false);
+  if (items.length === 0 && sections.length === 0) {
+    return null;
+  }
+  const activatorMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: styles$I.RollupActivator
+  }, /* @__PURE__ */ React.createElement(Button, {
+    icon: MenuHorizontalIcon,
+    accessibilityLabel: accessibilityLabel || i18n.translate("Polaris.ActionMenu.RollupActions.rollupButton"),
+    onClick: toggleRollupOpen
+  }));
+  return /* @__PURE__ */ React.createElement(Popover2, {
+    active: rollupOpen,
+    activator: activatorMarkup,
+    preferredAlignment: "right",
+    onClose: toggleRollupOpen,
+    hideOnPrint: true
+  }, /* @__PURE__ */ React.createElement(ActionList, {
+    items,
+    sections,
+    onActionAnyItem: toggleRollupOpen
+  }));
+}
+var styles$G = {
+  "ActionsLayoutOuter": "Polaris-ActionMenu-Actions__ActionsLayoutOuter",
+  "ActionsLayout": "Polaris-ActionMenu-Actions__ActionsLayout",
+  "ActionsLayout--measuring": "Polaris-ActionMenu-Actions--actionsLayoutMeasuring",
+  "ActionsLayoutMeasurer": "Polaris-ActionMenu-Actions__ActionsLayoutMeasurer"
+};
+function getVisibleAndHiddenActionsIndices(actions = [], groups = [], disclosureWidth, actionsWidths, containerWidth) {
+  const sumTabWidths = actionsWidths.reduce((sum, width) => sum + width, 0);
+  const arrayOfActionsIndices = actions.map((_, index2) => {
+    return index2;
+  });
+  const arrayOfGroupsIndices = groups.map((_, index2) => {
+    return index2;
+  });
+  const visibleActions = [];
+  const hiddenActions = [];
+  const visibleGroups = [];
+  const hiddenGroups = [];
+  if (containerWidth > sumTabWidths) {
+    visibleActions.push(...arrayOfActionsIndices);
+    visibleGroups.push(...arrayOfGroupsIndices);
+  } else {
+    let accumulatedWidth = 0;
+    arrayOfActionsIndices.forEach((currentActionsIndex) => {
+      const currentActionsWidth = actionsWidths[currentActionsIndex];
+      if (accumulatedWidth + currentActionsWidth >= containerWidth - disclosureWidth) {
+        hiddenActions.push(currentActionsIndex);
+        return;
+      }
+      visibleActions.push(currentActionsIndex);
+      accumulatedWidth += currentActionsWidth;
+    });
+    arrayOfGroupsIndices.forEach((currentGroupsIndex) => {
+      const currentActionsWidth = actionsWidths[currentGroupsIndex + actions.length];
+      if (accumulatedWidth + currentActionsWidth >= containerWidth - disclosureWidth) {
+        hiddenGroups.push(currentGroupsIndex);
+        return;
+      }
+      visibleGroups.push(currentGroupsIndex);
+      accumulatedWidth += currentActionsWidth;
+    });
+  }
+  return {
+    visibleActions,
+    hiddenActions,
+    visibleGroups,
+    hiddenGroups
+  };
+}
+var styles$F = {
+  "Details": "Polaris-ActionMenu-MenuGroup__Details"
+};
+var styles$E = {
+  "SecondaryAction": "Polaris-ActionMenu-SecondaryAction",
+  "critical": "Polaris-ActionMenu-SecondaryAction--critical"
+};
+function SecondaryAction({
+  children,
+  tone,
+  helpText,
+  onAction,
+  destructive,
+  ...rest
+}) {
+  const buttonMarkup = /* @__PURE__ */ React.createElement(Button, Object.assign({
+    onClick: onAction,
+    tone: destructive ? "critical" : void 0
+  }, rest), children);
+  const actionMarkup = helpText ? /* @__PURE__ */ React.createElement(Tooltip, {
+    preferredPosition: "below",
+    content: helpText
+  }, buttonMarkup) : buttonMarkup;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$E.SecondaryAction, tone === "critical" && styles$E.critical)
+  }, actionMarkup);
+}
+function MenuGroup({
+  accessibilityLabel,
+  active,
+  actions,
+  details,
+  title,
+  icon,
+  disabled,
+  onClick,
+  onClose,
+  onOpen,
+  sections
+}) {
+  const handleClose = useCallback(() => {
+    onClose(title);
+  }, [onClose, title]);
+  const handleOpen = useCallback(() => {
+    onOpen(title);
+  }, [onOpen, title]);
+  const handleClick = useCallback(() => {
+    if (onClick) {
+      onClick(handleOpen);
+    } else {
+      handleOpen();
+    }
+  }, [onClick, handleOpen]);
+  const popoverActivator = /* @__PURE__ */ React.createElement(SecondaryAction, {
+    disclosure: true,
+    disabled,
+    icon,
+    accessibilityLabel,
+    onClick: handleClick
+  }, title);
+  return /* @__PURE__ */ React.createElement(Popover2, {
+    active: Boolean(active),
+    activator: popoverActivator,
+    preferredAlignment: "left",
+    onClose: handleClose,
+    hideOnPrint: true
+  }, /* @__PURE__ */ React.createElement(ActionList, {
+    items: actions,
+    sections,
+    onActionAnyItem: handleClose
+  }), details && /* @__PURE__ */ React.createElement("div", {
+    className: styles$F.Details
+  }, details));
+}
+const ACTION_SPACING = 8;
+function ActionsMeasurer({
+  actions = [],
+  groups = [],
+  handleMeasurement: handleMeasurementProp
+}) {
+  const i18n = useI18n();
+  const containerNode = useRef(null);
+  const defaultRollupGroup = {
+    title: i18n.translate("Polaris.ActionMenu.Actions.moreActions")
+  };
+  const activator = /* @__PURE__ */ React.createElement(SecondaryAction, {
+    disclosure: true
+  }, defaultRollupGroup.title);
+  const handleMeasurement = useCallback(() => {
+    if (!containerNode.current) {
+      return;
+    }
+    const containerWidth = containerNode.current.offsetWidth;
+    const hiddenActionNodes = containerNode.current.children;
+    const hiddenActionNodesArray = Array.from(hiddenActionNodes);
+    const hiddenActionsWidths = hiddenActionNodesArray.map((node) => {
+      const buttonWidth = Math.ceil(node.getBoundingClientRect().width);
+      return buttonWidth + ACTION_SPACING;
+    });
+    const disclosureWidth = hiddenActionsWidths.pop() || 0;
+    handleMeasurementProp({
+      containerWidth,
+      disclosureWidth,
+      hiddenActionsWidths
+    });
+  }, [handleMeasurementProp]);
+  useEffect(() => {
+    handleMeasurement();
+  }, [handleMeasurement, actions, groups]);
+  const actionsMarkup = actions.map((action2) => {
+    const {
+      content: content2,
+      onAction,
+      ...rest
+    } = action2;
+    return /* @__PURE__ */ React.createElement(SecondaryAction, Object.assign({
+      key: content2,
+      onClick: onAction
+    }, rest), content2);
+  });
+  const groupsMarkup = groups.map((group) => {
+    const {
+      title,
+      icon
+    } = group;
+    return /* @__PURE__ */ React.createElement(SecondaryAction, {
+      key: title,
+      disclosure: true,
+      icon
+    }, title);
+  });
+  useEventListener("resize", handleMeasurement);
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$G.ActionsLayoutMeasurer,
+    ref: containerNode
+  }, actionsMarkup, groupsMarkup, activator);
+}
+function Actions({
+  actions,
+  groups,
+  onActionRollup
+}) {
+  const i18n = useI18n();
+  const rollupActiveRef = useRef(null);
+  const [activeMenuGroup, setActiveMenuGroup] = useState(void 0);
+  const [state, setState] = useReducer((data, partialData) => {
+    return {
+      ...data,
+      ...partialData
+    };
+  }, {
+    disclosureWidth: 0,
+    containerWidth: Infinity,
+    actionsWidths: [],
+    visibleActions: [],
+    hiddenActions: [],
+    visibleGroups: [],
+    hiddenGroups: [],
+    hasMeasured: false
+  });
+  const {
+    visibleActions,
+    hiddenActions,
+    visibleGroups,
+    hiddenGroups,
+    containerWidth,
+    disclosureWidth,
+    actionsWidths,
+    hasMeasured
+  } = state;
+  const defaultRollupGroup = {
+    title: i18n.translate("Polaris.ActionMenu.Actions.moreActions"),
+    actions: []
+  };
+  const handleMenuGroupToggle = useCallback((group) => setActiveMenuGroup(activeMenuGroup ? void 0 : group), [activeMenuGroup]);
+  const handleMenuGroupClose = useCallback(() => setActiveMenuGroup(void 0), []);
+  useEffect(() => {
+    if (containerWidth === 0) {
+      return;
+    }
+    const {
+      visibleActions: visibleActions2,
+      visibleGroups: visibleGroups2,
+      hiddenActions: hiddenActions2,
+      hiddenGroups: hiddenGroups2
+    } = getVisibleAndHiddenActionsIndices(actions, groups, disclosureWidth, actionsWidths, containerWidth);
+    setState({
+      visibleActions: visibleActions2,
+      visibleGroups: visibleGroups2,
+      hiddenActions: hiddenActions2,
+      hiddenGroups: hiddenGroups2,
+      hasMeasured: containerWidth !== Infinity
+    });
+  }, [containerWidth, disclosureWidth, actions, groups, actionsWidths, setState]);
+  const actionsOrDefault = useMemo(() => actions ?? [], [actions]);
+  const groupsOrDefault = useMemo(() => groups ?? [], [groups]);
+  const actionsMarkup = actionsOrDefault.filter((_, index2) => {
+    if (!visibleActions.includes(index2)) {
+      return false;
+    }
+    return true;
+  }).map((action2) => {
+    const {
+      content: content2,
+      onAction,
+      ...rest
+    } = action2;
+    return /* @__PURE__ */ React.createElement(SecondaryAction, Object.assign({
+      key: content2,
+      onClick: onAction
+    }, rest), content2);
+  });
+  const groupsToFilter = hiddenGroups.length > 0 || hiddenActions.length > 0 ? [...groupsOrDefault, defaultRollupGroup] : [...groupsOrDefault];
+  const filteredGroups = groupsToFilter.filter((group, index2) => {
+    const hasNoGroupsProp = groupsOrDefault.length === 0;
+    const isVisibleGroup = visibleGroups.includes(index2);
+    const isDefaultGroup = group === defaultRollupGroup;
+    if (hasNoGroupsProp) {
+      return hiddenActions.length > 0;
+    }
+    if (isDefaultGroup) {
+      return true;
+    }
+    return isVisibleGroup;
+  });
+  const hiddenActionObjects = hiddenActions.map((index2) => actionsOrDefault[index2]).filter((action2) => action2 != null);
+  const hiddenGroupObjects = hiddenGroups.map((index2) => groupsOrDefault[index2]).filter((group) => group != null);
+  const groupsMarkup = filteredGroups.map((group) => {
+    const {
+      title,
+      actions: groupActions,
+      ...rest
+    } = group;
+    const isDefaultGroup = group === defaultRollupGroup;
+    const allHiddenItems = [...hiddenActionObjects, ...hiddenGroupObjects];
+    const [finalRolledUpActions, finalRolledUpSectionGroups] = allHiddenItems.reduce(([actions2, sections], action2) => {
+      if (isMenuGroup(action2)) {
+        sections.push({
+          title: action2.title,
+          items: action2.actions.map((sectionAction) => ({
+            ...sectionAction,
+            disabled: action2.disabled || sectionAction.disabled
+          }))
+        });
+      } else {
+        actions2.push(action2);
+      }
+      return [actions2, sections];
+    }, [[], []]);
+    if (!isDefaultGroup) {
+      return /* @__PURE__ */ React.createElement(MenuGroup, Object.assign({
+        key: title,
+        title,
+        active: title === activeMenuGroup,
+        actions: groupActions
+      }, rest, {
+        onOpen: handleMenuGroupToggle,
+        onClose: handleMenuGroupClose
+      }));
+    }
+    return /* @__PURE__ */ React.createElement(MenuGroup, Object.assign({
+      key: title,
+      title,
+      active: title === activeMenuGroup,
+      actions: [...finalRolledUpActions, ...groupActions],
+      sections: finalRolledUpSectionGroups
+    }, rest, {
+      onOpen: handleMenuGroupToggle,
+      onClose: handleMenuGroupClose
+    }));
+  });
+  const handleMeasurement = useCallback((measurements) => {
+    const {
+      hiddenActionsWidths: actionsWidths2,
+      containerWidth: containerWidth2,
+      disclosureWidth: disclosureWidth2
+    } = measurements;
+    const {
+      visibleActions: visibleActions2,
+      hiddenActions: hiddenActions2,
+      visibleGroups: visibleGroups2,
+      hiddenGroups: hiddenGroups2
+    } = getVisibleAndHiddenActionsIndices(actionsOrDefault, groupsOrDefault, disclosureWidth2, actionsWidths2, containerWidth2);
+    if (onActionRollup) {
+      const isRollupActive = hiddenActions2.length > 0 || hiddenGroups2.length > 0;
+      if (rollupActiveRef.current !== isRollupActive) {
+        onActionRollup(isRollupActive);
+        rollupActiveRef.current = isRollupActive;
+      }
+    }
+    setState({
+      visibleActions: visibleActions2,
+      hiddenActions: hiddenActions2,
+      visibleGroups: visibleGroups2,
+      hiddenGroups: hiddenGroups2,
+      actionsWidths: actionsWidths2,
+      containerWidth: containerWidth2,
+      disclosureWidth: disclosureWidth2,
+      hasMeasured: true
+    });
+  }, [actionsOrDefault, groupsOrDefault, onActionRollup]);
+  const actionsMeasurer = /* @__PURE__ */ React.createElement(ActionsMeasurer, {
+    actions,
+    groups,
+    handleMeasurement
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$G.ActionsLayoutOuter
+  }, actionsMeasurer, /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$G.ActionsLayout, !hasMeasured && styles$G["ActionsLayout--measuring"])
+  }, actionsMarkup, groupsMarkup));
+}
+function isMenuGroup(actionOrMenuGroup) {
+  return "title" in actionOrMenuGroup;
+}
+function ActionMenu({
+  actions = [],
+  groups = [],
+  rollup,
+  rollupActionsLabel,
+  onActionRollup
+}) {
+  if (actions.length === 0 && groups.length === 0) {
+    return null;
+  }
+  const actionMenuClassNames = classNames(styles$J.ActionMenu, rollup && styles$J.rollup);
+  const rollupSections = groups.map((group) => convertGroupToSection(group));
+  return /* @__PURE__ */ React.createElement("div", {
+    className: actionMenuClassNames
+  }, rollup ? /* @__PURE__ */ React.createElement(RollupActions, {
+    accessibilityLabel: rollupActionsLabel,
+    items: actions,
+    sections: rollupSections
+  }) : /* @__PURE__ */ React.createElement(Actions, {
+    actions,
+    groups,
+    onActionRollup
+  }));
+}
+function hasGroupsWithActions(groups = []) {
+  return groups.length === 0 ? false : groups.some((group) => group.actions.length > 0);
+}
+function convertGroupToSection({
+  title,
+  actions,
+  disabled
+}) {
+  return {
+    title,
+    items: actions.map((action2) => ({
+      ...action2,
+      disabled: disabled || action2.disabled
+    }))
+  };
+}
+var styles$D = {
+  "Backdrop": "Polaris-Backdrop",
+  "transparent": "Polaris-Backdrop--transparent",
+  "belowNavigation": "Polaris-Backdrop--belowNavigation"
+};
+function useScrollLockManager() {
+  const scrollLockManager = useContext(ScrollLockManagerContext);
+  if (!scrollLockManager) {
+    throw new MissingAppProviderError("No ScrollLockManager was provided.");
+  }
+  return scrollLockManager;
+}
+function ScrollLock(_) {
+  const scrollLockManager = useScrollLockManager();
+  useEffect(() => {
+    scrollLockManager.registerScrollLock();
+    return () => {
+      scrollLockManager.unregisterScrollLock();
+    };
+  }, [scrollLockManager]);
+  return null;
+}
+function Backdrop(props) {
+  const {
+    onClick,
+    onTouchStart,
+    belowNavigation,
+    transparent,
+    setClosing
+  } = props;
+  const className = classNames(styles$D.Backdrop, belowNavigation && styles$D.belowNavigation, transparent && styles$D.transparent);
+  const handleMouseDown = () => {
+    if (setClosing) {
+      setClosing(true);
+    }
+  };
+  const handleClick = () => {
+    if (setClosing) {
+      setClosing(false);
+    }
+    if (onClick) {
+      onClick();
+    }
+  };
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ScrollLock, null), /* @__PURE__ */ React.createElement("div", {
+    className,
+    onClick: handleClick,
+    onTouchStart,
+    onMouseDown: handleMouseDown
+  }));
+}
+const BannerContext = /* @__PURE__ */ createContext(false);
+var styles$C = {
+  "ButtonGroup": "Polaris-ButtonGroup",
+  "Item": "Polaris-ButtonGroup__Item",
+  "Item-plain": "Polaris-ButtonGroup__Item--plain",
+  "variantSegmented": "Polaris-ButtonGroup--variantSegmented",
+  "Item-focused": "Polaris-ButtonGroup__Item--focused",
+  "fullWidth": "Polaris-ButtonGroup--fullWidth",
+  "extraTight": "Polaris-ButtonGroup--extraTight",
+  "tight": "Polaris-ButtonGroup--tight",
+  "loose": "Polaris-ButtonGroup--loose",
+  "noWrap": "Polaris-ButtonGroup--noWrap"
+};
+function Item$5({
+  button: button2
+}) {
+  const {
+    value: focused,
+    setTrue: forceTrueFocused,
+    setFalse: forceFalseFocused
+  } = useToggle(false);
+  const className = classNames(styles$C.Item, focused && styles$C["Item-focused"], button2.props.variant === "plain" && styles$C["Item-plain"]);
+  return /* @__PURE__ */ React.createElement("div", {
+    className,
+    onFocus: forceTrueFocused,
+    onBlur: forceFalseFocused
+  }, button2);
+}
+function ButtonGroup({
+  children,
+  gap,
+  variant,
+  fullWidth,
+  connectedTop,
+  noWrap
+}) {
+  const className = classNames(styles$C.ButtonGroup, gap && styles$C[gap], variant && styles$C[variationName("variant", variant)], fullWidth && styles$C.fullWidth, noWrap && styles$C.noWrap);
+  const contents = elementChildren(children).map((child, index2) => /* @__PURE__ */ React.createElement(Item$5, {
+    button: child,
+    key: index2
+  }));
+  return /* @__PURE__ */ React.createElement("div", {
+    className,
+    "data-buttongroup-variant": variant,
+    "data-buttongroup-connected-top": connectedTop,
+    "data-buttongroup-full-width": fullWidth,
+    "data-buttongroup-no-wrap": noWrap
+  }, contents);
+}
+var styles$B = {
+  "Bleed": "Polaris-Bleed"
+};
+const Bleed = ({
+  marginInline,
+  marginBlock,
+  marginBlockStart,
+  marginBlockEnd,
+  marginInlineStart,
+  marginInlineEnd,
+  children
+}) => {
+  const getNegativeMargins = (direction) => {
+    const xAxis = ["marginInlineStart", "marginInlineEnd"];
+    const yAxis = ["marginBlockStart", "marginBlockEnd"];
+    const directionValues = {
+      marginBlockStart,
+      marginBlockEnd,
+      marginInlineStart,
+      marginInlineEnd,
+      marginInline,
+      marginBlock
+    };
+    if (directionValues[direction]) {
+      return directionValues[direction];
+    } else if (xAxis.includes(direction) && marginInline) {
+      return directionValues.marginInline;
+    } else if (yAxis.includes(direction) && marginBlock) {
+      return directionValues.marginBlock;
+    }
+  };
+  const negativeMarginBlockStart = getNegativeMargins("marginBlockStart");
+  const negativeMarginBlockEnd = getNegativeMargins("marginBlockEnd");
+  const negativeMarginInlineStart = getNegativeMargins("marginInlineStart");
+  const negativeMarginInlineEnd = getNegativeMargins("marginInlineEnd");
+  const style = {
+    ...getResponsiveProps("bleed", "margin-block-start", "space", negativeMarginBlockStart),
+    ...getResponsiveProps("bleed", "margin-block-end", "space", negativeMarginBlockEnd),
+    ...getResponsiveProps("bleed", "margin-inline-start", "space", negativeMarginInlineStart),
+    ...getResponsiveProps("bleed", "margin-inline-end", "space", negativeMarginInlineEnd)
+  };
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$B.Bleed,
+    style: sanitizeCustomProperties(style)
+  }, children);
+};
+function Breadcrumbs({
+  backAction
+}) {
+  const {
+    content: content2
+  } = backAction;
+  return /* @__PURE__ */ React.createElement(Button, {
+    key: content2,
+    url: "url" in backAction ? backAction.url : void 0,
+    onClick: "onAction" in backAction ? backAction.onAction : void 0,
+    onPointerDown: handleMouseUpByBlurring,
+    icon: ArrowLeftIcon,
+    accessibilityLabel: backAction.accessibilityLabel ?? content2
+  });
+}
+var styles$A = {
+  "Indicator": "Polaris-Indicator",
+  "pulseIndicator": "Polaris-Indicator--pulseIndicator"
+};
+function Indicator({
+  pulse = true
+}) {
+  const className = classNames(styles$A.Indicator, pulse && styles$A.pulseIndicator);
+  return /* @__PURE__ */ React.createElement("span", {
+    className
+  });
+}
+var styles$z = {
+  "LegacyStack": "Polaris-LegacyStack",
+  "Item": "Polaris-LegacyStack__Item",
+  "noWrap": "Polaris-LegacyStack--noWrap",
+  "spacingNone": "Polaris-LegacyStack--spacingNone",
+  "spacingExtraTight": "Polaris-LegacyStack--spacingExtraTight",
+  "spacingTight": "Polaris-LegacyStack--spacingTight",
+  "spacingBaseTight": "Polaris-LegacyStack--spacingBaseTight",
+  "spacingLoose": "Polaris-LegacyStack--spacingLoose",
+  "spacingExtraLoose": "Polaris-LegacyStack--spacingExtraLoose",
+  "distributionLeading": "Polaris-LegacyStack--distributionLeading",
+  "distributionTrailing": "Polaris-LegacyStack--distributionTrailing",
+  "distributionCenter": "Polaris-LegacyStack--distributionCenter",
+  "distributionEqualSpacing": "Polaris-LegacyStack--distributionEqualSpacing",
+  "distributionFill": "Polaris-LegacyStack--distributionFill",
+  "distributionFillEvenly": "Polaris-LegacyStack--distributionFillEvenly",
+  "alignmentLeading": "Polaris-LegacyStack--alignmentLeading",
+  "alignmentTrailing": "Polaris-LegacyStack--alignmentTrailing",
+  "alignmentCenter": "Polaris-LegacyStack--alignmentCenter",
+  "alignmentFill": "Polaris-LegacyStack--alignmentFill",
+  "alignmentBaseline": "Polaris-LegacyStack--alignmentBaseline",
+  "vertical": "Polaris-LegacyStack--vertical",
+  "Item-fill": "Polaris-LegacyStack__Item--fill"
+};
+function Item$4({
+  children,
+  fill
+}) {
+  const className = classNames(styles$z.Item, fill && styles$z["Item-fill"]);
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, children);
+}
+const LegacyStack = /* @__PURE__ */ memo(function Stack({
+  children,
+  vertical,
+  spacing,
+  distribution,
+  alignment,
+  wrap
+}) {
+  const className = classNames(styles$z.LegacyStack, vertical && styles$z.vertical, spacing && styles$z[variationName("spacing", spacing)], distribution && styles$z[variationName("distribution", distribution)], alignment && styles$z[variationName("alignment", alignment)], wrap === false && styles$z.noWrap);
+  const itemMarkup = elementChildren(children).map((child, index2) => {
+    const props = {
+      key: index2
+    };
+    return wrapWithComponent(child, Item$4, props);
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, itemMarkup);
+});
+LegacyStack.Item = Item$4;
+var styles$y = {
+  "Collapsible": "Polaris-Collapsible",
+  "isFullyClosed": "Polaris-Collapsible--isFullyClosed",
+  "expandOnPrint": "Polaris-Collapsible--expandOnPrint"
+};
+function Collapsible({
+  id,
+  expandOnPrint,
+  open,
+  transition = true,
+  children,
+  onAnimationEnd
+}) {
+  const [height, setHeight] = useState(0);
+  const [isOpen, setIsOpen] = useState(open);
+  const [animationState, setAnimationState] = useState("idle");
+  const collapsibleContainer = useRef(null);
+  const isFullyOpen = animationState === "idle" && open && isOpen;
+  const isFullyClosed = animationState === "idle" && !open && !isOpen;
+  const content2 = expandOnPrint || !isFullyClosed ? children : null;
+  const wrapperClassName = classNames(styles$y.Collapsible, isFullyClosed && styles$y.isFullyClosed, expandOnPrint && styles$y.expandOnPrint);
+  const transitionDisabled = isTransitionDisabled(transition);
+  const transitionStyles = typeof transition === "object" && {
+    transitionDuration: transition.duration,
+    transitionTimingFunction: transition.timingFunction
+  };
+  const collapsibleStyles = {
+    ...transitionStyles,
+    ...{
+      maxHeight: isFullyOpen ? "none" : `${height}px`,
+      overflow: isFullyOpen ? "visible" : "hidden"
+    }
+  };
+  const handleCompleteAnimation = useCallback(({
+    target
+  }) => {
+    if (target === collapsibleContainer.current) {
+      setAnimationState("idle");
+      setIsOpen(open);
+      onAnimationEnd && onAnimationEnd();
+    }
+  }, [onAnimationEnd, open]);
+  const startAnimation = useCallback(() => {
+    if (transitionDisabled) {
+      setIsOpen(open);
+      setAnimationState("idle");
+      if (open && collapsibleContainer.current) {
+        setHeight(collapsibleContainer.current.scrollHeight);
+      } else {
+        setHeight(0);
+      }
+    } else {
+      setAnimationState("measuring");
+    }
+  }, [open, transitionDisabled]);
+  useEffect(() => {
+    if (open !== isOpen) {
+      startAnimation();
+    }
+  }, [open, isOpen]);
+  useEffect(() => {
+    if (!open || !collapsibleContainer.current) return;
+    setHeight(collapsibleContainer.current.scrollHeight);
+  }, []);
+  useEffect(() => {
+    if (!collapsibleContainer.current) return;
+    switch (animationState) {
+      case "idle":
+        break;
+      case "measuring":
+        setHeight(collapsibleContainer.current.scrollHeight);
+        setAnimationState("animating");
+        break;
+      case "animating":
+        setHeight(open ? collapsibleContainer.current.scrollHeight : 0);
+    }
+  }, [animationState, open, isOpen]);
+  return /* @__PURE__ */ React.createElement("div", {
+    id,
+    style: collapsibleStyles,
+    ref: collapsibleContainer,
+    className: wrapperClassName,
+    onTransitionEnd: handleCompleteAnimation,
+    "aria-hidden": !open
+  }, content2);
+}
+const zeroDurationRegex = /^0(ms|s)$/;
+function isTransitionDisabled(transitionProp) {
+  if (typeof transitionProp === "boolean") {
+    return !transitionProp;
+  }
+  const {
+    duration
+  } = transitionProp;
+  if (duration && zeroDurationRegex.test(duration.trim())) {
+    return true;
+  }
+  return false;
+}
+var styles$x = {
+  "InlineGrid": "Polaris-InlineGrid"
+};
+function InlineGrid({
+  children,
+  columns,
+  gap,
+  alignItems
+}) {
+  const style = {
+    ...getResponsiveValue("inline-grid", "grid-template-columns", formatInlineGrid(columns)),
+    ...getResponsiveProps("inline-grid", "gap", "space", gap),
+    "--pc-inline-grid-align-items": alignItems
+  };
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$x.InlineGrid,
+    style: sanitizeCustomProperties(style)
+  }, children);
+}
+function formatInlineGrid(columns) {
+  if (typeof columns === "object" && columns !== null && !Array.isArray(columns)) {
+    return Object.fromEntries(Object.entries(columns).map(([breakpointAlias, breakpointInlineGrid]) => [breakpointAlias, getColumnValue(breakpointInlineGrid)]));
+  }
+  return getColumnValue(columns);
+}
+function getColumnValue(columns) {
+  if (!columns) return void 0;
+  if (typeof columns === "number" || !isNaN(Number(columns))) {
+    return `repeat(${Number(columns)}, minmax(0, 1fr))`;
+  }
+  if (typeof columns === "string") return columns;
+  return columns.map((column) => {
+    switch (column) {
+      case "oneThird":
+        return "minmax(0, 1fr)";
+      case "oneHalf":
+        return "minmax(0, 1fr)";
+      case "twoThirds":
+        return "minmax(0, 2fr)";
+    }
+  }).join(" ");
+}
+const FrameContext = /* @__PURE__ */ createContext(void 0);
+function useFrame() {
+  const frame = useContext(FrameContext);
+  if (!frame) {
+    throw new Error("No Frame context was provided. Your component must be wrapped in a <Frame> component. See https://polaris.shopify.com/components/internal-only/frame for implementation instructions.");
+  }
+  return frame;
+}
+function measureColumn(tableData) {
+  return function(column, index2) {
+    const {
+      firstVisibleColumnIndex,
+      tableLeftVisibleEdge: tableStart,
+      tableRightVisibleEdge: tableEnd
+    } = tableData;
+    const leftEdge = column.offsetLeft;
+    const rightEdge = leftEdge + column.offsetWidth;
+    const isVisibleLeft = isEdgeVisible(leftEdge, tableStart, tableEnd, "left");
+    const isVisibleRight = isEdgeVisible(rightEdge, tableStart, tableEnd, "right");
+    const isVisible = isVisibleLeft || isVisibleRight;
+    const width = column.offsetWidth;
+    if (isVisible) {
+      tableData.firstVisibleColumnIndex = Math.min(firstVisibleColumnIndex, index2);
+    }
+    return {
+      leftEdge,
+      rightEdge,
+      isVisible,
+      width,
+      index: index2
+    };
+  };
+}
+function isEdgeVisible(position, start, end, edgeType) {
+  const minVisiblePixels = 30;
+  return position >= start + (edgeType === "left" ? 0 : minVisiblePixels) && position <= end - minVisiblePixels;
+}
+function getPrevAndCurrentColumns(tableData, columnData) {
+  const {
+    firstVisibleColumnIndex
+  } = tableData;
+  const previousColumnIndex = Math.max(firstVisibleColumnIndex - 1, 0);
+  const previousColumn = columnData[previousColumnIndex];
+  const currentColumn = columnData[firstVisibleColumnIndex];
+  return {
+    previousColumn,
+    currentColumn
+  };
+}
+var styles$w = {
+  "DataTable": "Polaris-DataTable",
+  "condensed": "Polaris-DataTable--condensed",
+  "Navigation": "Polaris-DataTable__Navigation",
+  "Pip": "Polaris-DataTable__Pip",
+  "Pip-visible": "Polaris-DataTable__Pip--visible",
+  "ScrollContainer": "Polaris-DataTable__ScrollContainer",
+  "Table": "Polaris-DataTable__Table",
+  "TableRow": "Polaris-DataTable__TableRow",
+  "Cell": "Polaris-DataTable__Cell",
+  "IncreasedTableDensity": "Polaris-DataTable__IncreasedTableDensity",
+  "ZebraStripingOnData": "Polaris-DataTable__ZebraStripingOnData",
+  "RowCountIsEven": "Polaris-DataTable__RowCountIsEven",
+  "ShowTotalsInFooter": "Polaris-DataTable__ShowTotalsInFooter",
+  "Cell-separate": "Polaris-DataTable__Cell--separate",
+  "Cell-firstColumn": "Polaris-DataTable__Cell--firstColumn",
+  "Cell-numeric": "Polaris-DataTable__Cell--numeric",
+  "Cell-truncated": "Polaris-DataTable__Cell--truncated",
+  "Cell-header": "Polaris-DataTable__Cell--header",
+  "Cell-sortable": "Polaris-DataTable__Cell--sortable",
+  "Heading-left": "Polaris-DataTable__Heading--left",
+  "Cell-verticalAlignTop": "Polaris-DataTable__Cell--verticalAlignTop",
+  "Cell-verticalAlignBottom": "Polaris-DataTable__Cell--verticalAlignBottom",
+  "Cell-verticalAlignMiddle": "Polaris-DataTable__Cell--verticalAlignMiddle",
+  "Cell-verticalAlignBaseline": "Polaris-DataTable__Cell--verticalAlignBaseline",
+  "hoverable": "Polaris-DataTable--hoverable",
+  "Cell-hovered": "Polaris-DataTable__Cell--hovered",
+  "Icon": "Polaris-DataTable__Icon",
+  "Heading": "Polaris-DataTable__Heading",
+  "StickyHeaderEnabled": "Polaris-DataTable__StickyHeaderEnabled",
+  "StickyHeaderWrapper": "Polaris-DataTable__StickyHeaderWrapper",
+  "Cell-sorted": "Polaris-DataTable__Cell--sorted",
+  "Cell-total": "Polaris-DataTable__Cell--total",
+  "ShowTotals": "Polaris-DataTable__ShowTotals",
+  "Cell-total-footer": "Polaris-DataTable--cellTotalFooter",
+  "Footer": "Polaris-DataTable__Footer",
+  "StickyHeaderInner": "Polaris-DataTable__StickyHeaderInner",
+  "StickyHeaderInner-isSticky": "Polaris-DataTable__StickyHeaderInner--isSticky",
+  "StickyHeaderTable": "Polaris-DataTable__StickyHeaderTable",
+  "FixedFirstColumn": "Polaris-DataTable__FixedFirstColumn",
+  "StickyTableHeadingsRow": "Polaris-DataTable__StickyTableHeadingsRow",
+  "TooltipContent": "Polaris-DataTable__TooltipContent"
+};
+function Cell({
+  content: content2,
+  contentType,
+  nthColumn,
+  firstColumn,
+  truncate,
+  header,
+  total,
+  totalInFooter,
+  sorted,
+  sortable,
+  sortDirection,
+  inFixedNthColumn,
+  verticalAlign = "top",
+  defaultSortDirection = "ascending",
+  onSort,
+  colSpan,
+  setRef = () => {
+  },
+  stickyHeadingCell = false,
+  stickyCellWidth,
+  hovered = false,
+  handleFocus = () => {
+  },
+  hasFixedNthColumn = false,
+  fixedCellVisible = false,
+  firstColumnMinWidth,
+  style,
+  lastFixedFirstColumn
+}) {
+  const i18n = useI18n();
+  const numeric = contentType === "numeric";
+  const className = classNames(styles$w.Cell, styles$w[`Cell-${variationName("verticalAlign", verticalAlign)}`], firstColumn && styles$w["Cell-firstColumn"], truncate && styles$w["Cell-truncated"], header && styles$w["Cell-header"], total && styles$w["Cell-total"], totalInFooter && styles$w["Cell-total-footer"], numeric && styles$w["Cell-numeric"], sortable && styles$w["Cell-sortable"], sorted && styles$w["Cell-sorted"], stickyHeadingCell && styles$w.StickyHeaderCell, hovered && styles$w["Cell-hovered"], lastFixedFirstColumn && inFixedNthColumn && fixedCellVisible && styles$w["Cell-separate"], nthColumn && inFixedNthColumn && stickyHeadingCell && styles$w.FixedFirstColumn);
+  const headerClassName = classNames(header && styles$w.Heading, header && contentType === "text" && styles$w["Heading-left"]);
+  const iconClassName = classNames(sortable && styles$w.Icon);
+  const direction = sorted && sortDirection ? sortDirection : defaultSortDirection;
+  const source = direction === "descending" ? SortDescendingIcon : SortAscendingIcon;
+  const oppositeDirection = sortDirection === "ascending" ? "descending" : "ascending";
+  const sortAccessibilityLabel = i18n.translate("Polaris.DataTable.sortAccessibilityLabel", {
+    direction: sorted ? oppositeDirection : direction
+  });
+  const iconMarkup = /* @__PURE__ */ React.createElement("span", {
+    className: iconClassName
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source,
+    accessibilityLabel: sortAccessibilityLabel
+  }));
+  const focusable = !(stickyHeadingCell && hasFixedNthColumn && nthColumn && !inFixedNthColumn);
+  const sortableHeadingContent = /* @__PURE__ */ React.createElement("button", {
+    className: headerClassName,
+    onClick: onSort,
+    onFocus: handleFocus,
+    tabIndex: focusable ? 0 : -1
+  }, iconMarkup, content2);
+  const columnHeadingContent = sortable ? sortableHeadingContent : content2;
+  const colSpanProp = colSpan && colSpan > 1 ? {
+    colSpan
+  } : {};
+  const minWidthStyles = nthColumn && firstColumnMinWidth ? {
+    minWidth: firstColumnMinWidth
+  } : {
+    minWidth: stickyCellWidth
+  };
+  const stickyHeading = /* @__PURE__ */ React.createElement("th", Object.assign({
+    ref: setRef
+  }, headerCell.props, colSpanProp, {
+    className,
+    "aria-sort": sortDirection,
+    style: {
+      ...style,
+      ...minWidthStyles
+    },
+    "data-index-table-sticky-heading": true
+  }), columnHeadingContent);
+  const headingMarkup = header ? /* @__PURE__ */ React.createElement("th", Object.assign({}, headerCell.props, {
+    "aria-sort": sortDirection
+  }, colSpanProp, {
+    ref: setRef,
+    className,
+    scope: "col",
+    style: {
+      ...minWidthStyles
+    }
+  }), columnHeadingContent) : /* @__PURE__ */ React.createElement("th", Object.assign({}, colSpanProp, {
+    ref: setRef,
+    className,
+    scope: "row",
+    style: {
+      ...minWidthStyles
+    }
+  }), truncate ? /* @__PURE__ */ React.createElement(TruncatedText, {
+    className: styles$w.TooltipContent
+  }, content2) : content2);
+  const cellMarkup = header || firstColumn || nthColumn ? headingMarkup : /* @__PURE__ */ React.createElement("td", Object.assign({
+    className
+  }, colSpanProp), content2);
+  return stickyHeadingCell ? stickyHeading : cellMarkup;
+}
+const TruncatedText = ({
+  children,
+  className = ""
+}) => {
+  const textRef = useRef(null);
+  const {
+    current
+  } = textRef;
+  const text2 = /* @__PURE__ */ React.createElement("span", {
+    ref: textRef,
+    className
+  }, children);
+  return (current == null ? void 0 : current.scrollWidth) > (current == null ? void 0 : current.offsetWidth) ? /* @__PURE__ */ React.createElement(Tooltip, {
+    content: textRef.current.innerText
+  }, text2) : text2;
+};
+var EditableTarget;
+(function(EditableTarget2) {
+  EditableTarget2["Input"] = "INPUT";
+  EditableTarget2["Textarea"] = "TEXTAREA";
+  EditableTarget2["Select"] = "SELECT";
+  EditableTarget2["ContentEditable"] = "contenteditable";
+})(EditableTarget || (EditableTarget = {}));
+function isInputFocused() {
+  if (document == null || document.activeElement == null) {
+    return false;
+  }
+  const {
+    tagName
+  } = document.activeElement;
+  return tagName === EditableTarget.Input || tagName === EditableTarget.Textarea || tagName === EditableTarget.Select || document.activeElement.hasAttribute(EditableTarget.ContentEditable);
+}
+var styles$v = {
+  "Pagination": "Polaris-Pagination",
+  "table": "Polaris-Pagination--table",
+  "TablePaginationActions": "Polaris-Pagination__TablePaginationActions"
+};
+function Pagination({
+  hasNext,
+  hasPrevious,
+  nextURL,
+  previousURL,
+  onNext,
+  onPrevious,
+  nextTooltip,
+  previousTooltip,
+  nextKeys,
+  previousKeys,
+  accessibilityLabel,
+  accessibilityLabels,
+  label: label2,
+  type = "page"
+}) {
+  const i18n = useI18n();
+  const node = /* @__PURE__ */ createRef();
+  const navLabel = accessibilityLabel || i18n.translate("Polaris.Pagination.pagination");
+  const previousLabel = (accessibilityLabels == null ? void 0 : accessibilityLabels.previous) || i18n.translate("Polaris.Pagination.previous");
+  const nextLabel = (accessibilityLabels == null ? void 0 : accessibilityLabels.next) || i18n.translate("Polaris.Pagination.next");
+  const prev = /* @__PURE__ */ React.createElement(Button, {
+    icon: ChevronLeftIcon,
+    accessibilityLabel: previousLabel,
+    url: previousURL,
+    onClick: onPrevious,
+    disabled: !hasPrevious,
+    id: "previousURL"
+  });
+  const constructedPrevious = previousTooltip && hasPrevious ? /* @__PURE__ */ React.createElement(Tooltip, {
+    activatorWrapper: "span",
+    content: previousTooltip,
+    preferredPosition: "below"
+  }, prev) : prev;
+  const next = /* @__PURE__ */ React.createElement(Button, {
+    icon: ChevronRightIcon,
+    accessibilityLabel: nextLabel,
+    url: nextURL,
+    onClick: onNext,
+    disabled: !hasNext,
+    id: "nextURL"
+  });
+  const constructedNext = nextTooltip && hasNext ? /* @__PURE__ */ React.createElement(Tooltip, {
+    activatorWrapper: "span",
+    content: nextTooltip,
+    preferredPosition: "below"
+  }, next) : next;
+  const previousHandler = onPrevious || noop$3;
+  const previousButtonEvents = previousKeys && (previousURL || onPrevious) && hasPrevious && previousKeys.map((key) => /* @__PURE__ */ React.createElement(KeypressListener, {
+    key,
+    keyCode: key,
+    handler: previousURL ? handleCallback(clickPaginationLink("previousURL", node)) : handleCallback(previousHandler)
+  }));
+  const nextHandler = onNext || noop$3;
+  const nextButtonEvents = nextKeys && (nextURL || onNext) && hasNext && nextKeys.map((key) => /* @__PURE__ */ React.createElement(KeypressListener, {
+    key,
+    keyCode: key,
+    handler: nextURL ? handleCallback(clickPaginationLink("nextURL", node)) : handleCallback(nextHandler)
+  }));
+  if (type === "table") {
+    const labelMarkup2 = label2 ? /* @__PURE__ */ React.createElement(Box, {
+      padding: "300",
+      paddingBlockStart: "0",
+      paddingBlockEnd: "0"
+    }, /* @__PURE__ */ React.createElement(Text, {
+      as: "span",
+      variant: "bodySm",
+      fontWeight: "medium"
+    }, label2)) : null;
+    return /* @__PURE__ */ React.createElement("nav", {
+      "aria-label": navLabel,
+      ref: node,
+      className: classNames(styles$v.Pagination, styles$v.table)
+    }, previousButtonEvents, nextButtonEvents, /* @__PURE__ */ React.createElement(Box, {
+      background: "bg-surface-secondary",
+      paddingBlockStart: "150",
+      paddingBlockEnd: "150",
+      paddingInlineStart: "300",
+      paddingInlineEnd: "200"
+    }, /* @__PURE__ */ React.createElement(InlineStack, {
+      align: "center",
+      blockAlign: "center"
+    }, /* @__PURE__ */ React.createElement("div", {
+      className: styles$v.TablePaginationActions,
+      "data-buttongroup-variant": "segmented"
+    }, /* @__PURE__ */ React.createElement("div", null, constructedPrevious), labelMarkup2, /* @__PURE__ */ React.createElement("div", null, constructedNext)))));
+  }
+  const labelTextMarkup = hasNext && hasPrevious ? /* @__PURE__ */ React.createElement("span", null, label2) : /* @__PURE__ */ React.createElement(Text, {
+    tone: "subdued",
+    as: "span"
+  }, label2);
+  const labelMarkup = label2 ? /* @__PURE__ */ React.createElement(Box, {
+    padding: "300",
+    paddingBlockStart: "0",
+    paddingBlockEnd: "0"
+  }, /* @__PURE__ */ React.createElement("div", {
+    "aria-live": "polite"
+  }, labelTextMarkup)) : null;
+  return /* @__PURE__ */ React.createElement("nav", {
+    "aria-label": navLabel,
+    ref: node,
+    className: styles$v.Pagination
+  }, previousButtonEvents, nextButtonEvents, /* @__PURE__ */ React.createElement(ButtonGroup, {
+    variant: "segmented"
+  }, constructedPrevious, labelMarkup, constructedNext));
+}
+function clickPaginationLink(id, node) {
+  return () => {
+    if (node.current == null) {
+      return;
+    }
+    const link = node.current.querySelector(`#${id}`);
+    if (link) {
+      link.click();
+    }
+  };
+}
+function handleCallback(fn) {
+  return () => {
+    if (isInputFocused()) {
+      return;
+    }
+    fn();
+  };
+}
+function noop$3() {
+}
+function AfterInitialMount({
+  children,
+  onMount,
+  fallback = null
+}) {
+  const isMounted = useIsAfterInitialMount();
+  const content2 = isMounted ? children : fallback;
+  useEffect(() => {
+    if (isMounted && onMount) {
+      onMount();
+    }
+  }, [isMounted, onMount]);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, content2);
+}
+function useStickyManager() {
+  const stickyManager = useContext(StickyManagerContext);
+  if (!stickyManager) {
+    throw new MissingAppProviderError("No StickyManager was provided.");
+  }
+  return stickyManager;
+}
+class StickyInner extends Component {
+  constructor(...args) {
+    super(...args);
+    this.state = {
+      isSticky: false,
+      style: {}
+    };
+    this.placeHolderNode = null;
+    this.stickyNode = null;
+    this.setPlaceHolderNode = (node) => {
+      this.placeHolderNode = node;
+    };
+    this.setStickyNode = (node) => {
+      this.stickyNode = node;
+    };
+    this.handlePositioning = (stick, top = 0, left = 0, width = 0) => {
+      const {
+        isSticky
+      } = this.state;
+      if (stick && !isSticky || !stick && isSticky) {
+        this.adjustPlaceHolderNode(stick);
+        this.setState({
+          isSticky: !isSticky
+        }, () => {
+          if (this.props.onStickyChange == null) {
+            return null;
+          }
+          this.props.onStickyChange(!isSticky);
+          if (this.props.boundingElement == null) {
+            return null;
+          }
+          this.props.boundingElement.toggleAttribute("data-sticky-active");
+        });
+      }
+      const style = stick ? {
+        position: "fixed",
+        top,
+        left,
+        width
+      } : {};
+      this.setState({
+        style
+      });
+    };
+    this.adjustPlaceHolderNode = (add) => {
+      if (this.placeHolderNode && this.stickyNode) {
+        this.placeHolderNode.style.paddingBottom = add ? `${getRectForNode(this.stickyNode).height}px` : "0px";
+      }
+    };
+  }
+  componentDidMount() {
+    const {
+      boundingElement,
+      offset = false,
+      disableWhenStacked = false,
+      stickyManager
+    } = this.props;
+    if (!this.stickyNode || !this.placeHolderNode) return;
+    stickyManager.registerStickyItem({
+      stickyNode: this.stickyNode,
+      placeHolderNode: this.placeHolderNode,
+      handlePositioning: this.handlePositioning,
+      offset,
+      boundingElement,
+      disableWhenStacked
+    });
+  }
+  componentWillUnmount() {
+    const {
+      stickyManager
+    } = this.props;
+    if (!this.stickyNode) return;
+    stickyManager.unregisterStickyItem(this.stickyNode);
+  }
+  render() {
+    const {
+      style,
+      isSticky
+    } = this.state;
+    const {
+      children
+    } = this.props;
+    const childrenContent = isFunction(children) ? children(isSticky) : children;
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
+      ref: this.setPlaceHolderNode
+    }), /* @__PURE__ */ React.createElement("div", {
+      ref: this.setStickyNode,
+      style
+    }, childrenContent));
+  }
+}
+function isFunction(arg) {
+  return typeof arg === "function";
+}
+function Sticky(props) {
+  const stickyManager = useStickyManager();
+  return /* @__PURE__ */ React.createElement(StickyInner, Object.assign({}, props, {
+    stickyManager
+  }));
+}
+function Navigation$2({
+  columnVisibilityData,
+  isScrolledFarthestLeft,
+  isScrolledFarthestRight,
+  navigateTableLeft,
+  navigateTableRight,
+  fixedFirstColumns,
+  setRef = () => {
+  }
+}) {
+  const i18n = useI18n();
+  const pipMarkup = columnVisibilityData.map((column, index2) => {
+    if (index2 < fixedFirstColumns) return;
+    const className = classNames(styles$w.Pip, column.isVisible && styles$w["Pip-visible"]);
+    return /* @__PURE__ */ React.createElement("div", {
+      className,
+      key: `pip-${index2}`
+    });
+  });
+  const leftA11yLabel = i18n.translate("Polaris.DataTable.navAccessibilityLabel", {
+    direction: "left"
+  });
+  const rightA11yLabel = i18n.translate("Polaris.DataTable.navAccessibilityLabel", {
+    direction: "right"
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$w.Navigation,
+    ref: setRef
+  }, /* @__PURE__ */ React.createElement(Button, {
+    variant: "tertiary",
+    icon: ChevronLeftIcon,
+    disabled: isScrolledFarthestLeft,
+    accessibilityLabel: leftA11yLabel,
+    onClick: navigateTableLeft
+  }), pipMarkup, /* @__PURE__ */ React.createElement(Button, {
+    variant: "tertiary",
+    icon: ChevronRightIcon,
+    disabled: isScrolledFarthestRight,
+    accessibilityLabel: rightA11yLabel,
+    onClick: navigateTableRight
+  }));
+}
+const getRowClientHeights = (rows) => {
+  const heights = [];
+  if (!rows) {
+    return heights;
+  }
+  rows.forEach((row) => {
+    heights.push(row.clientHeight);
+  });
+  return heights;
+};
+class DataTableInner extends PureComponent {
+  constructor(...args) {
+    super(...args);
+    this.state = {
+      condensed: false,
+      columnVisibilityData: [],
+      isScrolledFarthestLeft: true,
+      isScrolledFarthestRight: false,
+      rowHovered: void 0
+    };
+    this.dataTable = /* @__PURE__ */ createRef();
+    this.scrollContainer = /* @__PURE__ */ createRef();
+    this.table = /* @__PURE__ */ createRef();
+    this.stickyTable = /* @__PURE__ */ createRef();
+    this.stickyNav = null;
+    this.headerNav = null;
+    this.tableHeadings = [];
+    this.stickyHeadings = [];
+    this.tableHeadingWidths = [];
+    this.stickyHeaderActive = false;
+    this.scrollStopTimer = null;
+    this.handleResize = debounce(() => {
+      const {
+        table: {
+          current: table
+        },
+        scrollContainer: {
+          current: scrollContainer
+        }
+      } = this;
+      let condensed = false;
+      if (table && scrollContainer) {
+        condensed = table.scrollWidth > scrollContainer.clientWidth + 1;
+      }
+      this.setState({
+        condensed,
+        ...this.calculateColumnVisibilityData(condensed)
+      });
+    });
+    this.setCellRef = ({
+      ref,
+      index: index2,
+      inStickyHeader
+    }) => {
+      if (ref == null) {
+        return;
+      }
+      if (inStickyHeader) {
+        this.stickyHeadings[index2] = ref;
+        const button2 = ref.querySelector("button");
+        if (button2 == null) {
+          return;
+        }
+        button2.addEventListener("focus", this.handleHeaderButtonFocus);
+      } else {
+        this.tableHeadings[index2] = ref;
+        this.tableHeadingWidths[index2] = ref.clientWidth;
+      }
+    };
+    this.changeHeadingFocus = () => {
+      const {
+        tableHeadings,
+        stickyHeadings,
+        stickyNav,
+        headerNav
+      } = this;
+      const stickyFocusedItemIndex = stickyHeadings.findIndex((item) => {
+        var _a2;
+        return item === ((_a2 = document.activeElement) == null ? void 0 : _a2.parentElement);
+      });
+      const tableFocusedItemIndex = tableHeadings.findIndex((item) => {
+        var _a2;
+        return item === ((_a2 = document.activeElement) == null ? void 0 : _a2.parentElement);
+      });
+      const arrowsInStickyNav = stickyNav == null ? void 0 : stickyNav.querySelectorAll("button");
+      const arrowsInHeaderNav = headerNav == null ? void 0 : headerNav.querySelectorAll("button");
+      let stickyFocusedNavIndex = -1;
+      arrowsInStickyNav == null ? void 0 : arrowsInStickyNav.forEach((item, index2) => {
+        if (item === document.activeElement) {
+          stickyFocusedNavIndex = index2;
+        }
+      });
+      let headerFocusedNavIndex = -1;
+      arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav.forEach((item, index2) => {
+        if (item === document.activeElement) {
+          headerFocusedNavIndex = index2;
+        }
+      });
+      if (stickyFocusedItemIndex < 0 && tableFocusedItemIndex < 0 && stickyFocusedNavIndex < 0 && headerFocusedNavIndex < 0) {
+        return null;
+      }
+      let button2;
+      if (stickyFocusedItemIndex >= 0) {
+        button2 = tableHeadings[stickyFocusedItemIndex].querySelector("button");
+      } else if (tableFocusedItemIndex >= 0) {
+        button2 = stickyHeadings[tableFocusedItemIndex].querySelector("button");
+      }
+      if (stickyFocusedNavIndex >= 0) {
+        button2 = arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav[stickyFocusedNavIndex];
+      } else if (headerFocusedNavIndex >= 0) {
+        button2 = arrowsInStickyNav == null ? void 0 : arrowsInStickyNav[headerFocusedNavIndex];
+      }
+      if (button2 == null) {
+        return null;
+      }
+      button2.style.visibility = "visible";
+      button2.focus();
+      button2.style.removeProperty("visibility");
+    };
+    this.calculateColumnVisibilityData = (condensed) => {
+      const fixedFirstColumns = this.fixedFirstColumns();
+      const {
+        table: {
+          current: table
+        },
+        scrollContainer: {
+          current: scrollContainer
+        },
+        dataTable: {
+          current: dataTable
+        }
+      } = this;
+      const {
+        stickyHeader
+      } = this.props;
+      if ((stickyHeader || condensed) && table && scrollContainer && dataTable) {
+        const headerCells = table.querySelectorAll(headerCell.selector);
+        const rightMostHeader = headerCells[fixedFirstColumns - 1];
+        const nthColumnWidth = fixedFirstColumns ? rightMostHeader.offsetLeft + rightMostHeader.offsetWidth : 0;
+        if (headerCells.length > 0) {
+          const firstVisibleColumnIndex = headerCells.length - 1;
+          const tableLeftVisibleEdge = scrollContainer.scrollLeft + nthColumnWidth;
+          const tableRightVisibleEdge = scrollContainer.scrollLeft + dataTable.offsetWidth;
+          const tableData = {
+            firstVisibleColumnIndex,
+            tableLeftVisibleEdge,
+            tableRightVisibleEdge
+          };
+          const columnVisibilityData = [...headerCells].map(measureColumn(tableData));
+          const lastColumn = columnVisibilityData[columnVisibilityData.length - 1];
+          const isScrolledFarthestLeft = fixedFirstColumns ? tableLeftVisibleEdge === nthColumnWidth : tableLeftVisibleEdge === 0;
+          return {
+            columnVisibilityData,
+            ...getPrevAndCurrentColumns(tableData, columnVisibilityData),
+            isScrolledFarthestLeft,
+            isScrolledFarthestRight: lastColumn.rightEdge <= tableRightVisibleEdge
+          };
+        }
+      }
+      return {
+        columnVisibilityData: [],
+        previousColumn: void 0,
+        currentColumn: void 0
+      };
+    };
+    this.handleHeaderButtonFocus = (event) => {
+      var _a2;
+      const fixedFirstColumns = this.fixedFirstColumns();
+      if (this.scrollContainer.current == null || event.target == null || this.state.columnVisibilityData.length === 0) {
+        return;
+      }
+      const target = event.target;
+      const currentCell = target.parentNode;
+      const tableScrollLeft = this.scrollContainer.current.scrollLeft;
+      const tableViewableWidth = this.scrollContainer.current.offsetWidth;
+      const tableRightEdge = tableScrollLeft + tableViewableWidth;
+      const nthColumnWidth = this.state.columnVisibilityData.length > 0 ? (_a2 = this.state.columnVisibilityData[fixedFirstColumns]) == null ? void 0 : _a2.rightEdge : 0;
+      const currentColumnLeftEdge = currentCell.offsetLeft;
+      const currentColumnRightEdge = currentCell.offsetLeft + currentCell.offsetWidth;
+      if (tableScrollLeft > currentColumnLeftEdge - nthColumnWidth) {
+        this.scrollContainer.current.scrollLeft = currentColumnLeftEdge - nthColumnWidth;
+      }
+      if (currentColumnRightEdge > tableRightEdge) {
+        this.scrollContainer.current.scrollLeft = currentColumnRightEdge - tableViewableWidth;
+      }
+    };
+    this.stickyHeaderScrolling = () => {
+      const {
+        current: stickyTable
+      } = this.stickyTable;
+      const {
+        current: scrollContainer
+      } = this.scrollContainer;
+      if (stickyTable == null || scrollContainer == null) {
+        return;
+      }
+      stickyTable.scrollLeft = scrollContainer.scrollLeft;
+    };
+    this.scrollListener = () => {
+      var _a2;
+      if (this.scrollStopTimer) {
+        clearTimeout(this.scrollStopTimer);
+      }
+      this.scrollStopTimer = setTimeout(() => {
+        this.setState((prevState) => ({
+          ...this.calculateColumnVisibilityData(prevState.condensed)
+        }));
+      }, 100);
+      this.setState({
+        isScrolledFarthestLeft: ((_a2 = this.scrollContainer.current) == null ? void 0 : _a2.scrollLeft) === 0
+      });
+      if (this.props.stickyHeader && this.stickyHeaderActive) {
+        this.stickyHeaderScrolling();
+      }
+    };
+    this.handleHover = (row) => () => {
+      this.setState({
+        rowHovered: row
+      });
+    };
+    this.handleFocus = (event) => {
+      var _a2;
+      const fixedFirstColumns = this.fixedFirstColumns();
+      if (this.scrollContainer.current == null || event.target == null) {
+        return;
+      }
+      const currentCell = event.target.parentNode;
+      const fixedNthColumn = this.props;
+      const nthColumnWidth = fixedNthColumn ? (_a2 = this.state.columnVisibilityData[fixedFirstColumns]) == null ? void 0 : _a2.rightEdge : 0;
+      const currentColumnLeftEdge = currentCell.offsetLeft;
+      const desiredScrollLeft = currentColumnLeftEdge - nthColumnWidth;
+      if (this.scrollContainer.current.scrollLeft > desiredScrollLeft) {
+        this.scrollContainer.current.scrollLeft = desiredScrollLeft;
+      }
+    };
+    this.navigateTable = (direction) => {
+      var _a2;
+      const fixedFirstColumns = this.fixedFirstColumns();
+      const {
+        currentColumn,
+        previousColumn
+      } = this.state;
+      const nthColumnWidth = (_a2 = this.state.columnVisibilityData[fixedFirstColumns - 1]) == null ? void 0 : _a2.rightEdge;
+      if (!currentColumn || !previousColumn) {
+        return;
+      }
+      let prevWidths = 0;
+      for (let index2 = 0; index2 < currentColumn.index; index2++) {
+        prevWidths += this.state.columnVisibilityData[index2].width;
+      }
+      const {
+        current: scrollContainer
+      } = this.scrollContainer;
+      const handleScroll = () => {
+        let newScrollLeft = 0;
+        if (fixedFirstColumns) {
+          newScrollLeft = direction === "right" ? prevWidths - nthColumnWidth + currentColumn.width : prevWidths - previousColumn.width - nthColumnWidth;
+        } else {
+          newScrollLeft = direction === "right" ? currentColumn.rightEdge : previousColumn.leftEdge;
+        }
+        if (scrollContainer) {
+          scrollContainer.scrollLeft = newScrollLeft;
+          requestAnimationFrame(() => {
+            this.setState((prevState) => ({
+              ...this.calculateColumnVisibilityData(prevState.condensed)
+            }));
+          });
+        }
+      };
+      return handleScroll;
+    };
+    this.renderHeading = ({
+      heading: heading2,
+      headingIndex,
+      inFixedNthColumn,
+      inStickyHeader
+    }) => {
+      var _a2;
+      const {
+        sortable,
+        truncate = false,
+        columnContentTypes,
+        defaultSortDirection,
+        initialSortColumnIndex = 0,
+        verticalAlign,
+        firstColumnMinWidth
+      } = this.props;
+      const fixedFirstColumns = this.fixedFirstColumns();
+      const {
+        sortDirection = defaultSortDirection,
+        sortedColumnIndex = initialSortColumnIndex,
+        isScrolledFarthestLeft
+      } = this.state;
+      let sortableHeadingProps;
+      const headingCellId = `heading-cell-${headingIndex}`;
+      const stickyHeaderId = `stickyheader-${headingIndex}`;
+      const id = inStickyHeader ? stickyHeaderId : headingCellId;
+      if (sortable) {
+        const isSortable = sortable[headingIndex];
+        const isSorted = isSortable && sortedColumnIndex === headingIndex;
+        const direction = isSorted ? sortDirection : "none";
+        sortableHeadingProps = {
+          defaultSortDirection,
+          sorted: isSorted,
+          sortable: isSortable,
+          sortDirection: direction,
+          onSort: this.defaultOnSort(headingIndex),
+          fixedNthColumn: fixedFirstColumns,
+          inFixedNthColumn: fixedFirstColumns
+        };
+      }
+      const stickyCellWidth = inStickyHeader ? this.tableHeadingWidths[headingIndex] : void 0;
+      const fixedCellVisible = !isScrolledFarthestLeft;
+      const cellProps = {
+        header: true,
+        stickyHeadingCell: inStickyHeader,
+        content: heading2,
+        contentType: columnContentTypes[headingIndex],
+        nthColumn: headingIndex < fixedFirstColumns,
+        fixedFirstColumns,
+        truncate,
+        headingIndex,
+        ...sortableHeadingProps,
+        verticalAlign,
+        handleFocus: this.handleFocus,
+        stickyCellWidth,
+        fixedCellVisible,
+        firstColumnMinWidth
+      };
+      if (inFixedNthColumn && inStickyHeader) {
+        return [/* @__PURE__ */ React.createElement(Cell, Object.assign({
+          key: id
+        }, cellProps, {
+          setRef: (ref) => {
+            this.setCellRef({
+              ref,
+              index: headingIndex,
+              inStickyHeader
+            });
+          },
+          inFixedNthColumn: false
+        })), /* @__PURE__ */ React.createElement(Cell, Object.assign({
+          key: `${id}-sticky`
+        }, cellProps, {
+          setRef: (ref) => {
+            this.setCellRef({
+              ref,
+              index: headingIndex,
+              inStickyHeader
+            });
+          },
+          inFixedNthColumn: Boolean(fixedFirstColumns),
+          lastFixedFirstColumn: headingIndex === fixedFirstColumns - 1,
+          style: {
+            left: (_a2 = this.state.columnVisibilityData[headingIndex]) == null ? void 0 : _a2.leftEdge
+          }
+        }))];
+      }
+      return /* @__PURE__ */ React.createElement(Cell, Object.assign({
+        key: id
+      }, cellProps, {
+        setRef: (ref) => {
+          this.setCellRef({
+            ref,
+            index: headingIndex,
+            inStickyHeader
+          });
+        },
+        lastFixedFirstColumn: headingIndex === fixedFirstColumns - 1,
+        inFixedNthColumn
+      }));
+    };
+    this.totalsRowHeading = () => {
+      const {
+        i18n,
+        totals,
+        totalsName
+      } = this.props;
+      const totalsLabel = totalsName ? totalsName : {
+        singular: i18n.translate("Polaris.DataTable.totalRowHeading"),
+        plural: i18n.translate("Polaris.DataTable.totalsRowHeading")
+      };
+      return totals && totals.filter((total) => total !== "").length > 1 ? totalsLabel.plural : totalsLabel.singular;
+    };
+    this.renderTotals = ({
+      total,
+      index: index2
+    }) => {
+      const fixedFirstColumns = this.fixedFirstColumns();
+      const id = `totals-cell-${index2}`;
+      const {
+        truncate = false,
+        verticalAlign,
+        columnContentTypes
+      } = this.props;
+      let content2;
+      let contentType;
+      if (index2 === 0) {
+        content2 = this.totalsRowHeading();
+      }
+      if (total !== "" && index2 > 0) {
+        contentType = columnContentTypes[index2];
+        content2 = total;
+      }
+      const totalInFooter = this.props.showTotalsInFooter;
+      return /* @__PURE__ */ React.createElement(Cell, {
+        total: true,
+        totalInFooter,
+        nthColumn: index2 <= fixedFirstColumns - 1,
+        firstColumn: index2 === 0,
+        key: id,
+        content: content2,
+        contentType,
+        truncate,
+        verticalAlign
+      });
+    };
+    this.getColSpan = (rowLength, headingsLength, contentTypesLength, cellIndex) => {
+      const fixedFirstColumns = this.fixedFirstColumns();
+      if (fixedFirstColumns) {
+        return 1;
+      }
+      const rowLen = rowLength ? rowLength : 1;
+      const colLen = headingsLength ? headingsLength : contentTypesLength;
+      const colSpan = Math.floor(colLen / rowLen);
+      const remainder = colLen % rowLen;
+      return cellIndex === 0 ? colSpan + remainder : colSpan;
+    };
+    this.defaultRenderRow = ({
+      row,
+      index: index2,
+      inFixedNthColumn,
+      rowHeights
+    }) => {
+      const {
+        columnContentTypes,
+        truncate = false,
+        verticalAlign,
+        hoverable = true,
+        headings
+      } = this.props;
+      const {
+        condensed
+      } = this.state;
+      const fixedFirstColumns = this.fixedFirstColumns();
+      const className = classNames(styles$w.TableRow, hoverable && styles$w.hoverable);
+      return /* @__PURE__ */ React.createElement("tr", {
+        key: `row-${index2}`,
+        className,
+        onMouseEnter: this.handleHover(index2),
+        onMouseLeave: this.handleHover()
+      }, row.map((content2, cellIndex) => {
+        const hovered = index2 === this.state.rowHovered;
+        const id = `cell-${cellIndex}-row-${index2}`;
+        const colSpan = this.getColSpan(row.length, headings.length, columnContentTypes.length, cellIndex);
+        return /* @__PURE__ */ React.createElement(Cell, {
+          key: id,
+          content: content2,
+          contentType: columnContentTypes[cellIndex],
+          nthColumn: cellIndex <= fixedFirstColumns - 1,
+          firstColumn: cellIndex === 0,
+          truncate,
+          verticalAlign,
+          colSpan,
+          hovered,
+          style: rowHeights ? {
+            height: `${rowHeights[index2]}px`
+          } : {},
+          inFixedNthColumn: condensed && inFixedNthColumn
+        });
+      }));
+    };
+    this.defaultOnSort = (headingIndex) => {
+      const {
+        onSort,
+        defaultSortDirection = "ascending",
+        initialSortColumnIndex
+      } = this.props;
+      const {
+        sortDirection = defaultSortDirection,
+        sortedColumnIndex = initialSortColumnIndex
+      } = this.state;
+      let newSortDirection = defaultSortDirection;
+      if (sortedColumnIndex === headingIndex) {
+        newSortDirection = sortDirection === "ascending" ? "descending" : "ascending";
+      }
+      const handleSort = () => {
+        this.setState({
+          sortDirection: newSortDirection,
+          sortedColumnIndex: headingIndex
+        }, () => {
+          if (onSort) {
+            onSort(headingIndex, newSortDirection);
+          }
+        });
+      };
+      return handleSort;
+    };
+  }
+  componentDidMount() {
+    if (process.env.NODE_ENV === "development") {
+      setTimeout(() => {
+        this.handleResize();
+      }, 10);
+    } else {
+      this.handleResize();
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (isEqual(prevProps, this.props)) {
+      return;
+    }
+    this.handleResize();
+  }
+  componentWillUnmount() {
+    this.handleResize.cancel();
+  }
+  render() {
+    var _a2, _b, _c;
+    const {
+      headings,
+      totals,
+      showTotalsInFooter,
+      rows,
+      footerContent,
+      hideScrollIndicator = false,
+      increasedTableDensity = false,
+      hasZebraStripingOnData = false,
+      stickyHeader = false,
+      hasFixedFirstColumn: fixedFirstColumn = false,
+      pagination
+    } = this.props;
+    const {
+      condensed,
+      columnVisibilityData,
+      isScrolledFarthestLeft,
+      isScrolledFarthestRight
+    } = this.state;
+    if (fixedFirstColumn && process.env.NODE_ENV === "development") {
+      console.warn("Deprecation: The `hasFixedFirstColumn` prop on the `DataTable` has been deprecated. Use fixedFirstColumns={n} instead.");
+    }
+    const fixedFirstColumns = this.fixedFirstColumns();
+    const rowCountIsEven = rows.length % 2 === 0;
+    const className = classNames(styles$w.DataTable, condensed && styles$w.condensed, totals && styles$w.ShowTotals, showTotalsInFooter && styles$w.ShowTotalsInFooter, hasZebraStripingOnData && styles$w.ZebraStripingOnData, hasZebraStripingOnData && rowCountIsEven && styles$w.RowCountIsEven);
+    const wrapperClassName = classNames(styles$w.TableWrapper, condensed && styles$w.condensed, increasedTableDensity && styles$w.IncreasedTableDensity, stickyHeader && styles$w.StickyHeaderEnabled);
+    const headingMarkup = /* @__PURE__ */ React.createElement("tr", null, headings.map((heading2, index2) => this.renderHeading({
+      heading: heading2,
+      headingIndex: index2,
+      inFixedNthColumn: false,
+      inStickyHeader: false
+    })));
+    const totalsMarkup = totals ? /* @__PURE__ */ React.createElement("tr", null, totals.map((total, index2) => this.renderTotals({
+      total,
+      index: index2
+    }))) : null;
+    const nthColumns = rows.map((row) => row.slice(0, fixedFirstColumns));
+    const nthHeadings = headings.slice(0, fixedFirstColumns);
+    const nthTotals = totals == null ? void 0 : totals.slice(0, fixedFirstColumns);
+    const tableHeaderRows = (_a2 = this.table.current) == null ? void 0 : _a2.children[0].childNodes;
+    const tableBodyRows = (_b = this.table.current) == null ? void 0 : _b.children[1].childNodes;
+    const headerRowHeights = getRowClientHeights(tableHeaderRows);
+    const bodyRowHeights = getRowClientHeights(tableBodyRows);
+    const fixedNthColumnMarkup = condensed && fixedFirstColumns !== 0 && /* @__PURE__ */ React.createElement("table", {
+      className: classNames(styles$w.FixedFirstColumn, !isScrolledFarthestLeft && styles$w.separate),
+      style: {
+        width: `${(_c = columnVisibilityData[fixedFirstColumns - 1]) == null ? void 0 : _c.rightEdge}px`
+      }
+    }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", {
+      style: {
+        height: `${headerRowHeights[0]}px`
+      }
+    }, nthHeadings.map((heading2, index2) => this.renderHeading({
+      heading: heading2,
+      headingIndex: index2,
+      inFixedNthColumn: true,
+      inStickyHeader: false
+    }))), totals && !showTotalsInFooter && /* @__PURE__ */ React.createElement("tr", {
+      style: {
+        height: `${headerRowHeights[1]}px`
+      }
+    }, nthTotals == null ? void 0 : nthTotals.map((total, index2) => this.renderTotals({
+      total,
+      index: index2
+    })))), /* @__PURE__ */ React.createElement("tbody", null, nthColumns.map((row, index2) => this.defaultRenderRow({
+      row,
+      index: index2,
+      inFixedNthColumn: true,
+      rowHeights: bodyRowHeights
+    }))), totals && showTotalsInFooter && /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", null, nthTotals == null ? void 0 : nthTotals.map((total, index2) => this.renderTotals({
+      total,
+      index: index2
+    })))));
+    const bodyMarkup = rows.map((row, index2) => this.defaultRenderRow({
+      row,
+      index: index2,
+      inFixedNthColumn: false
+    }));
+    const footerMarkup = footerContent ? /* @__PURE__ */ React.createElement("div", {
+      className: styles$w.Footer
+    }, footerContent) : null;
+    const paginationMarkup = pagination ? /* @__PURE__ */ React.createElement(Pagination, Object.assign({
+      type: "table"
+    }, pagination)) : null;
+    const headerTotalsMarkup = !showTotalsInFooter ? totalsMarkup : null;
+    const footerTotalsMarkup = showTotalsInFooter ? /* @__PURE__ */ React.createElement("tfoot", null, totalsMarkup) : null;
+    const navigationMarkup = (location) => hideScrollIndicator ? null : /* @__PURE__ */ React.createElement(Navigation$2, {
+      columnVisibilityData,
+      isScrolledFarthestLeft,
+      isScrolledFarthestRight,
+      navigateTableLeft: this.navigateTable("left"),
+      navigateTableRight: this.navigateTable("right"),
+      fixedFirstColumns,
+      setRef: (ref) => {
+        if (location === "header") {
+          this.headerNav = ref;
+        } else if (location === "sticky") {
+          this.stickyNav = ref;
+        }
+      }
+    });
+    const stickyHeaderMarkup = stickyHeader ? /* @__PURE__ */ React.createElement(AfterInitialMount, null, /* @__PURE__ */ React.createElement("div", {
+      className: styles$w.StickyHeaderWrapper,
+      role: "presentation"
+    }, /* @__PURE__ */ React.createElement(Sticky, {
+      boundingElement: this.dataTable.current,
+      onStickyChange: (isSticky) => {
+        this.changeHeadingFocus();
+        this.stickyHeaderActive = isSticky;
+      }
+    }, (isSticky) => {
+      const stickyHeaderInnerClassNames = classNames(styles$w.StickyHeaderInner, isSticky && styles$w["StickyHeaderInner-isSticky"]);
+      const stickyHeaderTableClassNames = classNames(styles$w.StickyHeaderTable, !isScrolledFarthestLeft && styles$w.separate);
+      return /* @__PURE__ */ React.createElement("div", {
+        className: stickyHeaderInnerClassNames
+      }, /* @__PURE__ */ React.createElement("div", null, navigationMarkup("sticky")), /* @__PURE__ */ React.createElement("table", {
+        className: stickyHeaderTableClassNames,
+        ref: this.stickyTable
+      }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", {
+        className: styles$w.StickyTableHeadingsRow
+      }, headings.map((heading2, index2) => {
+        return this.renderHeading({
+          heading: heading2,
+          headingIndex: index2,
+          inFixedNthColumn: Boolean(index2 <= fixedFirstColumns - 1 && fixedFirstColumns),
+          inStickyHeader: true
+        });
+      })))));
+    }))) : null;
+    return /* @__PURE__ */ React.createElement("div", {
+      className: wrapperClassName,
+      ref: this.dataTable
+    }, stickyHeaderMarkup, navigationMarkup("header"), /* @__PURE__ */ React.createElement("div", {
+      className
+    }, /* @__PURE__ */ React.createElement("div", {
+      className: styles$w.ScrollContainer,
+      ref: this.scrollContainer
+    }, /* @__PURE__ */ React.createElement(EventListener, {
+      event: "resize",
+      handler: this.handleResize
+    }), /* @__PURE__ */ React.createElement(EventListener, {
+      capture: true,
+      passive: true,
+      event: "scroll",
+      handler: this.scrollListener
+    }), fixedNthColumnMarkup, /* @__PURE__ */ React.createElement("table", {
+      className: styles$w.Table,
+      ref: this.table
+    }, /* @__PURE__ */ React.createElement("thead", null, headingMarkup, headerTotalsMarkup), /* @__PURE__ */ React.createElement("tbody", null, bodyMarkup), footerTotalsMarkup)), paginationMarkup, footerMarkup));
+  }
+  fixedFirstColumns() {
+    const {
+      hasFixedFirstColumn,
+      fixedFirstColumns = 0,
+      headings
+    } = this.props;
+    const numberOfFixedFirstColumns = hasFixedFirstColumn && !fixedFirstColumns ? 1 : fixedFirstColumns;
+    if (numberOfFixedFirstColumns >= headings.length) {
+      return 0;
+    }
+    return numberOfFixedFirstColumns;
+  }
+  // eslint-disable-next-line @shopify/react-no-multiple-render-methods
+  // eslint-disable-next-line @shopify/react-no-multiple-render-methods
+}
+function DataTable(props) {
+  const i18n = useI18n();
+  return /* @__PURE__ */ React.createElement(DataTableInner, Object.assign({}, props, {
+    i18n
+  }));
+}
+var styles$u = {
+  "ImageContainer": "Polaris-EmptyState__ImageContainer",
+  "Image": "Polaris-EmptyState__Image",
+  "loaded": "Polaris-EmptyState--loaded",
+  "imageContained": "Polaris-EmptyState--imageContained",
+  "SkeletonImageContainer": "Polaris-EmptyState__SkeletonImageContainer",
+  "SkeletonImage": "Polaris-EmptyState__SkeletonImage"
+};
+function EmptyState({
+  children,
+  heading: heading2,
+  image,
+  largeImage,
+  imageContained,
+  fullWidth = false,
+  action: action2,
+  secondaryAction,
+  footerContent
+}) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const handleLoad = useCallback(() => {
+    setImageLoaded(true);
+  }, []);
+  const imageClassNames = classNames(styles$u.Image, imageLoaded && styles$u.loaded, imageContained && styles$u.imageContained);
+  const loadedImageMarkup = largeImage ? /* @__PURE__ */ React.createElement(Image, {
+    alt: "",
+    role: "presentation",
+    source: largeImage,
+    className: imageClassNames,
+    sourceSet: [{
+      source: image,
+      descriptor: "568w"
+    }, {
+      source: largeImage,
+      descriptor: "1136w"
+    }],
+    sizes: "(max-width: 568px) 60vw",
+    onLoad: handleLoad
+  }) : /* @__PURE__ */ React.createElement(Image, {
+    alt: "",
+    role: "presentation",
+    className: imageClassNames,
+    source: image,
+    onLoad: handleLoad
+  });
+  const skeletonImageClassNames = classNames(styles$u.SkeletonImage, imageLoaded && styles$u.loaded);
+  const imageContainerClassNames = classNames(styles$u.ImageContainer, !imageLoaded && styles$u.SkeletonImageContainer);
+  const imageMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: imageContainerClassNames
+  }, loadedImageMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: skeletonImageClassNames
+  }));
+  const secondaryActionMarkup = secondaryAction ? buttonFrom(secondaryAction, {}) : null;
+  const footerContentMarkup = footerContent ? /* @__PURE__ */ React.createElement(Box, {
+    paddingBlockStart: "400"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    alignment: "center",
+    variant: "bodySm"
+  }, footerContent)) : null;
+  const primaryActionMarkup = action2 ? buttonFrom(action2, {
+    variant: "primary",
+    size: "medium"
+  }) : null;
+  const headingMarkup = heading2 ? /* @__PURE__ */ React.createElement(Box, {
+    paddingBlockEnd: "150"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    variant: "headingMd",
+    as: "p",
+    alignment: "center"
+  }, heading2)) : null;
+  const childrenMarkup = children ? /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    alignment: "center",
+    variant: "bodySm"
+  }, children) : null;
+  const textContentMarkup = headingMarkup || children ? /* @__PURE__ */ React.createElement(Box, {
+    paddingBlockEnd: "400"
+  }, headingMarkup, childrenMarkup) : null;
+  const actionsMarkup = primaryActionMarkup || secondaryActionMarkup ? /* @__PURE__ */ React.createElement(InlineStack, {
+    align: "center",
+    gap: "200"
+  }, secondaryActionMarkup, primaryActionMarkup) : null;
+  const detailsMarkup = textContentMarkup || actionsMarkup || footerContentMarkup ? /* @__PURE__ */ React.createElement(Box, {
+    maxWidth: fullWidth ? "100%" : "400px"
+  }, /* @__PURE__ */ React.createElement(BlockStack, {
+    inlineAlign: "center"
+  }, textContentMarkup, actionsMarkup, footerContentMarkup)) : null;
+  return /* @__PURE__ */ React.createElement(Box, {
+    paddingInlineStart: "0",
+    paddingInlineEnd: "0",
+    paddingBlockStart: "500",
+    paddingBlockEnd: "1600"
+  }, /* @__PURE__ */ React.createElement(BlockStack, {
+    inlineAlign: "center"
+  }, imageMarkup, detailsMarkup));
+}
+const Focus = /* @__PURE__ */ memo(function Focus2({
+  children,
+  disabled,
+  root
+}) {
+  useEffect(() => {
+    if (disabled || !root) {
+      return;
+    }
+    const node = isRef$1(root) ? root.current : root;
+    if (!node || node.querySelector("[autofocus]")) {
+      return;
+    }
+    focusFirstFocusableNode(node, false);
+  }, [disabled, root]);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, children);
+});
+function isRef$1(ref) {
+  return ref.current !== void 0;
+}
+function Form({
+  acceptCharset,
+  action: action2,
+  autoComplete,
+  children,
+  encType,
+  implicitSubmit = true,
+  method = "post",
+  name,
+  noValidate,
+  preventDefault: preventDefault2 = true,
+  target,
+  onSubmit
+}) {
+  const i18n = useI18n();
+  const handleSubmit = useCallback((event) => {
+    if (!preventDefault2) {
+      return;
+    }
+    event.preventDefault();
+    onSubmit(event);
+  }, [onSubmit, preventDefault2]);
+  const autoCompleteInputs = normalizeAutoComplete(autoComplete);
+  const submitMarkup = implicitSubmit ? /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, /* @__PURE__ */ React.createElement("button", {
+    type: "submit",
+    "aria-hidden": "true",
+    tabIndex: -1
+  }, i18n.translate("Polaris.Common.submit"))) : null;
+  return /* @__PURE__ */ React.createElement("form", {
+    acceptCharset,
+    action: action2,
+    autoComplete: autoCompleteInputs,
+    encType,
+    method,
+    name,
+    noValidate,
+    target,
+    onSubmit: handleSubmit
+  }, submitMarkup, children);
+}
+function normalizeAutoComplete(autoComplete) {
+  if (autoComplete == null) {
+    return autoComplete;
+  }
+  return autoComplete ? "on" : "off";
+}
+var styles$t = {
+  "Item": "Polaris-FormLayout__Item",
+  "grouped": "Polaris-FormLayout--grouped",
+  "condensed": "Polaris-FormLayout--condensed"
+};
+function Item$3({
+  children,
+  condensed = false
+}) {
+  const className = classNames(styles$t.Item, condensed ? styles$t.condensed : styles$t.grouped);
+  return children ? /* @__PURE__ */ React.createElement("div", {
+    className
+  }, children) : null;
+}
+function Group({
+  children,
+  condensed,
+  title,
+  helpText
+}) {
+  const id = useId();
+  let helpTextElement = null;
+  let helpTextId;
+  let titleElement = null;
+  let titleId;
+  if (helpText) {
+    helpTextId = `${id}HelpText`;
+    helpTextElement = /* @__PURE__ */ React.createElement(Box, {
+      id: helpTextId,
+      color: "text-secondary"
+    }, helpText);
+  }
+  if (title) {
+    titleId = `${id}Title`;
+    titleElement = /* @__PURE__ */ React.createElement(Text, {
+      id: titleId,
+      as: "p"
+    }, title);
+  }
+  const itemsMarkup = Children.map(children, (child) => wrapWithComponent(child, Item$3, {
+    condensed
+  }));
+  return /* @__PURE__ */ React.createElement(BlockStack, {
+    role: "group",
+    gap: "200",
+    "aria-labelledby": titleId,
+    "aria-describedby": helpTextId
+  }, titleElement, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "300"
+  }, itemsMarkup), helpTextElement);
+}
+const FormLayout = /* @__PURE__ */ memo(function FormLayout2({
+  children
+}) {
+  return /* @__PURE__ */ React.createElement(BlockStack, {
+    gap: "400"
+  }, Children.map(children, wrapChildren));
+});
+FormLayout.Group = Group;
+function wrapChildren(child, index2) {
+  if (isElementOfType(child, Group)) {
+    return child;
+  }
+  const props = {
+    key: index2
+  };
+  return wrapWithComponent(child, Item$3, props);
+}
+function setRootProperty(name, value, node) {
+  if (!document) return;
+  const element = document.documentElement;
+  element.style.setProperty(name, value);
+}
+var styles$s = {
+  "Frame": "Polaris-Frame",
+  "Navigation": "Polaris-Frame__Navigation",
+  "hasTopBar": "Polaris-Frame--hasTopBar",
+  "Navigation-enter": "Polaris-Frame__Navigation--enter",
+  "Navigation-enterActive": "Polaris-Frame__Navigation--enterActive",
+  "Navigation-exit": "Polaris-Frame__Navigation--exit",
+  "Navigation-exitActive": "Polaris-Frame__Navigation--exitActive",
+  "NavigationDismiss": "Polaris-Frame__NavigationDismiss",
+  "Navigation-visible": "Polaris-Frame__Navigation--visible",
+  "TopBar": "Polaris-Frame__TopBar",
+  "ContextualSaveBar": "Polaris-Frame__ContextualSaveBar",
+  "Main": "Polaris-Frame__Main",
+  "hasNav": "Polaris-Frame--hasNav",
+  "Content": "Polaris-Frame__Content",
+  "hasSidebar": "Polaris-Frame--hasSidebar",
+  "GlobalRibbonContainer": "Polaris-Frame__GlobalRibbonContainer",
+  "LoadingBar": "Polaris-Frame__LoadingBar",
+  "Skip": "Polaris-Frame__Skip",
+  "focused": "Polaris-Frame--focused"
+};
+function useMediaQuery() {
+  const mediaQuery = useContext(MediaQueryContext);
+  if (!mediaQuery) {
+    throw new Error("No mediaQuery was provided. Your application must be wrapped in an <AppProvider> component. See https://polaris.shopify.com/components/app-provider for implementation instructions.");
+  }
+  return mediaQuery;
+}
+function useIsMountedRef() {
+  const isMounted = useRef(false);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  return isMounted;
+}
+var styles$r = {
+  "Loading": "Polaris-Frame-Loading",
+  "Level": "Polaris-Frame-Loading__Level"
+};
+const STUCK_THRESHOLD = 99;
+function Loading() {
+  const i18n = useI18n();
+  const isMountedRef = useIsMountedRef();
+  const [progress, setProgress] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  useEffect(() => {
+    if (progress >= STUCK_THRESHOLD || animating) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      if (!isMountedRef.current) return;
+      const step = Math.max((STUCK_THRESHOLD - progress) / 10, 1);
+      setAnimating(true);
+      setProgress(progress + step);
+    });
+  }, [progress, animating, isMountedRef]);
+  const customStyles = {
+    transform: `scaleX(${Math.floor(progress) / 100})`
+  };
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$r.Loading,
+    "aria-valuenow": progress,
+    "aria-valuemin": 0,
+    "aria-valuemax": 100,
+    role: "progressbar",
+    "aria-label": i18n.translate("Polaris.Loading.label")
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$r.Level,
+    style: customStyles,
+    onTransitionEnd: () => setAnimating(false)
+  }));
+}
+var styles$q = {
+  "startFade": "Polaris-Frame-CSSAnimation--startFade",
+  "endFade": "Polaris-Frame-CSSAnimation--endFade"
+};
+var TransitionStatus;
+(function(TransitionStatus2) {
+  TransitionStatus2["Entering"] = "entering";
+  TransitionStatus2["Entered"] = "entered";
+  TransitionStatus2["Exiting"] = "exiting";
+  TransitionStatus2["Exited"] = "exited";
+})(TransitionStatus || (TransitionStatus = {}));
+function CSSAnimation({
+  in: inProp,
+  className,
+  type,
+  children
+}) {
+  const [transitionStatus, setTransitionStatus] = useState(inProp ? TransitionStatus.Entering : TransitionStatus.Exited);
+  const isMounted = useRef(false);
+  const node = useRef(null);
+  useEffect(() => {
+    if (!isMounted.current) return;
+    transitionStatus === TransitionStatus.Entering && changeTransitionStatus(TransitionStatus.Entered);
+  }, [transitionStatus]);
+  useEffect(() => {
+    if (!isMounted.current) return;
+    inProp && changeTransitionStatus(TransitionStatus.Entering);
+    !inProp && changeTransitionStatus(TransitionStatus.Exiting);
+  }, [inProp]);
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
+  const wrapperClassName = classNames(className, styles$q[variationName("start", type)], inProp && styles$q[variationName("end", type)]);
+  const content2 = transitionStatus === TransitionStatus.Exited && !inProp ? null : children;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: wrapperClassName,
+    ref: node,
+    onTransitionEnd: handleTransitionEnd
+  }, content2);
+  function handleTransitionEnd() {
+    transitionStatus === TransitionStatus.Exiting && changeTransitionStatus(TransitionStatus.Exited);
+  }
+  function changeTransitionStatus(transitionStatus2) {
+    setTransitionStatus(transitionStatus2);
+    if (transitionStatus2 === TransitionStatus.Entering) node.current && node.current.getBoundingClientRect();
+  }
+}
+function pluckDeep(obj, key) {
+  if (!obj) {
+    return null;
+  }
+  const keys = Object.keys(obj);
+  for (const currKey of keys) {
+    if (currKey === key) {
+      return obj[key];
+    }
+    if (isObject(obj[currKey])) {
+      const plucked = pluckDeep(obj[currKey], key);
+      if (plucked) {
+        return plucked;
+      }
+    }
+  }
+  return null;
+}
+function getWidth(value = {}, defaultWidth = 0, key = "width") {
+  const width = typeof value === "number" ? value : pluckDeep(value, key);
+  return width ? `${width}px` : `${defaultWidth}px`;
+}
+var styles$p = {
+  "ContextualSaveBar": "Polaris-Frame-ContextualSaveBar",
+  "LogoContainer": "Polaris-Frame-ContextualSaveBar__LogoContainer",
+  "ContextControl": "Polaris-Frame-ContextualSaveBar__ContextControl",
+  "Contents": "Polaris-Frame-ContextualSaveBar__Contents",
+  "fullWidth": "Polaris-Frame-ContextualSaveBar--fullWidth",
+  "MessageContainer": "Polaris-Frame-ContextualSaveBar__MessageContainer",
+  "ActionContainer": "Polaris-Frame-ContextualSaveBar__ActionContainer"
+};
+var styles$o = {
+  "Body": "Polaris-Modal__Body",
+  "NoScrollBody": "Polaris-Modal__NoScrollBody",
+  "IFrame": "Polaris-Modal__IFrame"
+};
+var styles$n = {
+  "Section": "Polaris-Modal-Section",
+  "titleHidden": "Polaris-Modal-Section--titleHidden"
+};
+function Section$2({
+  children,
+  flush = false,
+  subdued = false,
+  titleHidden = false
+}) {
+  const className = classNames(styles$n.Section, titleHidden && styles$n.titleHidden);
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, /* @__PURE__ */ React.createElement(Box, Object.assign({
+    as: "section",
+    padding: flush ? "0" : "400"
+  }, titleHidden && {
+    paddingInlineEnd: "0"
+  }, subdued && {
+    background: "bg-surface-tertiary"
+  }), children));
+}
+var styles$m = {
+  "Container": "Polaris-Modal-Dialog__Container",
+  "Dialog": "Polaris-Modal-Dialog",
+  "Modal": "Polaris-Modal-Dialog__Modal",
+  "limitHeight": "Polaris-Modal-Dialog--limitHeight",
+  "sizeSmall": "Polaris-Modal-Dialog--sizeSmall",
+  "sizeLarge": "Polaris-Modal-Dialog--sizeLarge",
+  "sizeFullScreen": "Polaris-Modal-Dialog--sizeFullScreen",
+  "animateFadeUp": "Polaris-Modal-Dialog--animateFadeUp",
+  "entering": "Polaris-Modal-Dialog--entering",
+  "exiting": "Polaris-Modal-Dialog--exiting",
+  "exited": "Polaris-Modal-Dialog--exited",
+  "entered": "Polaris-Modal-Dialog--entered"
+};
+function useFocusManager({
+  trapping
+}) {
+  const focusManager = useContext(FocusManagerContext);
+  const id = useId();
+  if (!focusManager) {
+    throw new MissingAppProviderError("No FocusManager was provided.");
+  }
+  const {
+    trapFocusList,
+    add: addFocusItem,
+    remove: removeFocusItem
+  } = focusManager;
+  const canSafelyFocus = trapFocusList[0] === id;
+  const value = useMemo(() => ({
+    canSafelyFocus
+  }), [canSafelyFocus]);
+  useEffect(() => {
+    if (!trapping) return;
+    addFocusItem(id);
+    return () => {
+      removeFocusItem(id);
+    };
+  }, [addFocusItem, id, removeFocusItem, trapping]);
+  return value;
+}
+function TrapFocus({
+  trapping = true,
+  children
+}) {
+  const {
+    canSafelyFocus
+  } = useFocusManager({
+    trapping
+  });
+  const focusTrapWrapper = useRef(null);
+  const [disableFocus, setDisableFocus] = useState(true);
+  useEffect(() => {
+    const disable = canSafelyFocus && !(focusTrapWrapper.current && focusTrapWrapper.current.contains(document.activeElement)) ? !trapping : true;
+    setDisableFocus(disable);
+  }, [canSafelyFocus, trapping]);
+  const handleFocusIn = (event) => {
+    const containerContentsHaveFocus = focusTrapWrapper.current && focusTrapWrapper.current.contains(document.activeElement);
+    if (trapping === false || !focusTrapWrapper.current || containerContentsHaveFocus || event.target instanceof Element && event.target.matches(`${portal.selector} *`)) {
+      return;
+    }
+    if (canSafelyFocus && event.target instanceof HTMLElement && focusTrapWrapper.current !== event.target && !focusTrapWrapper.current.contains(event.target)) {
+      focusFirstFocusableNode(focusTrapWrapper.current);
+    }
+  };
+  const handleTab = (event) => {
+    if (trapping === false || !focusTrapWrapper.current) {
+      return;
+    }
+    const firstFocusableNode = findFirstKeyboardFocusableNode(focusTrapWrapper.current);
+    const lastFocusableNode = findLastKeyboardFocusableNode(focusTrapWrapper.current);
+    if (event.target === lastFocusableNode && !event.shiftKey) {
+      event.preventDefault();
+      focusFirstKeyboardFocusableNode(focusTrapWrapper.current);
+    }
+    if (event.target === firstFocusableNode && event.shiftKey) {
+      event.preventDefault();
+      focusLastKeyboardFocusableNode(focusTrapWrapper.current);
+    }
+  };
+  return /* @__PURE__ */ React.createElement(Focus, {
+    disabled: disableFocus,
+    root: focusTrapWrapper.current
+  }, /* @__PURE__ */ React.createElement("div", {
+    ref: focusTrapWrapper
+  }, /* @__PURE__ */ React.createElement(EventListener, {
+    event: "focusin",
+    handler: handleFocusIn
+  }), /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyCode: Key.Tab,
+    keyEvent: "keydown",
+    handler: handleTab
+  }), children));
+}
+function Dialog({
+  instant,
+  labelledBy,
+  children,
+  limitHeight,
+  size,
+  onClose,
+  onExited,
+  onEntered,
+  setClosing,
+  hasToasts,
+  ...props
+}) {
+  const theme = useTheme();
+  const containerNode = useRef(null);
+  const frameContext = useContext(FrameContext);
+  let toastMessages;
+  if (frameContext) {
+    toastMessages = frameContext.toastMessages;
+  }
+  const classes = classNames(styles$m.Modal, size && styles$m[variationName("size", size)], limitHeight && styles$m.limitHeight);
+  const TransitionChild = instant ? Transition : FadeUp;
+  useEffect(() => {
+    containerNode.current && !containerNode.current.contains(document.activeElement) && focusFirstFocusableNode(containerNode.current);
+  }, []);
+  const handleKeyDown2 = () => {
+    if (setClosing) {
+      setClosing(true);
+    }
+  };
+  const handleKeyUp = () => {
+    if (setClosing) {
+      setClosing(false);
+    }
+    onClose();
+  };
+  const ariaLiveAnnouncements = /* @__PURE__ */ React.createElement("div", {
+    "aria-live": "assertive"
+  }, toastMessages ? toastMessages.map((toastMessage) => /* @__PURE__ */ React.createElement(Text, {
+    visuallyHidden: true,
+    as: "p",
+    key: toastMessage.id
+  }, toastMessage.content)) : null);
+  return /* @__PURE__ */ React.createElement(TransitionChild, Object.assign({}, props, {
+    nodeRef: containerNode,
+    mountOnEnter: true,
+    unmountOnExit: true,
+    timeout: parseInt(theme.motion["motion-duration-200"], 10),
+    onEntered,
+    onExited
+  }), /* @__PURE__ */ React.createElement("div", {
+    className: styles$m.Container,
+    "data-polaris-layer": true,
+    "data-polaris-overlay": true,
+    ref: containerNode
+  }, /* @__PURE__ */ React.createElement(TrapFocus, null, /* @__PURE__ */ React.createElement("div", {
+    role: "dialog",
+    "aria-modal": true,
+    "aria-label": labelledBy,
+    "aria-labelledby": labelledBy,
+    tabIndex: -1,
+    className: styles$m.Dialog
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: classes
+  }, /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyCode: Key.Escape,
+    keyEvent: "keydown",
+    handler: handleKeyDown2
+  }), /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyCode: Key.Escape,
+    handler: handleKeyUp
+  }), children), ariaLiveAnnouncements))));
+}
+const fadeUpClasses = {
+  appear: classNames(styles$m.animateFadeUp, styles$m.entering),
+  appearActive: classNames(styles$m.animateFadeUp, styles$m.entered),
+  enter: classNames(styles$m.animateFadeUp, styles$m.entering),
+  enterActive: classNames(styles$m.animateFadeUp, styles$m.entered),
+  exit: classNames(styles$m.animateFadeUp, styles$m.exiting),
+  exitActive: classNames(styles$m.animateFadeUp, styles$m.exited)
+};
+function FadeUp({
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ React.createElement(CSSTransition, Object.assign({}, props, {
+    classNames: fadeUpClasses
+  }), children);
+}
+function CloseButton({
+  pressed,
+  onClick
+}) {
+  const i18n = useI18n();
+  return /* @__PURE__ */ React.createElement(Button, {
+    variant: "tertiary",
+    pressed,
+    icon: XIcon,
+    onClick,
+    accessibilityLabel: i18n.translate("Polaris.Common.close")
+  });
+}
+function Header$1({
+  id,
+  children,
+  closing,
+  titleHidden,
+  onClose
+}) {
+  const headerPaddingInline = "400";
+  const headerPaddingBlock = "400";
+  if (titleHidden || !children) {
+    return /* @__PURE__ */ React.createElement(Box, {
+      position: "absolute",
+      insetInlineEnd: headerPaddingInline,
+      insetBlockStart: headerPaddingBlock,
+      zIndex: "1"
+    }, /* @__PURE__ */ React.createElement(CloseButton, {
+      onClick: onClose
+    }));
+  }
+  return /* @__PURE__ */ React.createElement(Box, {
+    paddingBlockStart: "400",
+    paddingBlockEnd: "400",
+    paddingInlineStart: headerPaddingInline,
+    paddingInlineEnd: headerPaddingInline,
+    borderBlockEndWidth: "025",
+    borderColor: "border",
+    background: "bg-surface-tertiary"
+  }, /* @__PURE__ */ React.createElement(InlineGrid, {
+    columns: {
+      xs: "1fr auto"
+    },
+    gap: "400"
+  }, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400",
+    blockAlign: "center"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    id,
+    as: "h2",
+    variant: "headingMd",
+    breakWord: true
+  }, children)), /* @__PURE__ */ React.createElement(CloseButton, {
+    pressed: closing,
+    onClick: onClose
+  })));
+}
+function Footer({
+  primaryAction,
+  secondaryActions,
+  children
+}) {
+  const primaryActionButton = primaryAction && buttonsFrom(primaryAction, {
+    variant: "primary"
+  }) || null;
+  const secondaryActionButtons = secondaryActions && buttonsFrom(secondaryActions) || null;
+  const actions = primaryActionButton || secondaryActionButtons ? /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "200"
+  }, secondaryActionButtons, primaryActionButton) : null;
+  return /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400",
+    blockAlign: "center"
+  }, /* @__PURE__ */ React.createElement(Box, {
+    borderColor: "border",
+    borderBlockStartWidth: "025",
+    padding: "400",
+    width: "100%"
+  }, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400",
+    blockAlign: "center",
+    align: "space-between"
+  }, /* @__PURE__ */ React.createElement(Box, null, children), actions)));
+}
+const IFRAME_LOADING_HEIGHT = 200;
+const DEFAULT_IFRAME_CONTENT_HEIGHT = 400;
+const Modal = function Modal2({
+  children,
+  title,
+  titleHidden = false,
+  src,
+  iFrameName,
+  open,
+  instant,
+  sectioned,
+  loading,
+  size,
+  limitHeight,
+  footer,
+  primaryAction,
+  secondaryActions,
+  onScrolledToBottom,
+  activator,
+  activatorWrapper = "div",
+  onClose,
+  onIFrameLoad,
+  onTransitionEnd,
+  noScroll
+}) {
+  const [iframeHeight, setIframeHeight] = useState(IFRAME_LOADING_HEIGHT);
+  const [closing, setClosing] = useState(false);
+  const headerId = useId();
+  const activatorRef = useRef(null);
+  const i18n = useI18n();
+  const iframeTitle = i18n.translate("Polaris.Modal.iFrameTitle");
+  let dialog;
+  let backdrop;
+  const handleEntered = useCallback(() => {
+    if (onTransitionEnd) {
+      onTransitionEnd();
+    }
+  }, [onTransitionEnd]);
+  const handleExited = useCallback(() => {
+    setIframeHeight(IFRAME_LOADING_HEIGHT);
+    const activatorElement = activator && isRef(activator) ? activator && activator.current : activatorRef.current;
+    if (activatorElement) {
+      requestAnimationFrame(() => focusFirstFocusableNode(activatorElement));
+    }
+  }, [activator]);
+  const handleIFrameLoad = useCallback((evt) => {
+    const iframe = evt.target;
+    if (iframe && iframe.contentWindow) {
+      try {
+        setIframeHeight(iframe.contentWindow.document.body.scrollHeight);
+      } catch (_error) {
+        setIframeHeight(DEFAULT_IFRAME_CONTENT_HEIGHT);
+      }
+    }
+    if (onIFrameLoad != null) {
+      onIFrameLoad(evt);
+    }
+  }, [onIFrameLoad]);
+  if (open) {
+    const footerMarkup = !footer && !primaryAction && !secondaryActions ? null : /* @__PURE__ */ React.createElement(Footer, {
+      primaryAction,
+      secondaryActions
+    }, footer);
+    const content2 = sectioned ? wrapWithComponent(children, Section$2, {
+      titleHidden
+    }) : children;
+    const body = loading ? /* @__PURE__ */ React.createElement(Box, {
+      padding: "400"
+    }, /* @__PURE__ */ React.createElement(InlineStack, {
+      gap: "400",
+      align: "center",
+      blockAlign: "center"
+    }, /* @__PURE__ */ React.createElement(Spinner$1, null))) : content2;
+    const scrollContainerMarkup = noScroll ? /* @__PURE__ */ React.createElement("div", {
+      className: styles$o.NoScrollBody
+    }, /* @__PURE__ */ React.createElement(Box, {
+      width: "100%",
+      overflowX: "hidden",
+      overflowY: "hidden"
+    }, body)) : /* @__PURE__ */ React.createElement(Scrollable, {
+      shadow: true,
+      className: styles$o.Body,
+      onScrolledToBottom
+    }, body);
+    const bodyMarkup = src ? /* @__PURE__ */ React.createElement("iframe", {
+      name: iFrameName,
+      title: iframeTitle,
+      src,
+      className: styles$o.IFrame,
+      onLoad: handleIFrameLoad,
+      style: {
+        height: `${iframeHeight}px`
+      }
+    }) : scrollContainerMarkup;
+    dialog = /* @__PURE__ */ React.createElement(Dialog, {
+      instant,
+      labelledBy: headerId,
+      onClose,
+      onEntered: handleEntered,
+      onExited: handleExited,
+      size,
+      limitHeight,
+      setClosing
+    }, /* @__PURE__ */ React.createElement(Header$1, {
+      titleHidden,
+      id: headerId,
+      closing,
+      onClose
+    }, title), bodyMarkup, footerMarkup);
+    backdrop = /* @__PURE__ */ React.createElement(Backdrop, {
+      setClosing,
+      onClick: onClose
+    });
+  }
+  const animated = !instant;
+  const activatorMarkup = activator && !isRef(activator) ? /* @__PURE__ */ React.createElement(Box, {
+    ref: activatorRef,
+    as: activatorWrapper
+  }, activator) : null;
+  return /* @__PURE__ */ React.createElement(WithinContentContext.Provider, {
+    value: true
+  }, activatorMarkup, /* @__PURE__ */ React.createElement(Portal, {
+    idPrefix: "modal"
+  }, /* @__PURE__ */ React.createElement(TransitionGroup, {
+    appear: animated,
+    enter: animated,
+    exit: animated
+  }, dialog), backdrop));
+};
+function isRef(ref) {
+  return Object.prototype.hasOwnProperty.call(ref, "current");
+}
+Modal.Section = Section$2;
+function DiscardConfirmationModal({
+  open,
+  onDiscard,
+  onCancel
+}) {
+  const i18n = useI18n();
+  return /* @__PURE__ */ React.createElement(Modal, {
+    title: i18n.translate("Polaris.DiscardConfirmationModal.title"),
+    open,
+    onClose: onCancel,
+    primaryAction: {
+      content: i18n.translate("Polaris.DiscardConfirmationModal.primaryAction"),
+      destructive: true,
+      onAction: onDiscard
+    },
+    secondaryActions: [{
+      content: i18n.translate("Polaris.DiscardConfirmationModal.secondaryAction"),
+      onAction: onCancel
+    }],
+    sectioned: true
+  }, i18n.translate("Polaris.DiscardConfirmationModal.message"));
+}
+function ContextualSaveBar({
+  alignContentFlush,
+  message,
+  saveAction,
+  discardAction,
+  fullWidth,
+  contextControl,
+  secondaryMenu
+}) {
+  const i18n = useI18n();
+  const {
+    logo
+  } = useFrame();
+  const {
+    value: discardConfirmationModalVisible,
+    toggle: toggleDiscardConfirmationModal,
+    setFalse: closeDiscardConfirmationModal
+  } = useToggle(false);
+  const handleDiscardAction = useCallback(() => {
+    if (discardAction && discardAction.onAction) {
+      discardAction.onAction();
+    }
+    closeDiscardConfirmationModal();
+  }, [closeDiscardConfirmationModal, discardAction]);
+  const discardActionContent = discardAction && discardAction.content ? discardAction.content : i18n.translate("Polaris.ContextualSaveBar.discard");
+  let discardActionHandler;
+  if (discardAction && discardAction.discardConfirmationModal) {
+    discardActionHandler = toggleDiscardConfirmationModal;
+  } else if (discardAction) {
+    discardActionHandler = discardAction.onAction;
+  }
+  const discardConfirmationModalMarkup = discardAction && discardAction.onAction && discardAction.discardConfirmationModal && /* @__PURE__ */ React.createElement(DiscardConfirmationModal, {
+    open: discardConfirmationModalVisible,
+    onCancel: toggleDiscardConfirmationModal,
+    onDiscard: handleDiscardAction
+  });
+  const discardActionMarkup = discardAction && /* @__PURE__ */ React.createElement(Button, {
+    variant: "tertiary",
+    size: "large",
+    url: discardAction.url,
+    onClick: discardActionHandler,
+    loading: discardAction.loading,
+    disabled: discardAction.disabled,
+    accessibilityLabel: discardAction.content
+  }, discardActionContent);
+  const saveActionContent = saveAction && saveAction.content ? saveAction.content : i18n.translate("Polaris.ContextualSaveBar.save");
+  const saveActionMarkup = saveAction && /* @__PURE__ */ React.createElement(Button, {
+    variant: "primary",
+    tone: "success",
+    size: "large",
+    url: saveAction.url,
+    onClick: saveAction.onAction,
+    loading: saveAction.loading,
+    disabled: saveAction.disabled,
+    accessibilityLabel: saveAction.content
+  }, saveActionContent);
+  const width = getWidth(logo, 104);
+  const imageMarkup = logo && /* @__PURE__ */ React.createElement(Image, {
+    style: {
+      width
+    },
+    source: logo.contextualSaveBarSource || "",
+    alt: ""
+  });
+  const logoMarkup = alignContentFlush || contextControl ? null : /* @__PURE__ */ React.createElement("div", {
+    className: styles$p.LogoContainer,
+    style: {
+      width
+    }
+  }, imageMarkup);
+  const contextControlMarkup = contextControl ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$p.ContextControl
+  }, contextControl) : null;
+  const contentsClassName = classNames(styles$p.Contents, fullWidth && styles$p.fullWidth);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    className: styles$p.ContextualSaveBar
+  }, contextControlMarkup, logoMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: contentsClassName
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$p.MessageContainer
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: AlertTriangleIcon
+  }), message && /* @__PURE__ */ React.createElement(Text, {
+    as: "h2",
+    variant: "headingMd",
+    tone: "text-inverse",
+    truncate: true
+  }, message)), /* @__PURE__ */ React.createElement("div", {
+    className: styles$p.ActionContainer
+  }, /* @__PURE__ */ React.createElement(LegacyStack, {
+    spacing: "tight",
+    wrap: false
+  }, secondaryMenu, discardActionMarkup, saveActionMarkup)))), discardConfirmationModalMarkup);
+}
+function useDeepCompareRef(dependencies, comparator = isEqual) {
+  const dependencyList = useRef(dependencies);
+  if (!comparator(dependencyList.current, dependencies)) {
+    dependencyList.current = dependencies;
+  }
+  return dependencyList.current;
+}
+function useDeepEffect(callback, dependencies, customCompare) {
+  useEffect(callback, useDeepCompareRef(dependencies, customCompare));
+}
+function useDeepCallback(callback, dependencies, customCompare) {
+  return useCallback(callback, useDeepCompareRef(dependencies, customCompare));
+}
+var styles$l = {
+  "ToastManager": "Polaris-Frame-ToastManager",
+  "ToastWrapper": "Polaris-Frame-ToastManager__ToastWrapper",
+  "ToastWrapper-enter": "Polaris-Frame-ToastManager__ToastWrapper--enter",
+  "ToastWrapper-exit": "Polaris-Frame-ToastManager__ToastWrapper--exit",
+  "ToastWrapper-enter-done": "Polaris-Frame-ToastManager--toastWrapperEnterDone"
+};
+var styles$k = {
+  "Toast": "Polaris-Frame-Toast",
+  "Action": "Polaris-Frame-Toast__Action",
+  "error": "Polaris-Frame-Toast--error",
+  "CloseButton": "Polaris-Frame-Toast__CloseButton",
+  "LeadingIcon": "Polaris-Frame-Toast__LeadingIcon",
+  "toneMagic": "Polaris-Frame-Toast--toneMagic",
+  "WithActionOnComponent": "Polaris-Frame-Toast__WithActionOnComponent"
+};
+const DEFAULT_TOAST_DURATION = 5e3;
+const DEFAULT_TOAST_DURATION_WITH_ACTION = 1e4;
+function Toast({
+  content: content2,
+  onDismiss,
+  duration,
+  error,
+  action: action2,
+  tone,
+  onClick,
+  icon,
+  isHovered
+}) {
+  const defaultDurationWithoutAction = duration || DEFAULT_TOAST_DURATION;
+  const defaultDuration = action2 && !duration ? DEFAULT_TOAST_DURATION_WITH_ACTION : defaultDurationWithoutAction;
+  const durationRemaining = useRef(defaultDuration);
+  const timeoutStart = useRef(null);
+  const timer = useRef(null);
+  useEffect(() => {
+    function resume() {
+      timeoutStart.current = Date.now();
+      timer.current = setTimeout(() => {
+        onDismiss();
+      }, durationRemaining.current);
+    }
+    function pause() {
+      if (timeoutStart.current) {
+        durationRemaining.current -= Date.now() - timeoutStart.current;
+      }
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+      timer.current = null;
+    }
+    if (isHovered) {
+      pause();
+    } else {
+      resume();
+    }
+    return () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+    };
+  }, [isHovered, onDismiss]);
+  useEffect(() => {
+    if (action2 && duration && duration < DEFAULT_TOAST_DURATION_WITH_ACTION) {
+      console.log("Toast with action should persist for at least 10,000 milliseconds to give the merchant enough time to act on it.");
+    }
+  }, [action2, duration]);
+  const dismissMarkup = /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    className: styles$k.CloseButton,
+    onClick: onDismiss
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: XSmallIcon,
+    tone: "inherit"
+  }));
+  const actionMarkup = action2 ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$k.Action
+  }, /* @__PURE__ */ React.createElement(Button, {
+    variant: "monochromePlain",
+    removeUnderline: true,
+    size: "slim",
+    onClick: action2.onAction
+  }, action2.content)) : null;
+  let leadingIconMarkup = null;
+  if (error) {
+    leadingIconMarkup = /* @__PURE__ */ React.createElement("div", {
+      className: styles$k.LeadingIcon
+    }, /* @__PURE__ */ React.createElement(Icon, {
+      source: AlertCircleIcon,
+      tone: "inherit"
+    }));
+  } else if (icon) {
+    leadingIconMarkup = /* @__PURE__ */ React.createElement("div", {
+      className: styles$k.LeadingIcon
+    }, /* @__PURE__ */ React.createElement(Icon, {
+      source: icon,
+      tone: "inherit"
+    }));
+  }
+  const className = classNames(styles$k.Toast, error && styles$k.error, tone && styles$k[variationName("tone", tone)]);
+  if (!action2 && onClick) {
+    return /* @__PURE__ */ React.createElement("button", {
+      "aria-live": "assertive",
+      className: classNames(className, styles$k.WithActionOnComponent),
+      type: "button",
+      onClick
+    }, /* @__PURE__ */ React.createElement(KeypressListener, {
+      keyCode: Key.Escape,
+      handler: onDismiss
+    }), leadingIconMarkup, /* @__PURE__ */ React.createElement(InlineStack, {
+      gap: "400",
+      blockAlign: "center"
+    }, /* @__PURE__ */ React.createElement(Text, Object.assign({
+      as: "span",
+      variant: "bodyMd",
+      fontWeight: "medium"
+    }, tone === "magic" && {
+      tone: "magic"
+    }), content2)));
+  }
+  return /* @__PURE__ */ React.createElement("div", {
+    className,
+    "aria-live": "assertive"
+  }, /* @__PURE__ */ React.createElement(KeypressListener, {
+    keyCode: Key.Escape,
+    handler: onDismiss
+  }), leadingIconMarkup, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400",
+    blockAlign: "center"
+  }, /* @__PURE__ */ React.createElement(Text, Object.assign({
+    as: "span",
+    variant: "bodyMd",
+    fontWeight: "medium"
+  }, tone === "magic" && {
+    tone: "magic"
+  }), content2)), actionMarkup, dismissMarkup);
+}
+const ADDITIONAL_TOAST_BASE_MOVEMENT = 10;
+const TOAST_TRANSITION_DELAY = 30;
+function generateAdditionalVerticalMovement(index2) {
+  const getAmountToRemove = (idx) => (idx - 1) * idx / 2;
+  return index2 * ADDITIONAL_TOAST_BASE_MOVEMENT - getAmountToRemove(index2);
+}
+const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
+  toastMessages
+}) {
+  const toastNodes = [];
+  const [shouldExpand, setShouldExpand] = useState(false);
+  const isFullyExpanded = useRef(false);
+  const fullyExpandedTimeout = useRef(null);
+  const firstToast = useRef(null);
+  const updateToasts = useDeepCallback(() => {
+    const zeroIndexTotalMessages = toastMessages.length - 1;
+    toastMessages.forEach((_, index2) => {
+      const reversedOrder = zeroIndexTotalMessages - index2;
+      const currentToast = toastNodes[index2];
+      if (!currentToast.current) return;
+      const toastHeight = currentToast.current.clientHeight;
+      const scale = shouldExpand ? 1 : 0.9 ** reversedOrder;
+      const additionalVerticalMovement = generateAdditionalVerticalMovement(reversedOrder);
+      const targetInPos = shouldExpand ? toastHeight + (toastHeight - 8) * reversedOrder : toastHeight + additionalVerticalMovement;
+      currentToast.current.style.setProperty("--pc-toast-manager-translate-y-in", `-${targetInPos}px`);
+      currentToast.current.style.setProperty("--pc-toast-manager-scale-in", `${scale}`);
+      currentToast.current.style.setProperty("--pc-toast-manager-blur-in", shouldExpand ? "0" : `${reversedOrder * 0.5}px`);
+      currentToast.current.style.setProperty("--pc-toast-manager-transition-delay-in", `${shouldExpand ? reversedOrder * TOAST_TRANSITION_DELAY : 0}ms`);
+      currentToast.current.style.setProperty("--pc-toast-manager-scale-out", `${reversedOrder === 0 ? 0.85 : scale ** 2}`);
+      currentToast.current.style.setProperty("--pc-toast-manager-translate-y-out", `${-targetInPos}px`);
+    });
+  }, [toastMessages, toastNodes, shouldExpand]);
+  useDeepEffect(() => {
+    updateToasts();
+    if (toastMessages.length === 0) {
+      setShouldExpand(false);
+    }
+    if (shouldExpand) {
+      fullyExpandedTimeout.current = setTimeout(() => {
+        isFullyExpanded.current = true;
+      }, toastMessages.length * TOAST_TRANSITION_DELAY + 400);
+    } else if (fullyExpandedTimeout.current) {
+      clearTimeout(fullyExpandedTimeout.current);
+      isFullyExpanded.current = false;
+    }
+  }, [toastMessages, shouldExpand]);
+  const toastsMarkup = toastMessages.map((toast2, index2) => {
+    const reverseOrderIndex = toastMessages.length - index2 - 1;
+    const toastNode = /* @__PURE__ */ createRef();
+    toastNodes[index2] = toastNode;
+    function handleMouseEnter() {
+      setShouldExpand(true);
+    }
+    function handleMouseEnterFirstToast() {
+      if (isFullyExpanded.current) {
+        setShouldExpand(false);
+      }
+    }
+    return /* @__PURE__ */ React.createElement(CSSTransition, {
+      nodeRef: toastNodes[index2],
+      key: toast2.id,
+      timeout: {
+        enter: 0,
+        exit: 200
+      },
+      classNames: toastClasses
+    }, /* @__PURE__ */ React.createElement("div", {
+      ref: toastNode,
+      onMouseEnter: reverseOrderIndex > 0 ? handleMouseEnter : handleMouseEnterFirstToast
+    }, /* @__PURE__ */ React.createElement("div", {
+      ref: (node) => reverseOrderIndex === 0 ? firstToast.current = node : null
+    }, /* @__PURE__ */ React.createElement(Toast, Object.assign({}, toast2, {
+      isHovered: shouldExpand
+    })))));
+  });
+  return /* @__PURE__ */ React.createElement(Portal, {
+    idPrefix: "toast"
+  }, /* @__PURE__ */ React.createElement(EventListener, {
+    event: "resize",
+    handler: updateToasts
+  }), /* @__PURE__ */ React.createElement("div", {
+    className: styles$l.ToastManager,
+    "aria-live": "assertive",
+    onMouseEnter: function(event) {
+      var _a2;
+      const target = event.target;
+      const isInFirstToast = (_a2 = firstToast.current) == null ? void 0 : _a2.contains(target);
+      setShouldExpand(!isInFirstToast);
+    },
+    onMouseLeave: function() {
+      setShouldExpand(false);
+    }
+  }, /* @__PURE__ */ React.createElement(TransitionGroup, {
+    component: null
+  }, toastsMarkup)));
+});
+const toastClasses = {
+  enter: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-enter"]),
+  enterDone: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-enter-done"]),
+  exit: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-exit"])
+};
+const APP_FRAME_MAIN = "AppFrameMain";
+const APP_FRAME_NAV = "AppFrameNav";
+const APP_FRAME_TOP_BAR = "AppFrameTopBar";
+const APP_FRAME_LOADING_BAR = "AppFrameLoadingBar";
+class FrameInner extends PureComponent {
+  constructor(...args) {
+    super(...args);
+    this.state = {
+      skipFocused: false,
+      globalRibbonHeight: 0,
+      loadingStack: 0,
+      toastMessages: [],
+      showContextualSaveBar: false
+    };
+    this.contextualSaveBar = null;
+    this.globalRibbonContainer = null;
+    this.navigationNode = /* @__PURE__ */ createRef();
+    this.setGlobalRibbonHeight = () => {
+      const {
+        globalRibbonContainer
+      } = this;
+      if (globalRibbonContainer) {
+        this.setState({
+          globalRibbonHeight: globalRibbonContainer.offsetHeight
+        }, this.setGlobalRibbonRootProperty);
+      }
+    };
+    this.setOffset = () => {
+      const {
+        offset = "0px"
+      } = this.props;
+      setRootProperty("--pc-frame-offset", offset);
+    };
+    this.setGlobalRibbonRootProperty = () => {
+      const {
+        globalRibbonHeight
+      } = this.state;
+      setRootProperty("--pc-frame-global-ribbon-height", `${globalRibbonHeight}px`);
+    };
+    this.showToast = (toast2) => {
+      this.setState(({
+        toastMessages
+      }) => {
+        const hasToastById = toastMessages.find(({
+          id
+        }) => id === toast2.id) != null;
+        return {
+          toastMessages: hasToastById ? toastMessages : [...toastMessages, toast2]
+        };
+      });
+    };
+    this.hideToast = ({
+      id
+    }) => {
+      this.setState(({
+        toastMessages
+      }) => {
+        return {
+          toastMessages: toastMessages.filter(({
+            id: toastId
+          }) => id !== toastId)
+        };
+      });
+    };
+    this.setContextualSaveBar = (props) => {
+      const {
+        showContextualSaveBar
+      } = this.state;
+      this.contextualSaveBar = {
+        ...props
+      };
+      if (showContextualSaveBar === true) {
+        this.forceUpdate();
+      } else {
+        this.setState({
+          showContextualSaveBar: true
+        });
+      }
+    };
+    this.removeContextualSaveBar = () => {
+      this.contextualSaveBar = null;
+      this.setState({
+        showContextualSaveBar: false
+      });
+    };
+    this.startLoading = () => {
+      this.setState(({
+        loadingStack
+      }) => ({
+        loadingStack: loadingStack + 1
+      }));
+    };
+    this.stopLoading = () => {
+      this.setState(({
+        loadingStack
+      }) => ({
+        loadingStack: Math.max(0, loadingStack - 1)
+      }));
+    };
+    this.handleResize = () => {
+      if (this.props.globalRibbon) {
+        this.setGlobalRibbonHeight();
+      }
+    };
+    this.handleFocus = () => {
+      this.setState({
+        skipFocused: true
+      });
+    };
+    this.handleBlur = () => {
+      this.setState({
+        skipFocused: false
+      });
+    };
+    this.handleClick = (event) => {
+      const {
+        skipToContentTarget
+      } = this.props;
+      if (skipToContentTarget && skipToContentTarget.current) {
+        skipToContentTarget.current.focus();
+        event == null ? void 0 : event.preventDefault();
+      }
+    };
+    this.handleNavigationDismiss = () => {
+      const {
+        onNavigationDismiss
+      } = this.props;
+      if (onNavigationDismiss != null) {
+        onNavigationDismiss();
+      }
+    };
+    this.setGlobalRibbonContainer = (node) => {
+      this.globalRibbonContainer = node;
+    };
+    this.handleNavKeydown = (event) => {
+      const {
+        key
+      } = event;
+      const {
+        mediaQuery: {
+          isNavigationCollapsed
+        },
+        showMobileNavigation
+      } = this.props;
+      const mobileNavShowing = isNavigationCollapsed && showMobileNavigation;
+      if (mobileNavShowing && key === "Escape") {
+        this.handleNavigationDismiss();
+      }
+    };
+  }
+  componentDidMount() {
+    this.handleResize();
+    if (this.props.globalRibbon) {
+      return;
+    }
+    this.setGlobalRibbonRootProperty();
+    this.setOffset();
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.globalRibbon !== prevProps.globalRibbon) {
+      this.setGlobalRibbonHeight();
+    }
+    this.setOffset();
+  }
+  render() {
+    const {
+      skipFocused,
+      loadingStack,
+      toastMessages,
+      showContextualSaveBar
+    } = this.state;
+    const {
+      logo,
+      children,
+      navigation,
+      topBar,
+      globalRibbon,
+      showMobileNavigation = false,
+      skipToContentTarget,
+      i18n,
+      sidebar,
+      mediaQuery: {
+        isNavigationCollapsed
+      }
+    } = this.props;
+    const navClassName = classNames(styles$s.Navigation, showMobileNavigation && styles$s["Navigation-visible"]);
+    const mobileNavHidden = isNavigationCollapsed && !showMobileNavigation;
+    const mobileNavShowing = isNavigationCollapsed && showMobileNavigation;
+    const tabIndex = mobileNavShowing ? 0 : -1;
+    const mobileNavAttributes = {
+      ...mobileNavShowing && {
+        "aria-modal": true,
+        role: "dialog"
+      }
+    };
+    const navigationMarkup = navigation ? /* @__PURE__ */ React.createElement(UseTheme, null, (theme) => /* @__PURE__ */ React.createElement(TrapFocus, {
+      trapping: mobileNavShowing
+    }, /* @__PURE__ */ React.createElement(CSSTransition, {
+      nodeRef: this.navigationNode,
+      appear: isNavigationCollapsed,
+      exit: isNavigationCollapsed,
+      in: showMobileNavigation,
+      timeout: parseInt(theme.motion["motion-duration-300"], 10),
+      classNames: navTransitionClasses
+    }, /* @__PURE__ */ React.createElement("div", Object.assign({
+      key: "NavContent"
+    }, mobileNavAttributes, {
+      "aria-label": i18n.translate("Polaris.Frame.navigationLabel"),
+      ref: this.navigationNode,
+      className: navClassName,
+      onKeyDown: this.handleNavKeydown,
+      id: APP_FRAME_NAV,
+      hidden: mobileNavHidden
+    }), navigation, /* @__PURE__ */ React.createElement("button", {
+      type: "button",
+      className: styles$s.NavigationDismiss,
+      onClick: this.handleNavigationDismiss,
+      "aria-hidden": mobileNavHidden || !isNavigationCollapsed && !showMobileNavigation,
+      "aria-label": i18n.translate("Polaris.Frame.Navigation.closeMobileNavigationLabel"),
+      tabIndex
+    }, /* @__PURE__ */ React.createElement(Icon, {
+      source: XIcon
+    })))))) : null;
+    const loadingMarkup = loadingStack > 0 ? /* @__PURE__ */ React.createElement("div", {
+      className: styles$s.LoadingBar,
+      id: APP_FRAME_LOADING_BAR
+    }, /* @__PURE__ */ React.createElement(Loading, null)) : null;
+    const topBarMarkup = topBar ? /* @__PURE__ */ React.createElement("div", Object.assign({
+      className: styles$s.TopBar
+    }, layer.props, dataPolarisTopBar.props, {
+      id: APP_FRAME_TOP_BAR
+    }), topBar) : null;
+    const globalRibbonMarkup = globalRibbon ? /* @__PURE__ */ React.createElement("div", {
+      className: styles$s.GlobalRibbonContainer,
+      ref: this.setGlobalRibbonContainer
+    }, globalRibbon) : null;
+    const skipClassName = classNames(styles$s.Skip, skipFocused && styles$s.focused);
+    const skipTarget = (skipToContentTarget == null ? void 0 : skipToContentTarget.current) ? skipToContentTarget.current.id : APP_FRAME_MAIN;
+    const skipMarkup = /* @__PURE__ */ React.createElement("div", {
+      className: skipClassName
+    }, /* @__PURE__ */ React.createElement("a", {
+      href: `#${skipTarget}`,
+      onFocus: this.handleFocus,
+      onBlur: this.handleBlur,
+      onClick: this.handleClick
+    }, /* @__PURE__ */ React.createElement(Text, {
+      as: "span",
+      variant: "bodyLg",
+      fontWeight: "medium"
+    }, i18n.translate("Polaris.Frame.skipToContent"))));
+    const navigationAttributes = navigation ? {
+      "data-has-navigation": true
+    } : {};
+    const frameClassName = classNames(styles$s.Frame, navigation && styles$s.hasNav, topBar && styles$s.hasTopBar, sidebar && styles$s.hasSidebar);
+    const contextualSaveBarMarkup = /* @__PURE__ */ React.createElement(CSSAnimation, {
+      in: showContextualSaveBar,
+      className: styles$s.ContextualSaveBar,
+      type: "fade"
+    }, /* @__PURE__ */ React.createElement(ContextualSaveBar, this.contextualSaveBar));
+    const navigationOverlayMarkup = showMobileNavigation && isNavigationCollapsed ? /* @__PURE__ */ React.createElement(Backdrop, {
+      belowNavigation: true,
+      onClick: this.handleNavigationDismiss,
+      onTouchStart: this.handleNavigationDismiss
+    }) : null;
+    const context = {
+      logo,
+      showToast: this.showToast,
+      hideToast: this.hideToast,
+      toastMessages,
+      startLoading: this.startLoading,
+      stopLoading: this.stopLoading,
+      setContextualSaveBar: this.setContextualSaveBar,
+      removeContextualSaveBar: this.removeContextualSaveBar
+    };
+    return /* @__PURE__ */ React.createElement(FrameContext.Provider, {
+      value: context
+    }, /* @__PURE__ */ React.createElement("div", Object.assign({
+      className: frameClassName
+    }, layer.props, navigationAttributes), skipMarkup, topBarMarkup, navigationMarkup, contextualSaveBarMarkup, loadingMarkup, navigationOverlayMarkup, /* @__PURE__ */ React.createElement("main", {
+      className: styles$s.Main,
+      id: APP_FRAME_MAIN,
+      "data-has-global-ribbon": Boolean(globalRibbon)
+    }, /* @__PURE__ */ React.createElement("div", {
+      className: styles$s.Content
+    }, children)), /* @__PURE__ */ React.createElement(ToastManager, {
+      toastMessages
+    }), globalRibbonMarkup, /* @__PURE__ */ React.createElement(EventListener, {
+      event: "resize",
+      handler: this.handleResize
+    })));
+  }
+}
+const navTransitionClasses = {
+  enter: classNames(styles$s["Navigation-enter"]),
+  enterActive: classNames(styles$s["Navigation-enterActive"]),
+  enterDone: classNames(styles$s["Navigation-enterActive"]),
+  exit: classNames(styles$s["Navigation-exit"]),
+  exitActive: classNames(styles$s["Navigation-exitActive"])
+};
+function Frame(props) {
+  const i18n = useI18n();
+  const mediaQuery = useMediaQuery();
+  return /* @__PURE__ */ React.createElement(FrameInner, Object.assign({}, props, {
+    i18n,
+    mediaQuery
+  }));
+}
+function useIsTouchDevice() {
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const handleTouchStart = useCallback(() => setIsTouchDevice(true), []);
+  useEventListener("touchstart", handleTouchStart);
+  return isTouchDevice;
+}
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+function getVisibleAndHiddenTabIndices(tabs, selected, disclosureWidth, tabWidths, containerWidth) {
+  const sumTabWidths = tabWidths.reduce((sum, width) => sum + width, 0);
+  const arrayOfTabIndices = tabs.map((_, index2) => {
+    return index2;
+  });
+  const visibleTabs = [];
+  const hiddenTabs = [];
+  if (containerWidth > sumTabWidths) {
+    visibleTabs.push(...arrayOfTabIndices);
+  } else {
+    visibleTabs.push(selected);
+    let tabListWidth = tabWidths[selected];
+    arrayOfTabIndices.forEach((currentTabIndex) => {
+      if (currentTabIndex !== selected) {
+        const currentTabWidth = tabWidths[currentTabIndex];
+        if (tabListWidth + currentTabWidth >= containerWidth - disclosureWidth) {
+          hiddenTabs.push(currentTabIndex);
+          return;
+        }
+        visibleTabs.push(currentTabIndex);
+        tabListWidth += currentTabWidth;
+      }
+    });
+  }
+  return {
+    visibleTabs,
+    hiddenTabs
+  };
+}
+var styles$j = {
+  "Outer": "Polaris-Tabs__Outer",
+  "Wrapper": "Polaris-Tabs__Wrapper",
+  "WrapperWithNewButton": "Polaris-Tabs__WrapperWithNewButton",
+  "ButtonWrapper": "Polaris-Tabs__ButtonWrapper",
+  "Tabs": "Polaris-Tabs",
+  "Tab": "Polaris-Tabs__Tab",
+  "Tab-active": "Polaris-Tabs__Tab--active",
+  "Tab-hasActions": "Polaris-Tabs__Tab--hasActions",
+  "Tab-iconOnly": "Polaris-Tabs__Tab--iconOnly",
+  "fillSpace": "Polaris-Tabs--fillSpace",
+  "TabContainer": "Polaris-Tabs__TabContainer",
+  "fitted": "Polaris-Tabs--fitted",
+  "List": "Polaris-Tabs__List",
+  "Item": "Polaris-Tabs__Item",
+  "DisclosureTab": "Polaris-Tabs__DisclosureTab",
+  "DisclosureTab-visible": "Polaris-Tabs__DisclosureTab--visible",
+  "DisclosureActivator": "Polaris-Tabs__DisclosureActivator",
+  "TabsMeasurer": "Polaris-Tabs__TabsMeasurer",
+  "NewTab": "Polaris-Tabs__NewTab",
+  "ActionListWrap": "Polaris-Tabs__ActionListWrap",
+  "Panel": "Polaris-Tabs__Panel",
+  "Panel-hidden": "Polaris-Tabs__Panel--hidden"
+};
+const MAX_VIEW_NAME_LENGTH$1 = 40;
+function DuplicateModal({
+  open,
+  isModalLoading,
+  name,
+  onClose,
+  onClickPrimaryAction,
+  onClickSecondaryAction,
+  helpText,
+  viewNames
+}) {
+  const i18n = useI18n();
+  const [value, setValue] = useState(name);
+  const container = useRef(null);
+  const hasSameNameError = viewNames == null ? void 0 : viewNames.some((viewName) => viewName.trim().toLowerCase() === value.trim().toLowerCase());
+  const isPrimaryActionDisabled = isModalLoading || hasSameNameError || !value || value.length > MAX_VIEW_NAME_LENGTH$1;
+  useEffect(() => {
+    if (!container.current) return;
+    if (open) {
+      focusFirstFocusableNode(container.current);
+    }
+  }, [open]);
+  useEffect(() => {
+    if (open) {
+      setValue(name.slice(0, MAX_VIEW_NAME_LENGTH$1));
+    }
+  }, [name, open]);
+  const handleChange = useCallback((newValue) => {
+    setValue(newValue);
+  }, []);
+  async function handlePrimaryAction() {
+    if (isPrimaryActionDisabled) {
+      return;
+    }
+    await onClickPrimaryAction(value);
+    setValue("");
+    onClose();
+  }
+  function handleSecondaryAction() {
+    onClickSecondaryAction == null ? void 0 : onClickSecondaryAction();
+    setValue(name);
+    onClose();
+  }
+  return /* @__PURE__ */ React.createElement(Modal, {
+    open,
+    onClose,
+    title: i18n.translate("Polaris.Tabs.DuplicateModal.title"),
+    primaryAction: {
+      content: i18n.translate("Polaris.Tabs.DuplicateModal.create"),
+      onAction: handlePrimaryAction,
+      disabled: isPrimaryActionDisabled
+    },
+    secondaryActions: [{
+      content: i18n.translate("Polaris.Tabs.DuplicateModal.cancel"),
+      onAction: handleSecondaryAction
+    }],
+    instant: true
+  }, /* @__PURE__ */ React.createElement(Modal.Section, null, /* @__PURE__ */ React.createElement(Form, {
+    onSubmit: handlePrimaryAction
+  }, /* @__PURE__ */ React.createElement(FormLayout, null, /* @__PURE__ */ React.createElement("div", {
+    ref: container
+  }, /* @__PURE__ */ React.createElement(TextField, {
+    label: i18n.translate("Polaris.Tabs.DuplicateModal.label"),
+    value,
+    onChange: handleChange,
+    autoComplete: "off",
+    helpText,
+    maxLength: MAX_VIEW_NAME_LENGTH$1,
+    showCharacterCount: true,
+    error: hasSameNameError ? i18n.translate("Polaris.Tabs.DuplicateModal.errors.sameName", {
+      name: value
+    }) : void 0
+  }))))));
+}
+function RenameModal({
+  open,
+  isModalLoading,
+  name,
+  onClose,
+  onClickPrimaryAction,
+  onClickSecondaryAction,
+  helpText,
+  viewNames
+}) {
+  const i18n = useI18n();
+  const [value, setValue] = useState(name);
+  const container = useRef(null);
+  const hasSameNameError = viewNames == null ? void 0 : viewNames.filter((viewName) => viewName !== name).some((viewName) => viewName.trim().toLowerCase() === value.trim().toLowerCase());
+  const isPrimaryActionDisabled = isModalLoading || hasSameNameError || value === name || !value;
+  useEffect(() => {
+    if (!container.current) return;
+    if (open) {
+      focusFirstFocusableNode(container.current);
+    }
+  }, [open]);
+  useEffect(() => {
+    if (open) {
+      setValue(name);
+    }
+  }, [name, open]);
+  const handleChange = useCallback((newValue) => {
+    setValue(newValue);
+  }, []);
+  async function handlePrimaryAction() {
+    if (isPrimaryActionDisabled) {
+      return;
+    }
+    await onClickPrimaryAction(value);
+    setValue("");
+    onClose();
+  }
+  function handleSecondaryAction() {
+    onClickSecondaryAction == null ? void 0 : onClickSecondaryAction();
+    setValue(name);
+    onClose();
+  }
+  return /* @__PURE__ */ React.createElement(Modal, {
+    open,
+    onClose,
+    title: i18n.translate("Polaris.Tabs.RenameModal.title"),
+    primaryAction: {
+      content: i18n.translate("Polaris.Tabs.RenameModal.create"),
+      onAction: handlePrimaryAction,
+      disabled: isPrimaryActionDisabled
+    },
+    secondaryActions: [{
+      content: i18n.translate("Polaris.Tabs.RenameModal.cancel"),
+      onAction: handleSecondaryAction
+    }],
+    instant: true
+  }, /* @__PURE__ */ React.createElement(Modal.Section, null, /* @__PURE__ */ React.createElement(Form, {
+    onSubmit: handlePrimaryAction
+  }, /* @__PURE__ */ React.createElement(FormLayout, null, /* @__PURE__ */ React.createElement("div", {
+    ref: container
+  }, /* @__PURE__ */ React.createElement(TextField, {
+    label: i18n.translate("Polaris.Tabs.RenameModal.label"),
+    value,
+    onChange: handleChange,
+    autoComplete: "off",
+    helpText,
+    maxLength: 40,
+    showCharacterCount: true,
+    error: hasSameNameError ? i18n.translate("Polaris.Tabs.RenameModal.errors.sameName", {
+      name: value
+    }) : void 0
+  }))))));
+}
+const Tab = /* @__PURE__ */ forwardRef(({
+  content: content2,
+  accessibilityLabel,
+  badge,
+  id,
+  panelID,
+  url,
+  onAction,
+  actions,
+  disabled,
+  isModalLoading,
+  icon,
+  siblingTabHasFocus,
+  measuring,
+  focused,
+  selected,
+  onToggleModal,
+  onTogglePopover,
+  viewNames,
+  tabIndexOverride,
+  onFocus
+}, ref) => {
+  const i18n = useI18n();
+  const [popoverActive, setPopoverActive] = useState(false);
+  const [activeModalType, setActiveModalType] = useState(null);
+  const wasSelected = useRef(selected);
+  const panelFocused = useRef(false);
+  const node = useRef(null);
+  useEffect(() => {
+    onTogglePopover(popoverActive);
+  }, [popoverActive, onTogglePopover]);
+  useEffect(() => {
+    onToggleModal(Boolean(activeModalType));
+  }, [activeModalType, onToggleModal]);
+  useEffect(() => {
+    return () => {
+      onToggleModal(false);
+      onTogglePopover(false);
+    };
+  }, [onToggleModal, onTogglePopover]);
+  useEffect(() => {
+    if (measuring) {
+      return;
+    }
+    const itemHadFocus = focused || document.activeElement && document.activeElement.id === id;
+    if (itemHadFocus && selected && panelID != null && !panelFocused.current) {
+      focusPanelID(panelID);
+      panelFocused.current = true;
+    }
+    if (selected && !wasSelected.current && panelID != null) {
+      focusPanelID(panelID);
+    } else if (focused && node.current != null && activeModalType == null && !disabled) {
+      focusFirstFocusableNode(node.current);
+    }
+    wasSelected.current = selected;
+  }, [focused, id, content2, measuring, panelID, selected, activeModalType, disabled]);
+  let tabIndex;
+  if (selected && !siblingTabHasFocus && !measuring) {
+    tabIndex = 0;
+  } else if (focused && !measuring) {
+    tabIndex = 0;
+  } else {
+    tabIndex = -1;
+  }
+  if (tabIndexOverride != null) {
+    tabIndex = tabIndexOverride;
+  }
+  const renameAction = actions == null ? void 0 : actions.find((action2) => action2.type === "rename");
+  const duplicateAction = actions == null ? void 0 : actions.find((action2) => action2.type === "duplicate");
+  const deleteAction = actions == null ? void 0 : actions.find((action2) => action2.type === "delete");
+  const togglePopoverActive = useCallback(() => {
+    if (!(actions == null ? void 0 : actions.length)) {
+      return;
+    }
+    setPopoverActive((popoverActive2) => !popoverActive2);
+  }, [actions]);
+  const handleClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    if (selected) {
+      togglePopoverActive();
+    } else {
+      onAction == null ? void 0 : onAction();
+    }
+  }, [selected, onAction, togglePopoverActive, disabled]);
+  const handleModalOpen = (type) => {
+    setActiveModalType(type);
+  };
+  const handleModalClose = () => {
+    setActiveModalType(null);
+  };
+  const handleSaveRenameModal = useCallback(async (value) => {
+    var _a2;
+    await ((_a2 = renameAction == null ? void 0 : renameAction.onPrimaryAction) == null ? void 0 : _a2.call(renameAction, value));
+    setTimeout(() => {
+      if (node.current) {
+        focusFirstFocusableNode(node.current);
+      }
+    }, 250);
+  }, [renameAction]);
+  const handleConfirmDeleteView = useCallback(async () => {
+    var _a2;
+    await ((_a2 = deleteAction == null ? void 0 : deleteAction.onPrimaryAction) == null ? void 0 : _a2.call(deleteAction, content2));
+    handleModalClose();
+  }, [deleteAction, content2]);
+  const handleSaveDuplicateModal = useCallback(async (duplicateName) => {
+    var _a2;
+    await ((_a2 = duplicateAction == null ? void 0 : duplicateAction.onPrimaryAction) == null ? void 0 : _a2.call(duplicateAction, duplicateName));
+  }, [duplicateAction]);
+  const actionContent = {
+    rename: {
+      icon: InfoIcon,
+      content: i18n.translate("Polaris.Tabs.Tab.rename")
+    },
+    duplicate: {
+      icon: DuplicateIcon,
+      content: i18n.translate("Polaris.Tabs.Tab.duplicate")
+    },
+    edit: {
+      icon: EditIcon,
+      content: i18n.translate("Polaris.Tabs.Tab.edit")
+    },
+    "edit-columns": {
+      icon: LayoutColumns3Icon,
+      content: i18n.translate("Polaris.Tabs.Tab.editColumns")
+    },
+    delete: {
+      icon: DeleteIcon,
+      content: i18n.translate("Polaris.Tabs.Tab.delete"),
+      destructive: true
+    }
+  };
+  const formattedActions = actions == null ? void 0 : actions.map(({
+    type,
+    onAction: onAction2,
+    onPrimaryAction,
+    ...additionalOptions
+  }) => {
+    const isModalActivator = !type.includes("edit");
+    return {
+      ...actionContent[type],
+      ...additionalOptions,
+      onAction: () => {
+        onAction2 == null ? void 0 : onAction2(content2);
+        togglePopoverActive();
+        if (isModalActivator) {
+          handleModalOpen(type);
+        }
+      }
+    };
+  });
+  const handleKeyDown2 = useCallback((event) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      handleClick();
+    }
+  }, [handleClick]);
+  const tabContainerClassNames = classNames(styles$j.TabContainer, selected && styles$j.Underline);
+  const urlIfNotDisabledOrSelected = disabled || selected ? void 0 : url;
+  const BaseComponent = urlIfNotDisabledOrSelected ? UnstyledLink : UnstyledButton;
+  const tabClassName = classNames(styles$j.Tab, icon && styles$j["Tab-iconOnly"], popoverActive && styles$j["Tab-popoverActive"], selected && styles$j["Tab-active"], selected && (actions == null ? void 0 : actions.length) && styles$j["Tab-hasActions"]);
+  const badgeMarkup = badge ? /* @__PURE__ */ React.createElement(Badge, {
+    tone: selected ? void 0 : "new"
+  }, badge) : null;
+  const disclosureMarkup = selected && (actions == null ? void 0 : actions.length) ? /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$j.IconWrap)
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: ChevronDownIcon
+  })) : null;
+  const activator = /* @__PURE__ */ React.createElement(BaseComponent, {
+    id,
+    className: tabClassName,
+    tabIndex,
+    "aria-selected": selected,
+    "aria-controls": panelID,
+    "aria-label": accessibilityLabel,
+    role: tabIndexOverride == null ? "tab" : void 0,
+    disabled,
+    url: urlIfNotDisabledOrSelected,
+    onFocus,
+    onMouseUp: handleMouseUpByBlurring,
+    onClick: handleClick,
+    onKeyDown: handleKeyDown2
+  }, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "200",
+    align: "center",
+    blockAlign: "center",
+    wrap: false
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    fontWeight: "medium"
+  }, icon ?? content2), badgeMarkup), disclosureMarkup);
+  const isPlainButton = !selected || !(actions == null ? void 0 : actions.length);
+  const renameModal = renameAction ? /* @__PURE__ */ React.createElement(RenameModal, {
+    name: content2,
+    open: activeModalType === "rename",
+    onClose: handleModalClose,
+    onClickPrimaryAction: handleSaveRenameModal,
+    isModalLoading,
+    viewNames
+  }) : null;
+  const duplicateModal = duplicateAction ? /* @__PURE__ */ React.createElement(DuplicateModal, {
+    open: activeModalType === "duplicate",
+    name: i18n.translate("Polaris.Tabs.Tab.copy", {
+      name: content2
+    }),
+    onClose: handleModalClose,
+    onClickPrimaryAction: handleSaveDuplicateModal,
+    isModalLoading,
+    viewNames: viewNames || []
+  }) : null;
+  const deleteModal = deleteAction ? /* @__PURE__ */ React.createElement(Modal, {
+    open: activeModalType === "delete",
+    onClose: handleModalClose,
+    primaryAction: {
+      content: i18n.translate("Polaris.Tabs.Tab.deleteModal.delete"),
+      onAction: handleConfirmDeleteView,
+      destructive: true,
+      disabled: isModalLoading
+    },
+    secondaryActions: [{
+      content: i18n.translate("Polaris.Tabs.Tab.deleteModal.cancel"),
+      onAction: handleModalClose
+    }],
+    title: i18n.translate("Polaris.Tabs.Tab.deleteModal.title"),
+    instant: true
+  }, /* @__PURE__ */ React.createElement(Modal.Section, null, i18n.translate("Polaris.Tabs.Tab.deleteModal.description", {
+    viewName: content2
+  }))) : null;
+  const markup = isPlainButton || disabled ? activator : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Popover2, {
+    active: popoverActive,
+    activator,
+    autofocusTarget: "first-node",
+    onClose: togglePopoverActive
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$j.ActionListWrap
+  }, /* @__PURE__ */ React.createElement(ActionList, {
+    actionRole: "menuitem",
+    items: formattedActions
+  }))), renameModal, duplicateModal, deleteModal);
+  if (icon) {
+    return markup;
+  }
+  return /* @__PURE__ */ React.createElement("li", {
+    className: tabContainerClassNames,
+    ref: mergeRefs([node, ref]),
+    role: "presentation"
+  }, markup);
+});
+Tab.displayName = "Tab";
+function focusPanelID(panelID) {
+  const panel = document.getElementById(panelID);
+  if (panel) {
+    panel.focus({
+      preventScroll: true
+    });
+  }
+}
+function mergeRefs(refs) {
+  return (node) => {
+    for (const ref of refs) {
+      if (ref != null) {
+        ref.current = node;
+      }
+    }
+  };
+}
+const TabMeasurer = /* @__PURE__ */ memo(function TabMeasurer2({
+  selected,
+  tabs,
+  activator,
+  tabToFocus,
+  siblingTabHasFocus,
+  handleMeasurement: handleMeasurementProp
+}) {
+  const containerNode = useRef(null);
+  const animationFrame = useRef(null);
+  const handleMeasurement = useCallback(() => {
+    if (animationFrame.current) {
+      cancelAnimationFrame(animationFrame.current);
+    }
+    animationFrame.current = requestAnimationFrame(() => {
+      if (!containerNode.current) {
+        return;
+      }
+      const containerWidth = containerNode.current.offsetWidth - 20 - 28;
+      const hiddenTabNodes = containerNode.current.children;
+      const hiddenTabNodesArray = Array.from(hiddenTabNodes);
+      const hiddenTabWidths = hiddenTabNodesArray.map((node) => {
+        const buttonWidth = Math.ceil(node.getBoundingClientRect().width);
+        return buttonWidth + 4;
+      });
+      const disclosureWidth = hiddenTabWidths.pop() || 0;
+      handleMeasurementProp({
+        containerWidth,
+        disclosureWidth,
+        hiddenTabWidths
+      });
+    });
+  }, [handleMeasurementProp]);
+  useEffect(() => {
+    handleMeasurement();
+  }, [handleMeasurement, tabs]);
+  useComponentDidMount(() => {
+    if (process.env.NODE_ENV === "development") {
+      setTimeout(handleMeasurement, 0);
+    }
+  });
+  const tabsMarkup = tabs.map((tab, index2) => {
+    return /* @__PURE__ */ React.createElement(Tab, {
+      measuring: true,
+      key: `$${tab.id}Hidden`,
+      id: `${tab.id}Measurer`,
+      siblingTabHasFocus,
+      focused: index2 === tabToFocus,
+      selected: index2 === selected,
+      url: tab.url,
+      content: tab.content,
+      onTogglePopover: noop$2,
+      onToggleModal: noop$2
+    });
+  });
+  const classname = classNames(styles$j.Tabs, styles$j.TabsMeasurer);
+  useEventListener("resize", handleMeasurement);
+  return /* @__PURE__ */ React.createElement("div", {
+    className: classname,
+    ref: containerNode
+  }, tabsMarkup, activator);
+});
+function noop$2() {
+}
+function Panel({
+  hidden,
+  id,
+  tabID,
+  children
+}) {
+  const className = classNames(styles$j.Panel, hidden && styles$j["Panel-hidden"]);
+  return /* @__PURE__ */ React.createElement("div", {
+    className,
+    id,
+    role: "tabpanel",
+    "aria-labelledby": tabID,
+    tabIndex: -1
+  }, children);
+}
+const Item$2 = /* @__PURE__ */ memo(function Item({
+  id,
+  focused,
+  children,
+  url,
+  accessibilityLabel,
+  onClick = noop$1
+}) {
+  const focusedNode = useRef(null);
+  useEffect(() => {
+    if (focusedNode.current && focusedNode.current instanceof HTMLElement && focused) {
+      focusedNode.current.focus();
+    }
+  }, [focusedNode, focused]);
+  const classname = classNames(styles$j.Item);
+  const sharedProps = {
+    id,
+    ref: focusedNode,
+    onClick,
+    className: classname,
+    "aria-selected": false,
+    "aria-label": accessibilityLabel
+  };
+  const markup = url ? /* @__PURE__ */ React.createElement(UnstyledLink, Object.assign({}, sharedProps, {
+    url
+  }), children) : /* @__PURE__ */ React.createElement("button", Object.assign({}, sharedProps, {
+    ref: focusedNode,
+    type: "button"
+  }), children);
+  return /* @__PURE__ */ React.createElement("li", null, markup);
+});
+function noop$1() {
+}
+function List$1({
+  focusIndex,
+  disclosureTabs,
+  onClick = noop,
+  onKeyPress = noop
+}) {
+  const tabs = disclosureTabs.map(({
+    id,
+    content: content2,
+    ...tabProps
+  }, index2) => {
+    return /* @__PURE__ */ React.createElement(Item$2, Object.assign({
+      key: id
+    }, tabProps, {
+      id,
+      focused: index2 === focusIndex,
+      onClick: onClick.bind(null, id)
+    }), content2);
+  });
+  return /* @__PURE__ */ React.createElement("ul", {
+    className: styles$j.List,
+    onKeyDown: handleKeyDown,
+    onKeyUp: onKeyPress
+  }, tabs);
+}
+function noop() {
+}
+function handleKeyDown(event) {
+  const {
+    key
+  } = event;
+  if (key === "ArrowLeft" || key === "ArrowRight") {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+}
+const MAX_VIEW_NAME_LENGTH = 40;
+function CreateViewModal({
+  activator,
+  open,
+  onClose,
+  onClickPrimaryAction,
+  onClickSecondaryAction,
+  viewNames
+}) {
+  const i18n = useI18n();
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const container = useRef(null);
+  const isTouchDevice = useIsTouchDevice();
+  const hasSameNameError = viewNames.some((viewName) => viewName.trim().toLowerCase() === value.trim().toLowerCase());
+  const isPrimaryActionDisabled = !value || hasSameNameError || loading || value.length > MAX_VIEW_NAME_LENGTH;
+  useEffect(() => {
+    if (!container.current || isTouchDevice) return;
+    if (open) {
+      focusFirstFocusableNode(container.current);
+      const timeout = setTimeout(() => {
+        if (!container.current) return;
+        focusFirstFocusableNode(container.current);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [open, isTouchDevice]);
+  const handleChange = useCallback((newValue) => {
+    setValue(newValue);
+  }, []);
+  async function handlePrimaryAction() {
+    if (hasSameNameError || isPrimaryActionDisabled) {
+      return;
+    }
+    setLoading(true);
+    await onClickPrimaryAction(value);
+    setLoading(false);
+    setValue("");
+    onClose();
+  }
+  function handleSecondaryAction() {
+    onClickSecondaryAction == null ? void 0 : onClickSecondaryAction();
+    setValue("");
+    onClose();
+  }
+  return /* @__PURE__ */ React.createElement(Modal, {
+    activator,
+    open,
+    onClose,
+    title: i18n.translate("Polaris.Tabs.CreateViewModal.title"),
+    primaryAction: {
+      content: i18n.translate("Polaris.Tabs.CreateViewModal.create"),
+      onAction: handlePrimaryAction,
+      disabled: isPrimaryActionDisabled
+    },
+    secondaryActions: [{
+      content: i18n.translate("Polaris.Tabs.CreateViewModal.cancel"),
+      onAction: handleSecondaryAction
+    }]
+  }, /* @__PURE__ */ React.createElement(Modal.Section, null, /* @__PURE__ */ React.createElement(Form, {
+    onSubmit: handlePrimaryAction
+  }, /* @__PURE__ */ React.createElement(FormLayout, null, /* @__PURE__ */ React.createElement("div", {
+    ref: container
+  }, /* @__PURE__ */ React.createElement(TextField, {
+    label: i18n.translate("Polaris.Tabs.CreateViewModal.label"),
+    value,
+    onChange: handleChange,
+    autoComplete: "off",
+    maxLength: MAX_VIEW_NAME_LENGTH,
+    showCharacterCount: true,
+    error: hasSameNameError ? i18n.translate("Polaris.Tabs.CreateViewModal.errors.sameName", {
+      name: value
+    }) : void 0
+  }))))));
+}
+const CREATE_NEW_VIEW_ID = "create-new-view";
+const Tabs = ({
+  tabs,
+  children,
+  selected,
+  newViewAccessibilityLabel,
+  canCreateNewView,
+  disabled,
+  onCreateNewView,
+  onSelect,
+  fitted,
+  disclosureText
+}) => {
+  const i18n = useI18n();
+  const {
+    mdDown
+  } = useBreakpoints();
+  const scrollRef = useRef(null);
+  const wrapRef = useRef(null);
+  const selectedTabRef = useRef(null);
+  const [state, setState] = useReducer((data, partialData) => {
+    return {
+      ...data,
+      ...partialData
+    };
+  }, {
+    disclosureWidth: 0,
+    containerWidth: Infinity,
+    tabWidths: [],
+    visibleTabs: [],
+    hiddenTabs: [],
+    showDisclosure: false,
+    tabToFocus: -1,
+    isNewViewModalActive: false,
+    modalSubmitted: false,
+    isTabsFocused: false,
+    isTabPopoverOpen: false,
+    isTabModalOpen: false
+  });
+  const {
+    tabToFocus,
+    visibleTabs,
+    hiddenTabs,
+    showDisclosure,
+    isNewViewModalActive,
+    modalSubmitted,
+    disclosureWidth,
+    tabWidths,
+    containerWidth,
+    isTabsFocused,
+    isTabModalOpen,
+    isTabPopoverOpen
+  } = state;
+  const prevModalOpen = usePrevious(isTabModalOpen);
+  const prevPopoverOpen = usePrevious(isTabPopoverOpen);
+  useEffect(() => {
+    const hasModalClosed = prevModalOpen && !isTabModalOpen;
+    const hasPopoverClosed = prevPopoverOpen && !isTabPopoverOpen;
+    if (hasModalClosed) {
+      setState({
+        isTabsFocused: true,
+        tabToFocus: selected
+      });
+    } else if (hasPopoverClosed && !isTabModalOpen) {
+      setState({
+        isTabsFocused: true,
+        tabToFocus: selected
+      });
+    }
+  }, [prevPopoverOpen, isTabPopoverOpen, prevModalOpen, isTabModalOpen, selected, tabToFocus]);
+  const handleTogglePopover = useCallback((isOpen) => setState({
+    isTabPopoverOpen: isOpen
+  }), []);
+  const handleToggleModal = useCallback((isOpen) => setState({
+    isTabModalOpen: isOpen
+  }), []);
+  const handleCloseNewViewModal = () => {
+    setState({
+      isNewViewModalActive: false
+    });
+  };
+  const handleSaveNewViewModal = async (value) => {
+    if (!onCreateNewView) {
+      return false;
+    }
+    const hasExecuted = await (onCreateNewView == null ? void 0 : onCreateNewView(value));
+    if (hasExecuted) {
+      setState({
+        modalSubmitted: true
+      });
+    }
+    return hasExecuted;
+  };
+  const handleClickNewTab = () => {
+    setState({
+      isNewViewModalActive: true
+    });
+  };
+  const handleTabClick = useCallback((id) => {
+    const tab = tabs.find((aTab) => aTab.id === id);
+    if (tab == null) {
+      return null;
+    }
+    const selectedIndex = tabs.indexOf(tab);
+    onSelect == null ? void 0 : onSelect(selectedIndex);
+  }, [tabs, onSelect]);
+  const renderTabMarkup = useCallback((tab, index2) => {
+    const handleClick = () => {
+      var _a2;
+      handleTabClick(tab.id);
+      (_a2 = tab.onAction) == null ? void 0 : _a2.call(tab);
+    };
+    const viewNames2 = tabs.map(({
+      content: content2
+    }) => content2);
+    const tabPanelID = tab.panelID || `${tab.id}-panel`;
+    return /* @__PURE__ */ React.createElement(Tab, Object.assign({}, tab, {
+      key: `${index2}-${tab.id}`,
+      id: tab.id,
+      panelID: children ? tabPanelID : void 0,
+      disabled: disabled || tab.disabled,
+      siblingTabHasFocus: tabToFocus > -1,
+      focused: index2 === tabToFocus,
+      selected: index2 === selected,
+      onAction: handleClick,
+      accessibilityLabel: tab.accessibilityLabel,
+      url: tab.url,
+      content: tab.content,
+      onToggleModal: handleToggleModal,
+      onTogglePopover: handleTogglePopover,
+      viewNames: viewNames2,
+      ref: index2 === selected ? selectedTabRef : null
+    }));
+  }, [disabled, handleTabClick, tabs, children, selected, tabToFocus, handleToggleModal, handleTogglePopover]);
+  const handleFocus = useCallback((event) => {
+    const target = event.target;
+    const isItem = target.classList.contains(styles$j.Item);
+    const isInNaturalDOMOrder = target.closest(`[data-tabs-focus-catchment]`) || isItem;
+    const isDisclosureActivator = target.classList.contains(styles$j.DisclosureActivator);
+    if (isDisclosureActivator || !isInNaturalDOMOrder) {
+      return;
+    }
+    setState({
+      isTabsFocused: true
+    });
+  }, []);
+  const handleBlur = useCallback((event) => {
+    var _a2, _b, _c;
+    const target = event.target;
+    const relatedTarget = event.relatedTarget;
+    const isInNaturalDOMOrder = (_a2 = relatedTarget == null ? void 0 : relatedTarget.closest) == null ? void 0 : _a2.call(relatedTarget, `.${styles$j.Tabs}`);
+    const targetIsATab = (_c = (_b = target == null ? void 0 : target.classList) == null ? void 0 : _b.contains) == null ? void 0 : _c.call(_b, styles$j.Tab);
+    const focusReceiverIsAnItem = relatedTarget == null ? void 0 : relatedTarget.classList.contains(styles$j.Item);
+    if (!relatedTarget && !isTabModalOpen && !targetIsATab && !focusReceiverIsAnItem) {
+      setState({
+        tabToFocus: -1
+      });
+      return;
+    }
+    if (!isInNaturalDOMOrder && !isTabModalOpen && !targetIsATab && !focusReceiverIsAnItem) {
+      setState({
+        tabToFocus: -1
+      });
+      return;
+    }
+    setState({
+      isTabsFocused: false
+    });
+  }, [isTabModalOpen]);
+  const handleKeyDown2 = (event) => {
+    if (isTabPopoverOpen || isTabModalOpen || isNewViewModalActive) {
+      return;
+    }
+    const {
+      key
+    } = event;
+    if (key === "ArrowLeft" || key === "ArrowRight") {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+  useEffect(() => {
+    const {
+      visibleTabs: visibleTabs2,
+      hiddenTabs: hiddenTabs2
+    } = getVisibleAndHiddenTabIndices(tabs, selected, disclosureWidth, tabWidths, containerWidth);
+    setState({
+      visibleTabs: visibleTabs2,
+      hiddenTabs: hiddenTabs2
+    });
+  }, [containerWidth, disclosureWidth, tabs, selected, tabWidths, setState]);
+  const moveToSelectedTab = useCallback(() => {
+    var _a2;
+    const activeButton = (_a2 = selectedTabRef.current) == null ? void 0 : _a2.querySelector(`.${styles$j["Tab-active"]}`);
+    if (activeButton) {
+      moveToActiveTab(activeButton.offsetLeft);
+    }
+  }, []);
+  useEffect(() => {
+    if (mdDown) {
+      moveToSelectedTab();
+    }
+  }, [moveToSelectedTab, selected, mdDown]);
+  useEffect(() => {
+    if (isTabsFocused && !showDisclosure) {
+      const tabToFocus2 = selected;
+      setState({
+        tabToFocus: tabToFocus2
+      });
+    }
+  }, [isTabsFocused, selected, setState, showDisclosure]);
+  const handleKeyPress = (event) => {
+    const {
+      showDisclosure: showDisclosure2,
+      visibleTabs: visibleTabs2,
+      hiddenTabs: hiddenTabs2,
+      tabToFocus: tabToFocus2,
+      isNewViewModalActive: isNewViewModalActive2
+    } = state;
+    if (isTabModalOpen || isTabPopoverOpen || isNewViewModalActive2) {
+      return;
+    }
+    const key = event.key;
+    const tabsArrayInOrder = showDisclosure2 || mdDown ? visibleTabs2.concat(hiddenTabs2) : [...visibleTabs2];
+    let newFocus = tabsArrayInOrder.indexOf(tabToFocus2);
+    if (key === "ArrowRight") {
+      newFocus += 1;
+      if (newFocus === tabsArrayInOrder.length) {
+        newFocus = 0;
+      }
+    }
+    if (key === "ArrowLeft") {
+      if (newFocus === -1 || newFocus === 0) {
+        newFocus = tabsArrayInOrder.length - 1;
+      } else {
+        newFocus -= 1;
+      }
+    }
+    const buttonToFocus = tabsArrayInOrder[newFocus];
+    if (buttonToFocus != null) {
+      setState({
+        tabToFocus: buttonToFocus
+      });
+    }
+  };
+  const handleDisclosureActivatorClick = () => {
+    setState({
+      showDisclosure: !showDisclosure,
+      tabToFocus: hiddenTabs[0]
+    });
+  };
+  const handleClose = () => {
+    setState({
+      showDisclosure: false
+    });
+  };
+  const handleMeasurement = useCallback((measurements) => {
+    const {
+      hiddenTabWidths: tabWidths2,
+      containerWidth: containerWidth2,
+      disclosureWidth: disclosureWidth2
+    } = measurements;
+    const {
+      visibleTabs: visibleTabs2,
+      hiddenTabs: hiddenTabs2
+    } = getVisibleAndHiddenTabIndices(tabs, selected, disclosureWidth2, tabWidths2, containerWidth2);
+    setState({
+      visibleTabs: visibleTabs2,
+      hiddenTabs: hiddenTabs2,
+      disclosureWidth: disclosureWidth2,
+      containerWidth: containerWidth2,
+      tabWidths: tabWidths2
+    });
+  }, [tabs, selected, setState]);
+  const handleListTabClick = (id) => {
+    handleTabClick(id);
+    handleClose();
+    setState({
+      isTabsFocused: true
+    });
+  };
+  const moveToActiveTab = (offsetLeft) => {
+    setTimeout(() => {
+      var _a2, _b;
+      if (scrollRef.current && typeof scrollRef.current.scroll === "function") {
+        const scrollRefOffset = ((_a2 = wrapRef == null ? void 0 : wrapRef.current) == null ? void 0 : _a2.offsetLeft) || 0;
+        (_b = scrollRef == null ? void 0 : scrollRef.current) == null ? void 0 : _b.scroll({
+          left: offsetLeft - scrollRefOffset
+        });
+      }
+    }, 0);
+  };
+  const createViewA11yLabel = newViewAccessibilityLabel || i18n.translate("Polaris.Tabs.newViewAccessibilityLabel");
+  const tabsToShow = mdDown ? [...visibleTabs, ...hiddenTabs] : visibleTabs;
+  const tabsMarkup = tabsToShow.sort((tabA, tabB) => tabA - tabB).filter((tabIndex) => tabs[tabIndex]).map((tabIndex) => renderTabMarkup(tabs[tabIndex], tabIndex));
+  const disclosureActivatorVisible = visibleTabs.length < tabs.length && !mdDown;
+  const classname = classNames(styles$j.Tabs, fitted && styles$j.fitted, disclosureActivatorVisible && styles$j.fillSpace);
+  const wrapperClassNames = classNames(styles$j.Wrapper, canCreateNewView && styles$j.WrapperWithNewButton);
+  const disclosureTabClassName = classNames(styles$j.DisclosureTab, disclosureActivatorVisible && styles$j["DisclosureTab-visible"]);
+  const disclosureButtonClassName = classNames(styles$j.DisclosureActivator);
+  const disclosureButtonContent = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    fontWeight: "medium"
+  }, disclosureText ?? i18n.translate("Polaris.Tabs.toggleTabsLabel")), /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$j.IconWrap, disclosureActivatorVisible && showDisclosure && styles$j["IconWrap-open"])
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: ChevronDownIcon,
+    tone: "subdued"
+  })));
+  const disclosureButton = /* @__PURE__ */ React.createElement(UnstyledButton, {
+    type: "button",
+    className: disclosureButtonClassName,
+    onClick: handleDisclosureActivatorClick,
+    "aria-label": disclosureText ?? i18n.translate("Polaris.Tabs.toggleTabsLabel"),
+    disabled
+  }, disclosureButtonContent);
+  const activator = disclosureButton;
+  const disclosureTabs = hiddenTabs.map((tabIndex) => tabs[tabIndex]);
+  const viewNames = tabs.map(({
+    content: content2
+  }) => content2);
+  const tabMeasurer = /* @__PURE__ */ React.createElement(TabMeasurer, {
+    tabToFocus,
+    activator,
+    selected,
+    tabs,
+    siblingTabHasFocus: tabToFocus > -1,
+    handleMeasurement
+  });
+  const newTab = /* @__PURE__ */ React.createElement(Tab, {
+    id: CREATE_NEW_VIEW_ID,
+    content: createViewA11yLabel,
+    actions: [],
+    onAction: handleClickNewTab,
+    onFocus: () => {
+      if (modalSubmitted) {
+        setState({
+          tabToFocus: selected,
+          modalSubmitted: false
+        });
+      }
+    },
+    icon: /* @__PURE__ */ React.createElement(Icon, {
+      source: PlusIcon,
+      accessibilityLabel: createViewA11yLabel
+    }),
+    disabled,
+    onTogglePopover: handleTogglePopover,
+    onToggleModal: handleToggleModal,
+    tabIndexOverride: 0
+  });
+  const panelMarkup = children ? tabs.map((_tab, index2) => {
+    return selected === index2 ? /* @__PURE__ */ React.createElement(Panel, {
+      id: tabs[index2].panelID || `${tabs[index2].id}-panel`,
+      tabID: tabs[index2].id,
+      key: tabs[index2].id
+    }, children) : /* @__PURE__ */ React.createElement(Panel, {
+      id: tabs[index2].panelID || `${tabs[index2].id}-panel`,
+      tabID: tabs[index2].id,
+      key: tabs[index2].id,
+      hidden: true
+    });
+  }) : null;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$j.Outer
+  }, /* @__PURE__ */ React.createElement(Box, {
+    padding: {
+      md: "200"
+    }
+  }, tabMeasurer, /* @__PURE__ */ React.createElement("div", {
+    className: wrapperClassNames,
+    ref: scrollRef
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$j.ButtonWrapper,
+    ref: wrapRef
+  }, /* @__PURE__ */ React.createElement("ul", {
+    role: tabsMarkup.length > 0 ? "tablist" : void 0,
+    className: classname,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    onKeyDown: handleKeyDown2,
+    onKeyUp: handleKeyPress,
+    "data-tabs-focus-catchment": true
+  }, tabsMarkup, mdDown || tabsToShow.length === 0 ? null : /* @__PURE__ */ React.createElement("li", {
+    className: disclosureTabClassName,
+    role: "presentation"
+  }, /* @__PURE__ */ React.createElement(Popover2, {
+    preferredPosition: "below",
+    preferredAlignment: "left",
+    activator,
+    active: disclosureActivatorVisible && showDisclosure,
+    onClose: handleClose,
+    autofocusTarget: "first-node"
+  }, /* @__PURE__ */ React.createElement(List$1, {
+    focusIndex: hiddenTabs.indexOf(tabToFocus),
+    disclosureTabs,
+    onClick: handleListTabClick,
+    onKeyPress: handleKeyPress
+  })))), canCreateNewView && tabsToShow.length > 0 ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$j.NewTab
+  }, /* @__PURE__ */ React.createElement(CreateViewModal, {
+    open: isNewViewModalActive,
+    onClose: handleCloseNewViewModal,
+    onClickPrimaryAction: handleSaveNewViewModal,
+    viewNames,
+    activator: disabled ? newTab : /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Tooltip, {
+      content: i18n.translate("Polaris.Tabs.newViewTooltip"),
+      preferredPosition: "above",
+      hoverDelay: 400
+    }, newTab))
+  })) : null))), panelMarkup);
+};
+var styles$i = {
+  "Layout": "Polaris-Layout",
+  "Section": "Polaris-Layout__Section",
+  "Section-fullWidth": "Polaris-Layout__Section--fullWidth",
+  "Section-oneHalf": "Polaris-Layout__Section--oneHalf",
+  "Section-oneThird": "Polaris-Layout__Section--oneThird",
+  "AnnotatedSection": "Polaris-Layout__AnnotatedSection",
+  "AnnotationWrapper": "Polaris-Layout__AnnotationWrapper",
+  "AnnotationContent": "Polaris-Layout__AnnotationContent",
+  "Annotation": "Polaris-Layout__Annotation"
+};
+var styles$h = {
+  "TextContainer": "Polaris-TextContainer",
+  "spacingTight": "Polaris-TextContainer--spacingTight",
+  "spacingLoose": "Polaris-TextContainer--spacingLoose"
+};
+function TextContainer({
+  spacing,
+  children
+}) {
+  const className = classNames(styles$h.TextContainer, spacing && styles$h[variationName("spacing", spacing)]);
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, children);
+}
+function AnnotatedSection({
+  children,
+  title,
+  description,
+  id
+}) {
+  const descriptionMarkup = typeof description === "string" ? /* @__PURE__ */ React.createElement(Text, {
+    as: "p",
+    variant: "bodyMd"
+  }, description) : description;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$i.AnnotatedSection
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$i.AnnotationWrapper
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$i.Annotation
+  }, /* @__PURE__ */ React.createElement(TextContainer, {
+    spacing: "tight"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    id,
+    variant: "headingMd",
+    as: "h2"
+  }, title), descriptionMarkup && /* @__PURE__ */ React.createElement(Box, {
+    color: "text-secondary"
+  }, descriptionMarkup))), /* @__PURE__ */ React.createElement("div", {
+    className: styles$i.AnnotationContent
+  }, children)));
+}
+function Section$1({
+  children,
+  variant
+}) {
+  const className = classNames(styles$i.Section, styles$i[`Section-${variant}`]);
+  return /* @__PURE__ */ React.createElement("div", {
+    className
+  }, children);
+}
+const Layout = function Layout2({
+  sectioned,
+  children
+}) {
+  const content2 = sectioned ? /* @__PURE__ */ React.createElement(Section$1, null, children) : children;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$i.Layout
+  }, content2);
+};
+Layout.AnnotatedSection = AnnotatedSection;
+Layout.Section = Section$1;
+var styles$g = {
+  "Tag": "Polaris-Tag",
+  "disabled": "Polaris-Tag--disabled",
+  "clickable": "Polaris-Tag--clickable",
+  "linkable": "Polaris-Tag--linkable",
+  "removable": "Polaris-Tag--removable",
+  "Button": "Polaris-Tag__Button",
+  "Link": "Polaris-Tag__Link",
+  "segmented": "Polaris-Tag--segmented",
+  "Text": "Polaris-Tag__Text",
+  "sizeLarge": "Polaris-Tag--sizeLarge",
+  "overlay": "Polaris-Tag--overlay"
+};
+function Tag({
+  children,
+  disabled = false,
+  onClick,
+  onRemove,
+  accessibilityLabel,
+  url,
+  size
+}) {
+  const i18n = useI18n();
+  const segmented = onRemove && url;
+  const className = classNames(styles$g.Tag, disabled && styles$g.disabled, onClick && styles$g.clickable, onRemove && styles$g.removable, url && !disabled && styles$g.linkable, segmented && styles$g.segmented, size && styles$g[variationName("size", size)]);
+  let tagTitle = accessibilityLabel;
+  if (!tagTitle) {
+    tagTitle = typeof children === "string" ? children : void 0;
+  }
+  const tagText = /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    truncate: true
+  }, /* @__PURE__ */ React.createElement("span", {
+    title: tagTitle,
+    className: styles$g.Text
+  }, children));
+  if (onClick) {
+    return /* @__PURE__ */ React.createElement("button", {
+      type: "button",
+      disabled,
+      className,
+      onClick
+    }, tagText);
+  }
+  const ariaLabel = i18n.translate("Polaris.Tag.ariaLabel", {
+    children: tagTitle || ""
+  });
+  const removeButton = onRemove ? /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    "aria-label": ariaLabel,
+    className: classNames(styles$g.Button, segmented && styles$g.segmented),
+    onClick: onRemove,
+    onMouseUp: handleMouseUpByBlurring,
+    disabled
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: XSmallIcon
+  })) : null;
+  const tagContent = url && !disabled ? /* @__PURE__ */ React.createElement("a", {
+    className: classNames(styles$g.Link, segmented && styles$g.segmented),
+    href: url
+  }, tagText) : tagText;
+  return /* @__PURE__ */ React.createElement("span", {
+    className,
+    "aria-disabled": disabled
+  }, tagContent, size === "large" && /* @__PURE__ */ React.createElement("span", {
+    className: styles$g.overlay
+  }), removeButton);
+}
+var styles$f = {
+  "Link": "Polaris-Link",
+  "monochrome": "Polaris-Link--monochrome",
+  "removeUnderline": "Polaris-Link--removeUnderline"
+};
+function Link({
+  url,
+  children,
+  onClick,
+  external,
+  target,
+  id,
+  monochrome,
+  removeUnderline,
+  accessibilityLabel,
+  dataPrimaryLink
+}) {
+  return /* @__PURE__ */ React.createElement(BannerContext.Consumer, null, (BannerContext2) => {
+    const shouldBeMonochrome = monochrome || BannerContext2;
+    const className = classNames(styles$f.Link, shouldBeMonochrome && styles$f.monochrome, removeUnderline && styles$f.removeUnderline);
+    return url ? /* @__PURE__ */ React.createElement(UnstyledLink, {
+      onClick,
+      className,
+      url,
+      external,
+      target,
+      id,
+      "aria-label": accessibilityLabel,
+      "data-primary-link": dataPrimaryLink
+    }, children) : /* @__PURE__ */ React.createElement("button", {
+      type: "button",
+      onClick,
+      className,
+      id,
+      "aria-label": accessibilityLabel,
+      "data-primary-link": dataPrimaryLink
+    }, children);
+  });
+}
+var styles$e = {
+  "List": "Polaris-List",
+  "typeNumber": "Polaris-List--typeNumber",
+  "Item": "Polaris-List__Item",
+  "spacingLoose": "Polaris-List--spacingLoose"
+};
+function Item$1({
+  children
+}) {
+  return /* @__PURE__ */ React.createElement("li", {
+    className: styles$e.Item
+  }, children);
+}
+const List = function List2({
+  children,
+  gap = "loose",
+  type = "bullet"
+}) {
+  const className = classNames(styles$e.List, gap && styles$e[variationName("spacing", gap)], type && styles$e[variationName("type", type)]);
+  const ListElement = type === "bullet" ? "ul" : "ol";
+  return /* @__PURE__ */ React.createElement(ListElement, {
+    className
+  }, children);
+};
+List.Item = Item$1;
+const NavigationContext = /* @__PURE__ */ createContext({
+  location: ""
+});
+var styles$d = {
+  "Navigation": "Polaris-Navigation",
+  "ContextControl": "Polaris-Navigation__ContextControl",
+  "PrimaryNavigation": "Polaris-Navigation__PrimaryNavigation",
+  "LogoContainer": "Polaris-Navigation__LogoContainer",
+  "hasLogoSuffix": "Polaris-Navigation--hasLogoSuffix",
+  "Logo": "Polaris-Navigation__Logo",
+  "LogoLink": "Polaris-Navigation__LogoLink",
+  "Item": "Polaris-Navigation__Item",
+  "Icon-resized": "Polaris-Navigation__Icon--resized",
+  "Badge": "Polaris-Navigation__Badge",
+  "ItemInnerWrapper": "Polaris-Navigation__ItemInnerWrapper",
+  "ItemWrapper": "Polaris-Navigation__ItemWrapper",
+  "ItemInnerDisabled": "Polaris-Navigation__ItemInnerDisabled",
+  "ItemInnerWrapper-display-actions-on-hover": "Polaris-Navigation--itemInnerWrapperDisplayActionsOnHover",
+  "SecondaryActions": "Polaris-Navigation__SecondaryActions",
+  "ItemInnerWrapper-selected": "Polaris-Navigation__ItemInnerWrapper--selected",
+  "Text": "Polaris-Navigation__Text",
+  "ItemInnerWrapper-open": "Polaris-Navigation__ItemInnerWrapper--open",
+  "Item-selected": "Polaris-Navigation__Item--selected",
+  "Item-child-active": "Polaris-Navigation--itemChildActive",
+  "Item-disabled": "Polaris-Navigation__Item--disabled",
+  "Icon": "Polaris-Navigation__Icon",
+  "ListItem-hasAction": "Polaris-Navigation__ListItem--hasAction",
+  "subNavigationActive": "Polaris-Navigation--subNavigationActive",
+  "ListItem": "Polaris-Navigation__ListItem",
+  "RollupSection": "Polaris-Navigation__RollupSection",
+  "SecondaryNavigation": "Polaris-Navigation__SecondaryNavigation",
+  "Text-truncated": "Polaris-Navigation__Text--truncated",
+  "ItemWithFloatingActions": "Polaris-Navigation__ItemWithFloatingActions",
+  "SecondaryAction": "Polaris-Navigation__SecondaryAction",
+  "List": "Polaris-Navigation__List",
+  "Item-line": "Polaris-Navigation__Item--line",
+  "Item-line-pointer": "Polaris-Navigation--itemLinePointer",
+  "Item-hover-pointer": "Polaris-Navigation--itemHoverPointer",
+  "SecondaryNavigation-noIcon": "Polaris-Navigation__SecondaryNavigation--noIcon",
+  "Section": "Polaris-Navigation__Section",
+  "Section-fill": "Polaris-Navigation__Section--fill",
+  "Section-withSeparator": "Polaris-Navigation__Section--withSeparator",
+  "SectionHeading": "Polaris-Navigation__SectionHeading",
+  "Action": "Polaris-Navigation__Action",
+  "RollupToggle": "Polaris-Navigation__RollupToggle",
+  "Indicator": "Polaris-Navigation__Indicator",
+  "SecondaryNavigationOpen": "Polaris-Navigation__SecondaryNavigationOpen"
+};
+let MatchState;
+(function(MatchState2) {
+  MatchState2[MatchState2["MatchForced"] = 0] = "MatchForced";
+  MatchState2[MatchState2["MatchUrl"] = 1] = "MatchUrl";
+  MatchState2[MatchState2["MatchPaths"] = 2] = "MatchPaths";
+  MatchState2[MatchState2["Excluded"] = 3] = "Excluded";
+  MatchState2[MatchState2["NoMatch"] = 4] = "NoMatch";
+})(MatchState || (MatchState = {}));
+function SecondaryNavigation({
+  ItemComponent,
+  icon,
+  longestMatch,
+  subNavigationItems,
+  showExpanded,
+  truncateText,
+  secondaryNavigationId
+}) {
+  const uid = useId();
+  const {
+    onNavigationDismiss
+  } = useContext(NavigationContext);
+  const [hoveredItem, setHoveredItem] = useState();
+  const matchedItemPosition = subNavigationItems.findIndex((item) => isEqual(item, longestMatch));
+  const hoveredItemPosition = subNavigationItems.findIndex((item) => isEqual(item, hoveredItem));
+  return /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$d.SecondaryNavigation, showExpanded && styles$d.SecondaryNavigationOpen, !icon && styles$d["SecondaryNavigation-noIcon"])
+  }, /* @__PURE__ */ React.createElement(Collapsible, {
+    id: secondaryNavigationId || uid,
+    open: showExpanded,
+    transition: false
+  }, /* @__PURE__ */ React.createElement("ul", {
+    className: styles$d.List
+  }, subNavigationItems.map((item, index2) => {
+    const {
+      label: label2,
+      ...rest
+    } = item;
+    const onClick = () => {
+      onNavigationDismiss == null ? void 0 : onNavigationDismiss();
+      if (item.onClick && item.onClick !== onNavigationDismiss) {
+        item.onClick();
+      }
+    };
+    const shouldShowVerticalLine = index2 < matchedItemPosition;
+    return /* @__PURE__ */ React.createElement(ItemComponent, Object.assign({
+      key: label2
+    }, rest, {
+      label: label2,
+      showVerticalLine: shouldShowVerticalLine,
+      showVerticalHoverPointer: index2 === hoveredItemPosition,
+      level: 1,
+      onMouseEnter: item.disabled ? void 0 : () => setHoveredItem(item),
+      onMouseLeave: item.disabled ? void 0 : () => setHoveredItem(void 0),
+      matches: isEqual(item, longestMatch),
+      onClick,
+      truncateText
+    }));
+  }))));
+}
+const MAX_SECONDARY_ACTIONS = 2;
+const TOOLTIP_HOVER_DELAY = 1e3;
+function Item2({
+  url,
+  icon: baseIcon,
+  matchedItemIcon,
+  label: label2,
+  subNavigationItems = [],
+  secondaryAction,
+  secondaryActions,
+  displayActionsOnHover,
+  disabled,
+  onClick,
+  accessibilityLabel,
+  selected: selectedOverride,
+  badge,
+  new: isNew,
+  matches: matches2,
+  exactMatch,
+  matchPaths,
+  excludePaths,
+  external,
+  onToggleExpandedState,
+  expanded,
+  shouldResizeIcon,
+  truncateText,
+  showVerticalLine,
+  showVerticalHoverPointer,
+  level = 0,
+  onMouseEnter,
+  onMouseLeave
+}) {
+  const i18n = useI18n();
+  const {
+    isNavigationCollapsed
+  } = useMediaQuery();
+  const secondaryNavigationId = useId();
+  const {
+    location,
+    onNavigationDismiss
+  } = useContext(NavigationContext);
+  const navTextRef = useRef(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+  useEffect(() => {
+    if (!isNavigationCollapsed && expanded) {
+      onToggleExpandedState == null ? void 0 : onToggleExpandedState();
+    }
+  }, [expanded, isNavigationCollapsed, onToggleExpandedState]);
+  useIsomorphicLayoutEffect(() => {
+    const navTextNode = navTextRef.current;
+    if (truncateText && navTextNode) {
+      setIsTruncated(navTextNode.scrollHeight > navTextNode.clientHeight);
+    }
+  }, [truncateText]);
+  const tabIndex = disabled ? -1 : 0;
+  const hasNewChild = subNavigationItems.filter((subNavigationItem) => subNavigationItem.new).length > 0;
+  const indicatorMarkup = hasNewChild ? /* @__PURE__ */ React.createElement("span", {
+    className: styles$d.Indicator
+  }, /* @__PURE__ */ React.createElement(Indicator, {
+    pulse: true
+  })) : null;
+  const matchState = matchStateForItem({
+    url,
+    matches: matches2,
+    exactMatch,
+    matchPaths,
+    excludePaths
+  }, location);
+  const matchingSubNavigationItems = subNavigationItems.filter((item) => {
+    const subMatchState = matchStateForItem(item, location);
+    return subMatchState === MatchState.MatchForced || subMatchState === MatchState.MatchUrl || subMatchState === MatchState.MatchPaths;
+  });
+  const childIsActive = matchingSubNavigationItems.length > 0;
+  const selected = selectedOverride == null ? matchState === MatchState.MatchForced || matchState === MatchState.MatchUrl || matchState === MatchState.MatchPaths : selectedOverride;
+  const icon = selected || childIsActive ? matchedItemIcon ?? baseIcon : baseIcon;
+  const iconMarkup = icon ? /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$d.Icon, shouldResizeIcon && styles$d["Icon-resized"])
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: icon
+  })) : null;
+  let badgeMarkup = null;
+  if (isNew) {
+    badgeMarkup = /* @__PURE__ */ React.createElement(Badge, {
+      tone: "new"
+    }, i18n.translate("Polaris.Badge.TONE_LABELS.new"));
+  } else if (typeof badge === "string") {
+    badgeMarkup = /* @__PURE__ */ React.createElement(Badge, {
+      tone: "new"
+    }, badge);
+  } else {
+    badgeMarkup = badge;
+  }
+  const wrappedBadgeMarkup = badgeMarkup == null ? null : /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.Badge
+  }, badgeMarkup);
+  const tone = !showVerticalHoverPointer && !matches2 && level !== 0 ? "subdued" : void 0;
+  let fontWeight = "regular";
+  if ((matches2 || selected) && !childIsActive) {
+    fontWeight = "semibold";
+  } else if (level === 0 || showVerticalHoverPointer) {
+    fontWeight = "medium";
+  }
+  const itemLabelMarkup = /* @__PURE__ */ React.createElement("span", {
+    className: classNames(styles$d.Text, truncateText && styles$d["Text-truncated"]),
+    ref: navTextRef
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd",
+    tone,
+    fontWeight
+  }, label2), indicatorMarkup);
+  if (url == null) {
+    const className2 = classNames(styles$d.Item, disabled && styles$d["Item-disabled"], selectedOverride && styles$d["Item-selected"]);
+    return /* @__PURE__ */ React.createElement("li", {
+      className: styles$d.ListItem
+    }, /* @__PURE__ */ React.createElement("div", {
+      className: styles$d.ItemWrapper
+    }, /* @__PURE__ */ React.createElement("div", {
+      className: classNames(styles$d.ItemInnerWrapper, disabled && styles$d.ItemInnerDisabled, selectedOverride && styles$d["ItemInnerWrapper-selected"])
+    }, /* @__PURE__ */ React.createElement("button", {
+      type: "button",
+      className: className2,
+      disabled,
+      "aria-disabled": disabled,
+      "aria-label": accessibilityLabel,
+      onClick: getClickHandler(onClick)
+    }, iconMarkup, itemLabelMarkup, wrappedBadgeMarkup))));
+  }
+  if (secondaryAction && process.env.NODE_ENV === "development") {
+    console.warn("Deprecation: The `secondaryAction` prop on the `Navigation.Item` has been deprecated. Use `secondaryActions` instead.");
+  }
+  const actions = secondaryActions || secondaryAction && [secondaryAction];
+  if (actions && actions.length > MAX_SECONDARY_ACTIONS) {
+    actions.length = MAX_SECONDARY_ACTIONS;
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`secondaryActions must have a maximum of ${MAX_SECONDARY_ACTIONS} actions. Only the first ${MAX_SECONDARY_ACTIONS} actions will be rendered.`);
+    }
+  }
+  const secondaryActionMarkup = (actions == null ? void 0 : actions.length) ? /* @__PURE__ */ React.createElement("span", {
+    className: styles$d.SecondaryActions
+  }, actions.map((action2) => /* @__PURE__ */ React.createElement(ItemSecondaryAction, Object.assign({
+    key: action2.accessibilityLabel
+  }, action2, {
+    tabIndex,
+    disabled
+  })))) : null;
+  const itemContentMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, iconMarkup, itemLabelMarkup, secondaryActionMarkup ? null : wrappedBadgeMarkup);
+  const outerContentMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, secondaryActionMarkup ? wrappedBadgeMarkup : null);
+  const showExpanded = selected || expanded || childIsActive;
+  const itemClassName = classNames(styles$d.Item, disabled && styles$d["Item-disabled"], (selected || childIsActive) && styles$d["Item-selected"], showExpanded && styles$d.subNavigationActive, childIsActive && styles$d["Item-child-active"], showVerticalLine && styles$d["Item-line"], matches2 && styles$d["Item-line-pointer"], showVerticalHoverPointer && styles$d["Item-hover-pointer"]);
+  let secondaryNavigationMarkup = null;
+  if (subNavigationItems.length > 0) {
+    const longestMatch = matchingSubNavigationItems.sort(({
+      url: firstUrl
+    }, {
+      url: secondUrl
+    }) => secondUrl.length - firstUrl.length)[0];
+    secondaryNavigationMarkup = /* @__PURE__ */ React.createElement(SecondaryNavigation, {
+      ItemComponent: Item2,
+      icon,
+      longestMatch,
+      subNavigationItems,
+      showExpanded,
+      truncateText,
+      secondaryNavigationId
+    });
+  }
+  const className = classNames(styles$d.ListItem, Boolean(actions && actions.length) && styles$d["ListItem-hasAction"]);
+  const itemLinkMarkup = () => {
+    const linkMarkup = /* @__PURE__ */ React.createElement(UnstyledLink, Object.assign({
+      url,
+      className: itemClassName,
+      external,
+      tabIndex,
+      "aria-disabled": disabled,
+      "aria-label": accessibilityLabel,
+      onClick: getClickHandler(onClick)
+    }, normalizeAriaAttributes(secondaryNavigationId, subNavigationItems.length > 0, showExpanded)), itemContentMarkup);
+    return isTruncated ? /* @__PURE__ */ React.createElement(Tooltip, {
+      hoverDelay: TOOLTIP_HOVER_DELAY,
+      content: label2,
+      preferredPosition: "above"
+    }, linkMarkup) : linkMarkup;
+  };
+  return /* @__PURE__ */ React.createElement("li", {
+    className,
+    onMouseEnter: () => {
+      onMouseEnter == null ? void 0 : onMouseEnter(label2);
+    },
+    onMouseLeave
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.ItemWrapper
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$d.ItemInnerWrapper, selected && childIsActive && styles$d["ItemInnerWrapper-open"] || selected && !childIsActive && styles$d["ItemInnerWrapper-selected"], displayActionsOnHover && styles$d["ItemInnerWrapper-display-actions-on-hover"], disabled && styles$d.ItemInnerDisabled)
+  }, displayActionsOnHover && secondaryActionMarkup && wrappedBadgeMarkup ? /* @__PURE__ */ React.createElement("span", {
+    className: styles$d.ItemWithFloatingActions
+  }, itemLinkMarkup(), secondaryActionMarkup) : /* @__PURE__ */ React.createElement(React.Fragment, null, itemLinkMarkup(), secondaryActionMarkup), outerContentMarkup)), secondaryNavigationMarkup);
+  function getClickHandler(onClick2) {
+    return (event) => {
+      const {
+        currentTarget
+      } = event;
+      if (currentTarget.getAttribute("href") === location) {
+        event.preventDefault();
+      }
+      if (subNavigationItems && subNavigationItems.length > 0 && isNavigationCollapsed) {
+        event.preventDefault();
+        onToggleExpandedState == null ? void 0 : onToggleExpandedState();
+      } else if (onNavigationDismiss) {
+        onNavigationDismiss();
+        if (onClick2 && onClick2 !== onNavigationDismiss) {
+          onClick2();
+        }
+        return;
+      }
+      if (onClick2) {
+        onClick2();
+      }
+    };
+  }
+}
+function ItemSecondaryAction({
+  url,
+  icon,
+  accessibilityLabel,
+  tooltip,
+  onClick,
+  disabled,
+  tabIndex
+}) {
+  const markup = url ? /* @__PURE__ */ React.createElement(UnstyledLink, {
+    external: true,
+    url,
+    className: styles$d.SecondaryAction,
+    tabIndex,
+    "aria-disabled": disabled,
+    "aria-label": accessibilityLabel,
+    onClick
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: icon
+  })) : /* @__PURE__ */ React.createElement(UnstyledButton, {
+    className: styles$d.SecondaryAction,
+    tabIndex,
+    disabled,
+    accessibilityLabel,
+    onClick
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: icon
+  }));
+  return tooltip ? /* @__PURE__ */ React.createElement(Tooltip, tooltip, " ", markup, " ") : markup;
+}
+function normalizePathname(pathname) {
+  const barePathname = pathname.split("?")[0].split("#")[0];
+  return barePathname.endsWith("/") ? barePathname : `${barePathname}/`;
+}
+function safeEqual(location, path) {
+  return normalizePathname(location) === normalizePathname(path);
+}
+function safeStartsWith(location, path) {
+  return normalizePathname(location).startsWith(normalizePathname(path));
+}
+function matchStateForItem({
+  url,
+  matches: matches2,
+  exactMatch,
+  matchPaths,
+  excludePaths
+}, location) {
+  if (url == null) {
+    return MatchState.NoMatch;
+  }
+  if (matches2) {
+    return MatchState.MatchForced;
+  }
+  if (matches2 === false || excludePaths && excludePaths.some((path) => safeStartsWith(location, path))) {
+    return MatchState.Excluded;
+  }
+  if (matchPaths && matchPaths.some((path) => safeStartsWith(location, path))) {
+    return MatchState.MatchPaths;
+  }
+  const matchesUrl = exactMatch ? safeEqual(location, url) : safeStartsWith(location, url);
+  return matchesUrl ? MatchState.MatchUrl : MatchState.NoMatch;
+}
+function normalizeAriaAttributes(controlId, hasSubMenu, expanded) {
+  return hasSubMenu ? {
+    "aria-expanded": expanded,
+    "aria-controls": controlId
+  } : void 0;
+}
+function Section({
+  title,
+  fill,
+  action: action2,
+  items,
+  rollup,
+  separator
+}) {
+  const {
+    value: expanded,
+    toggle: toggleExpanded,
+    setFalse: setExpandedFalse
+  } = useToggle(false);
+  const animationFrame = useRef(null);
+  const {
+    isNavigationCollapsed
+  } = useMediaQuery();
+  const [expandedIndex, setExpandedIndex] = useState();
+  const handleClick = (onClick, hasSubNavItems) => {
+    return () => {
+      if (onClick) {
+        onClick();
+      }
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+      if (!hasSubNavItems || !isNavigationCollapsed) {
+        animationFrame.current = requestAnimationFrame(setExpandedFalse);
+      }
+    };
+  };
+  useEffect(() => {
+    return () => {
+      animationFrame.current && cancelAnimationFrame(animationFrame.current);
+    };
+  });
+  const className = classNames(styles$d.Section, separator && styles$d["Section-withSeparator"], fill && styles$d["Section-fill"]);
+  const buttonMarkup = action2 && /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    className: styles$d.Action,
+    "aria-label": action2.accessibilityLabel,
+    onClick: action2.onClick
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: action2.icon
+  }));
+  const actionMarkup = action2 && (action2.tooltip ? /* @__PURE__ */ React.createElement(Tooltip, action2.tooltip, buttonMarkup) : buttonMarkup);
+  const sectionHeadingMarkup = title && /* @__PURE__ */ React.createElement("li", {
+    className: styles$d.SectionHeading
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodySm",
+    fontWeight: "medium",
+    tone: "subdued"
+  }, title), actionMarkup);
+  const itemsMarkup = items.map((item, index2) => {
+    const {
+      onClick,
+      label: label2,
+      subNavigationItems,
+      ...rest
+    } = item;
+    const hasSubNavItems = subNavigationItems != null && subNavigationItems.length > 0;
+    const handleToggleExpandedState = () => {
+      if (expandedIndex === index2) {
+        setExpandedIndex(-1);
+      } else {
+        setExpandedIndex(index2);
+      }
+    };
+    return /* @__PURE__ */ React.createElement(Item2, Object.assign({
+      key: label2
+    }, rest, {
+      label: label2,
+      subNavigationItems,
+      onClick: handleClick(onClick, hasSubNavItems),
+      onToggleExpandedState: handleToggleExpandedState,
+      expanded: expandedIndex === index2
+    }));
+  });
+  const toggleClassName = classNames(styles$d.Item, styles$d.RollupToggle);
+  const ariaLabel = rollup && (expanded ? rollup.hide : rollup.view);
+  const toggleRollup = rollup && items.length > rollup.after && /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.ListItem,
+    key: "List Item"
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.ItemWrapper
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.ItemInnerWrapper
+  }, /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    className: toggleClassName,
+    onClick: toggleExpanded,
+    "aria-label": ariaLabel
+  }, /* @__PURE__ */ React.createElement("span", {
+    className: styles$d.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: MenuHorizontalIcon
+  }))))));
+  const activeItemIndex = items.findIndex((item) => {
+    if (!rollup) {
+      return false;
+    }
+    return rollup.activePath === item.url || item.url && rollup.activePath.startsWith(item.url) || (item.subNavigationItems ? item.subNavigationItems.some(({
+      url: itemUrl
+    }) => rollup.activePath.startsWith(itemUrl)) : false);
+  });
+  const sectionItems = rollup ? itemsMarkup.slice(0, rollup.after) : itemsMarkup;
+  const additionalItems = rollup ? itemsMarkup.slice(rollup.after) : [];
+  if (rollup && activeItemIndex !== -1 && activeItemIndex > rollup.after - 1) {
+    sectionItems.push(...additionalItems.splice(activeItemIndex - rollup.after, 1));
+  }
+  const additionalItemsId = useId();
+  const activeItemsMarkup = rollup && additionalItems.length > 0 && /* @__PURE__ */ React.createElement("li", {
+    className: styles$d.RollupSection
+  }, /* @__PURE__ */ React.createElement(Collapsible, {
+    id: additionalItemsId,
+    open: expanded
+  }, /* @__PURE__ */ React.createElement("ul", {
+    className: styles$d.List
+  }, additionalItems)), toggleRollup);
+  return /* @__PURE__ */ React.createElement("ul", {
+    className
+  }, sectionHeadingMarkup, sectionItems, activeItemsMarkup);
+}
+const Navigation$1 = function Navigation({
+  children,
+  contextControl,
+  location,
+  onDismiss,
+  ariaLabelledBy,
+  logoSuffix
+}) {
+  const {
+    logo
+  } = useFrame();
+  const width = getWidth(logo, 104);
+  const logoMarkup = logo ? /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$d.LogoContainer, logoSuffix && styles$d.hasLogoSuffix)
+  }, /* @__PURE__ */ React.createElement(UnstyledLink, {
+    url: logo.url || "",
+    className: styles$d.LogoLink,
+    style: {
+      width
+    }
+  }, /* @__PURE__ */ React.createElement(Image, {
+    source: logo.topBarSource || "",
+    alt: logo.accessibilityLabel || "",
+    className: styles$d.Logo,
+    style: {
+      width
+    }
+  })), logoSuffix) : null;
+  const mediaMarkup = contextControl ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$d.ContextControl
+  }, contextControl) : logoMarkup;
+  const context = useMemo(() => ({
+    location,
+    onNavigationDismiss: onDismiss
+  }), [location, onDismiss]);
+  return /* @__PURE__ */ React.createElement(NavigationContext.Provider, {
+    value: context
+  }, /* @__PURE__ */ React.createElement(WithinContentContext.Provider, {
+    value: true
+  }, /* @__PURE__ */ React.createElement("nav", {
+    className: styles$d.Navigation,
+    "aria-labelledby": ariaLabelledBy
+  }, mediaMarkup, /* @__PURE__ */ React.createElement(Scrollable, {
+    className: styles$d.PrimaryNavigation
+  }, children))));
+};
+Navigation$1.Item = Item2;
+Navigation$1.Section = Section;
+function isInterface(x) {
+  return !/* @__PURE__ */ isValidElement(x) && x !== void 0;
+}
+function isReactElement(x) {
+  return /* @__PURE__ */ isValidElement(x) && x !== void 0;
+}
+var styles$c = {
+  "Page": "Polaris-Page",
+  "fullWidth": "Polaris-Page--fullWidth",
+  "narrowWidth": "Polaris-Page--narrowWidth",
+  "Content": "Polaris-Page__Content"
+};
+var styles$b = {
+  "TitleWrapper": "Polaris-Page-Header__TitleWrapper",
+  "TitleWrapperExpand": "Polaris-Page-Header__TitleWrapperExpand",
+  "BreadcrumbWrapper": "Polaris-Page-Header__BreadcrumbWrapper",
+  "PaginationWrapper": "Polaris-Page-Header__PaginationWrapper",
+  "PrimaryActionWrapper": "Polaris-Page-Header__PrimaryActionWrapper",
+  "Row": "Polaris-Page-Header__Row",
+  "mobileView": "Polaris-Page-Header--mobileView",
+  "RightAlign": "Polaris-Page-Header__RightAlign",
+  "noBreadcrumbs": "Polaris-Page-Header--noBreadcrumbs",
+  "AdditionalMetaData": "Polaris-Page-Header__AdditionalMetaData",
+  "Actions": "Polaris-Page-Header__Actions",
+  "longTitle": "Polaris-Page-Header--longTitle",
+  "mediumTitle": "Polaris-Page-Header--mediumTitle",
+  "isSingleRow": "Polaris-Page-Header--isSingleRow"
+};
+var styles$a = {
+  "Title": "Polaris-Header-Title",
+  "TitleWithSubtitle": "Polaris-Header-Title__TitleWithSubtitle",
+  "TitleWrapper": "Polaris-Header-Title__TitleWrapper",
+  "SubTitle": "Polaris-Header-Title__SubTitle",
+  "SubtitleCompact": "Polaris-Header-Title__SubtitleCompact",
+  "SubtitleMaxWidth": "Polaris-Header-Title__SubtitleMaxWidth"
+};
+function Title({
+  title,
+  subtitle,
+  titleMetadata,
+  compactTitle,
+  hasSubtitleMaxWidth
+}) {
+  const className = classNames(styles$a.Title, subtitle && styles$a.TitleWithSubtitle);
+  const titleMarkup = title ? /* @__PURE__ */ React.createElement("h1", {
+    className
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "headingLg",
+    fontWeight: "bold"
+  }, title)) : null;
+  const titleMetadataMarkup = titleMetadata ? /* @__PURE__ */ React.createElement(Bleed, {
+    marginBlock: "100"
+  }, titleMetadata) : null;
+  const wrappedTitleMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: styles$a.TitleWrapper
+  }, titleMarkup, titleMetadataMarkup);
+  const subtitleMarkup = subtitle ? /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$a.SubTitle, compactTitle && styles$a.SubtitleCompact, hasSubtitleMaxWidth && styles$a.SubtitleMaxWidth)
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "p",
+    variant: "bodySm",
+    tone: "subdued"
+  }, subtitle)) : null;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, wrappedTitleMarkup, subtitleMarkup);
+}
+const SHORT_TITLE = 20;
+const REALLY_SHORT_TITLE = 8;
+const LONG_TITLE = 34;
+function Header({
+  title,
+  subtitle,
+  pageReadyAccessibilityLabel,
+  titleMetadata,
+  additionalMetadata,
+  titleHidden = false,
+  primaryAction,
+  pagination,
+  filterActions,
+  backAction,
+  secondaryActions = [],
+  actionGroups = [],
+  compactTitle = false,
+  onActionRollup
+}) {
+  const i18n = useI18n();
+  const {
+    isNavigationCollapsed
+  } = useMediaQuery();
+  const isSingleRow = !primaryAction && !pagination && (isInterface(secondaryActions) && !secondaryActions.length || isReactElement(secondaryActions)) && !actionGroups.length;
+  const hasActionGroupsOrSecondaryActions = actionGroups.length > 0 || isInterface(secondaryActions) && secondaryActions.length > 0 || isReactElement(secondaryActions);
+  const breadcrumbMarkup = backAction ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.BreadcrumbWrapper
+  }, /* @__PURE__ */ React.createElement(Box, {
+    maxWidth: "100%",
+    paddingInlineEnd: "100",
+    printHidden: true
+  }, /* @__PURE__ */ React.createElement(Breadcrumbs, {
+    backAction
+  }))) : null;
+  const paginationMarkup = pagination && !isNavigationCollapsed ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.PaginationWrapper
+  }, /* @__PURE__ */ React.createElement(Box, {
+    printHidden: true
+  }, /* @__PURE__ */ React.createElement(Pagination, Object.assign({}, pagination, {
+    hasPrevious: pagination.hasPrevious,
+    hasNext: pagination.hasNext
+  })))) : null;
+  const pageTitleMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$b.TitleWrapper, !hasActionGroupsOrSecondaryActions && styles$b.TitleWrapperExpand)
+  }, /* @__PURE__ */ React.createElement(Title, {
+    title,
+    subtitle,
+    titleMetadata,
+    compactTitle,
+    hasSubtitleMaxWidth: hasActionGroupsOrSecondaryActions
+  }));
+  const labelForPageReadyAccessibilityLabel = pageReadyAccessibilityLabel || title;
+  const pageReadyAccessibilityLabelMarkup = labelForPageReadyAccessibilityLabel ? /* @__PURE__ */ React.createElement("div", {
+    role: "status"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    visuallyHidden: true,
+    as: "p"
+  }, i18n.translate("Polaris.Page.Header.pageReadyAccessibilityLabel", {
+    title: labelForPageReadyAccessibilityLabel
+  }))) : void 0;
+  const primaryActionMarkup = primaryAction ? /* @__PURE__ */ React.createElement(PrimaryActionMarkup, {
+    primaryAction
+  }) : null;
+  let actionMenuMarkup = null;
+  if (isInterface(secondaryActions) && (secondaryActions.length > 0 || hasGroupsWithActions(actionGroups))) {
+    actionMenuMarkup = /* @__PURE__ */ React.createElement(ActionMenu, {
+      actions: secondaryActions,
+      groups: actionGroups,
+      rollup: isNavigationCollapsed,
+      rollupActionsLabel: title ? i18n.translate("Polaris.Page.Header.rollupActionsLabel", {
+        title
+      }) : void 0,
+      onActionRollup
+    });
+  } else if (isReactElement(secondaryActions)) {
+    actionMenuMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, secondaryActions);
+  }
+  const navigationMarkup = breadcrumbMarkup || paginationMarkup ? /* @__PURE__ */ React.createElement(Box, {
+    printHidden: true,
+    paddingBlockEnd: "100",
+    paddingInlineEnd: actionMenuMarkup && isNavigationCollapsed ? "1000" : void 0
+  }, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400",
+    align: "space-between",
+    blockAlign: "center"
+  }, breadcrumbMarkup, paginationMarkup)) : null;
+  const additionalMetadataMarkup = additionalMetadata ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.AdditionalMetaData
+  }, /* @__PURE__ */ React.createElement(Text, {
+    tone: "subdued",
+    as: "span",
+    variant: "bodySm"
+  }, additionalMetadata)) : null;
+  const headerClassNames = classNames(isSingleRow && styles$b.isSingleRow, navigationMarkup && styles$b.hasNavigation, actionMenuMarkup && styles$b.hasActionMenu, isNavigationCollapsed && styles$b.mobileView, !backAction && styles$b.noBreadcrumbs, title && title.length < LONG_TITLE && styles$b.mediumTitle, title && title.length > LONG_TITLE && styles$b.longTitle);
+  const {
+    slot1,
+    slot2,
+    slot3,
+    slot4,
+    slot5
+  } = determineLayout({
+    actionMenuMarkup,
+    additionalMetadataMarkup,
+    breadcrumbMarkup,
+    isNavigationCollapsed,
+    pageTitleMarkup,
+    paginationMarkup,
+    primaryActionMarkup,
+    title
+  });
+  return /* @__PURE__ */ React.createElement(Box, {
+    position: "relative",
+    paddingBlockStart: {
+      xs: "400",
+      md: "600"
+    },
+    paddingBlockEnd: {
+      xs: "400",
+      md: "600"
+    },
+    paddingInlineStart: {
+      xs: "400",
+      sm: "0"
+    },
+    paddingInlineEnd: {
+      xs: "400",
+      sm: "0"
+    },
+    visuallyHidden: titleHidden
+  }, pageReadyAccessibilityLabelMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: headerClassNames
+  }, /* @__PURE__ */ React.createElement(FilterActionsProvider, {
+    filterActions: Boolean(filterActions)
+  }, /* @__PURE__ */ React.createElement(ConditionalRender, {
+    condition: [slot1, slot2, slot3, slot4].some(notNull)
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.Row
+  }, slot1, slot2, /* @__PURE__ */ React.createElement(ConditionalRender, {
+    condition: [slot3, slot4].some(notNull)
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.RightAlign
+  }, /* @__PURE__ */ React.createElement(ConditionalWrapper, {
+    condition: [slot3, slot4].every(notNull),
+    wrapper: (children) => /* @__PURE__ */ React.createElement("div", {
+      className: styles$b.Actions
+    }, children)
+  }, slot3, slot4))))), /* @__PURE__ */ React.createElement(ConditionalRender, {
+    condition: [slot5].some(notNull)
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.Row
+  }, /* @__PURE__ */ React.createElement(InlineStack, {
+    gap: "400"
+  }, slot5))))));
+}
+function PrimaryActionMarkup({
+  primaryAction
+}) {
+  const {
+    isNavigationCollapsed
+  } = useMediaQuery();
+  let actionMarkup;
+  if (isInterface(primaryAction)) {
+    const {
+      primary: isPrimary,
+      helpText
+    } = primaryAction;
+    const primary = isPrimary === void 0 ? true : isPrimary;
+    const content2 = buttonFrom(shouldShowIconOnly(isNavigationCollapsed, primaryAction), {
+      variant: primary ? "primary" : void 0
+    });
+    actionMarkup = helpText ? /* @__PURE__ */ React.createElement(Tooltip, {
+      content: helpText
+    }, content2) : content2;
+  } else {
+    actionMarkup = primaryAction;
+  }
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$b.PrimaryActionWrapper
+  }, /* @__PURE__ */ React.createElement(Box, {
+    printHidden: true
+  }, actionMarkup));
+}
+function shouldShowIconOnly(isMobile, action2) {
+  let {
+    content: content2,
+    accessibilityLabel
+  } = action2;
+  const {
+    icon
+  } = action2;
+  if (icon == null) return {
+    ...action2,
+    icon: void 0
+  };
+  if (isMobile) {
+    accessibilityLabel = accessibilityLabel || content2;
+    content2 = void 0;
+  }
+  return {
+    ...action2,
+    content: content2,
+    accessibilityLabel,
+    icon
+  };
+}
+function notNull(value) {
+  return value != null;
+}
+function determineLayout({
+  actionMenuMarkup,
+  additionalMetadataMarkup,
+  breadcrumbMarkup,
+  isNavigationCollapsed,
+  pageTitleMarkup,
+  paginationMarkup,
+  primaryActionMarkup,
+  title
+}) {
+  const layouts = {
+    mobileCompact: {
+      slots: {
+        slot1: null,
+        slot2: pageTitleMarkup,
+        slot3: actionMenuMarkup,
+        slot4: primaryActionMarkup,
+        slot5: additionalMetadataMarkup
+      },
+      condition: isNavigationCollapsed && breadcrumbMarkup == null && title != null && title.length <= REALLY_SHORT_TITLE
+    },
+    mobileDefault: {
+      slots: {
+        slot1: breadcrumbMarkup,
+        slot2: pageTitleMarkup,
+        slot3: actionMenuMarkup,
+        slot4: primaryActionMarkup,
+        slot5: additionalMetadataMarkup
+      },
+      condition: isNavigationCollapsed
+    },
+    desktopCompact: {
+      slots: {
+        slot1: breadcrumbMarkup,
+        slot2: pageTitleMarkup,
+        slot3: actionMenuMarkup,
+        slot4: primaryActionMarkup,
+        slot5: additionalMetadataMarkup
+      },
+      condition: !isNavigationCollapsed && paginationMarkup == null && actionMenuMarkup == null && title != null && title.length <= SHORT_TITLE
+    },
+    desktopDefault: {
+      slots: {
+        slot1: breadcrumbMarkup,
+        slot2: pageTitleMarkup,
+        slot3: /* @__PURE__ */ React.createElement(React.Fragment, null, actionMenuMarkup, primaryActionMarkup),
+        slot4: paginationMarkup,
+        slot5: additionalMetadataMarkup
+      },
+      condition: !isNavigationCollapsed
+    }
+  };
+  const layout = Object.values(layouts).find((layout2) => layout2.condition) || layouts.desktopDefault;
+  return layout.slots;
+}
+function Page$5({
+  children,
+  fullWidth,
+  narrowWidth,
+  ...rest
+}) {
+  const pageClassName = classNames(styles$c.Page, fullWidth && styles$c.fullWidth, narrowWidth && styles$c.narrowWidth);
+  const hasHeaderContent = rest.title != null && rest.title !== "" || rest.subtitle != null && rest.subtitle !== "" || rest.primaryAction != null || rest.secondaryActions != null && (isInterface(rest.secondaryActions) && rest.secondaryActions.length > 0 || isReactElement(rest.secondaryActions)) || rest.actionGroups != null && rest.actionGroups.length > 0 || rest.backAction != null;
+  const contentClassName = classNames(!hasHeaderContent && styles$c.Content);
+  const headerMarkup = hasHeaderContent ? /* @__PURE__ */ React.createElement(Header, Object.assign({
+    filterActions: true
+  }, rest)) : null;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: pageClassName
+  }, headerMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: contentClassName
+  }, children));
+}
+var styles$9 = {
+  "Select": "Polaris-Select",
+  "disabled": "Polaris-Select--disabled",
+  "error": "Polaris-Select--error",
+  "Backdrop": "Polaris-Select__Backdrop",
+  "Input": "Polaris-Select__Input",
+  "Content": "Polaris-Select__Content",
+  "InlineLabel": "Polaris-Select__InlineLabel",
+  "Icon": "Polaris-Select__Icon",
+  "SelectedOption": "Polaris-Select__SelectedOption",
+  "Prefix": "Polaris-Select__Prefix",
+  "hover": "Polaris-Select--hover",
+  "toneMagic": "Polaris-Select--toneMagic"
+};
+const PLACEHOLDER_VALUE = "";
+function Select({
+  options: optionsProp,
+  label: label2,
+  labelAction,
+  labelHidden: labelHiddenProp,
+  labelInline,
+  disabled,
+  helpText,
+  placeholder,
+  id: idProp,
+  name,
+  value = PLACEHOLDER_VALUE,
+  error,
+  onChange,
+  onFocus,
+  onBlur,
+  requiredIndicator,
+  tone
+}) {
+  const {
+    value: focused,
+    toggle: toggleFocused
+  } = useToggle(false);
+  const uniqId = useId();
+  const id = idProp ?? uniqId;
+  const labelHidden = labelInline ? true : labelHiddenProp;
+  const className = classNames(styles$9.Select, error && styles$9.error, tone && styles$9[variationName("tone", tone)], disabled && styles$9.disabled);
+  const handleFocus = useCallback((event) => {
+    toggleFocused();
+    onFocus == null ? void 0 : onFocus(event);
+  }, [onFocus, toggleFocused]);
+  const handleBlur = useCallback((event) => {
+    toggleFocused();
+    onBlur == null ? void 0 : onBlur(event);
+  }, [onBlur, toggleFocused]);
+  const handleChange = onChange ? (event) => onChange(event.currentTarget.value, id) : void 0;
+  const describedBy = [];
+  if (helpText) {
+    describedBy.push(helpTextID(id));
+  }
+  if (error) {
+    describedBy.push(`${id}Error`);
+  }
+  const options2 = optionsProp || [];
+  let normalizedOptions = options2.map(normalizeOption);
+  if (placeholder) {
+    normalizedOptions = [{
+      label: placeholder,
+      value: PLACEHOLDER_VALUE,
+      disabled: true
+    }, ...normalizedOptions];
+  }
+  const inlineLabelMarkup = labelInline && /* @__PURE__ */ React.createElement(Box, {
+    paddingInlineEnd: "100"
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    variant: "bodyMd",
+    tone: tone && tone === "magic" && !focused ? "magic-subdued" : "subdued",
+    truncate: true
+  }, label2));
+  const selectedOption = getSelectedOption(normalizedOptions, value);
+  const prefixMarkup = selectedOption.prefix && /* @__PURE__ */ React.createElement("div", {
+    className: styles$9.Prefix
+  }, selectedOption.prefix);
+  const contentMarkup = /* @__PURE__ */ React.createElement("div", {
+    className: styles$9.Content,
+    "aria-hidden": true,
+    "aria-disabled": disabled
+  }, inlineLabelMarkup, prefixMarkup, /* @__PURE__ */ React.createElement("span", {
+    className: styles$9.SelectedOption
+  }, selectedOption.label), /* @__PURE__ */ React.createElement("span", {
+    className: styles$9.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: SelectIcon
+  })));
+  const optionsMarkup = normalizedOptions.map(renderOption);
+  return /* @__PURE__ */ React.createElement(Labelled, {
+    id,
+    label: label2,
+    error,
+    action: labelAction,
+    labelHidden,
+    helpText,
+    requiredIndicator,
+    disabled
+  }, /* @__PURE__ */ React.createElement("div", {
+    className
+  }, /* @__PURE__ */ React.createElement("select", {
+    id,
+    name,
+    value,
+    className: styles$9.Input,
+    disabled,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    onChange: handleChange,
+    "aria-invalid": Boolean(error),
+    "aria-describedby": describedBy.length ? describedBy.join(" ") : void 0,
+    "aria-required": requiredIndicator
+  }, optionsMarkup), contentMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: styles$9.Backdrop
+  })));
+}
+function isString(option) {
+  return typeof option === "string";
+}
+function isGroup(option) {
+  return typeof option === "object" && "options" in option && option.options != null;
+}
+function normalizeStringOption(option) {
+  return {
+    label: option,
+    value: option
+  };
+}
+function normalizeOption(option) {
+  if (isString(option)) {
+    return normalizeStringOption(option);
+  } else if (isGroup(option)) {
+    const {
+      title,
+      options: options2
+    } = option;
+    return {
+      title,
+      options: options2.map((option2) => {
+        return isString(option2) ? normalizeStringOption(option2) : option2;
+      })
+    };
+  }
+  return option;
+}
+function getSelectedOption(options2, value) {
+  const flatOptions = flattenOptions(options2);
+  let selectedOption = flatOptions.find((option) => value === option.value);
+  if (selectedOption === void 0) {
+    selectedOption = flatOptions.find((option) => !option.hidden);
+  }
+  return selectedOption || {
+    value: "",
+    label: ""
+  };
+}
+function flattenOptions(options2) {
+  let flatOptions = [];
+  options2.forEach((optionOrGroup) => {
+    if (isGroup(optionOrGroup)) {
+      flatOptions = flatOptions.concat(optionOrGroup.options);
+    } else {
+      flatOptions.push(optionOrGroup);
+    }
+  });
+  return flatOptions;
+}
+function renderSingleOption(option) {
+  const {
+    value,
+    label: label2,
+    prefix: _prefix,
+    key,
+    ...rest
+  } = option;
+  return /* @__PURE__ */ React.createElement("option", Object.assign({
+    key: key ?? value,
+    value
+  }, rest), label2);
+}
+function renderOption(optionOrGroup) {
+  if (isGroup(optionOrGroup)) {
+    const {
+      title,
+      options: options2
+    } = optionOrGroup;
+    return /* @__PURE__ */ React.createElement("optgroup", {
+      label: title,
+      key: title
+    }, options2.map(renderSingleOption));
+  }
+  return renderSingleOption(optionOrGroup);
+}
+var styles$8 = {
+  "TopBar": "Polaris-TopBar",
+  "Container": "Polaris-TopBar__Container",
+  "LogoDisplayControl": "Polaris-TopBar__LogoDisplayControl",
+  "LogoDisplayContainer": "Polaris-TopBar__LogoDisplayContainer",
+  "LogoContainer": "Polaris-TopBar__LogoContainer",
+  "hasLogoSuffix": "Polaris-TopBar--hasLogoSuffix",
+  "Logo": "Polaris-TopBar__Logo",
+  "LogoLink": "Polaris-TopBar__LogoLink",
+  "ContextControl": "Polaris-TopBar__ContextControl",
+  "NavigationIcon": "Polaris-TopBar__NavigationIcon",
+  "focused": "Polaris-TopBar--focused",
+  "IconWrapper": "Polaris-TopBar__IconWrapper",
+  "LeftContent": "Polaris-TopBar__LeftContent",
+  "Search": "Polaris-TopBar__Search",
+  "RightContent": "Polaris-TopBar__RightContent",
+  "SecondaryMenu": "Polaris-TopBar__SecondaryMenu"
+};
+var styles$7 = {
+  "Search": "Polaris-TopBar-Search",
+  "SearchContent": "Polaris-TopBar-Search__SearchContent",
+  "visible": "Polaris-TopBar-Search--visible",
+  "Results": "Polaris-TopBar-Search__Results"
+};
+var styles$6 = {
+  "SearchDismissOverlay": "Polaris-TopBar-SearchDismissOverlay",
+  "visible": "Polaris-TopBar-SearchDismissOverlay--visible"
+};
+function SearchDismissOverlay({
+  onDismiss,
+  visible
+}) {
+  const node = useRef(null);
+  const handleDismiss = useCallback(({
+    target
+  }) => {
+    if (target === node.current && onDismiss != null) {
+      onDismiss();
+    }
+  }, [onDismiss]);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, visible ? /* @__PURE__ */ React.createElement(ScrollLock, null) : null, /* @__PURE__ */ React.createElement("div", {
+    ref: node,
+    className: classNames(styles$6.SearchDismissOverlay, visible && styles$6.visible),
+    onClick: handleDismiss
+  }));
+}
+function Search({
+  visible,
+  children,
+  onDismiss,
+  overlayVisible = false
+}) {
+  if (children == null) {
+    return null;
+  }
+  const overlayMarkup = visible ? /* @__PURE__ */ React.createElement(SearchDismissOverlay, {
+    onDismiss,
+    visible: overlayVisible
+  }) : null;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, overlayMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$7.Search, visible && styles$7.visible)
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$7.SearchContent
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$7.Results
+  }, children))));
+}
+var styles$5 = {
+  "SearchField": "Polaris-TopBar-SearchField",
+  "focused": "Polaris-TopBar-SearchField--focused",
+  "Input": "Polaris-TopBar-SearchField__Input",
+  "Backdrop": "Polaris-TopBar-SearchField__Backdrop",
+  "BackdropShowFocusBorder": "Polaris-TopBar-SearchField__BackdropShowFocusBorder",
+  "Icon": "Polaris-TopBar-SearchField__Icon",
+  "Clear": "Polaris-TopBar-SearchField__Clear"
+};
+function SearchField({
+  value,
+  focused,
+  active,
+  placeholder,
+  onChange,
+  onFocus,
+  onBlur,
+  onCancel,
+  showFocusBorder
+}) {
+  const i18n = useI18n();
+  const [forceActive, setForceActive] = useState(false);
+  const input2 = useRef(null);
+  const searchId = useId();
+  const handleChange = useCallback(({
+    currentTarget
+  }) => {
+    onChange(currentTarget.value);
+  }, [onChange]);
+  const handleFocus = useCallback(() => onFocus && onFocus(), [onFocus]);
+  const handleBlur = useCallback(() => onBlur && onBlur(), [onBlur]);
+  const handleClear = useCallback(() => {
+    onCancel && onCancel();
+    if (!input2.current) {
+      return;
+    }
+    input2.current.value = "";
+    onChange("");
+    input2.current.focus();
+  }, [onCancel, onChange]);
+  useEffect(() => {
+    if (!input2.current) {
+      return;
+    }
+    if (focused) {
+      input2.current.focus();
+    } else {
+      input2.current.blur();
+    }
+  }, [focused]);
+  const clearMarkup = value !== "" && /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    "aria-label": i18n.translate("Polaris.TopBar.SearchField.clearButtonLabel"),
+    className: styles$5.Clear,
+    onClick: handleClear,
+    onBlur: () => {
+      setForceActive(false);
+      handleClear();
+    },
+    onFocus: () => {
+      handleFocus();
+      setForceActive(true);
+    }
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: XCircleIcon
+  }));
+  const className = classNames(styles$5.SearchField, (focused || active || forceActive) && styles$5.focused);
+  return /* @__PURE__ */ React.createElement("div", {
+    className,
+    onFocus: handleFocus,
+    onBlur: handleBlur
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "span",
+    visuallyHidden: true
+  }, /* @__PURE__ */ React.createElement("label", {
+    htmlFor: searchId
+  }, i18n.translate("Polaris.TopBar.SearchField.search"))), /* @__PURE__ */ React.createElement("input", {
+    id: searchId,
+    className: styles$5.Input,
+    placeholder,
+    type: "search",
+    autoCapitalize: "off",
+    autoComplete: "off",
+    autoCorrect: "off",
+    ref: input2,
+    value,
+    onChange: handleChange,
+    onKeyDown: preventDefault
+  }), /* @__PURE__ */ React.createElement("span", {
+    className: styles$5.Icon
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: SearchIcon
+  })), clearMarkup, /* @__PURE__ */ React.createElement("div", {
+    className: classNames(styles$5.Backdrop, showFocusBorder && styles$5.BackdropShowFocusBorder)
+  }));
+}
+function preventDefault(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
+}
+var styles$4 = {
+  "Details": "Polaris-TopBar-UserMenu__Details"
+};
+var styles$3 = {
+  "MessageIndicatorWrapper": "Polaris-MessageIndicator__MessageIndicatorWrapper",
+  "MessageIndicator": "Polaris-MessageIndicator"
+};
+function MessageIndicator({
+  children,
+  active
+}) {
+  const indicatorMarkup = active && /* @__PURE__ */ React.createElement("div", {
+    className: styles$3.MessageIndicator
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$3.MessageIndicatorWrapper
+  }, indicatorMarkup, children);
+}
+var styles$2 = {
+  "ActivatorWrapper": "Polaris-TopBar-Menu__ActivatorWrapper",
+  "Activator": "Polaris-TopBar-Menu__Activator",
+  "Activator-userMenu": "Polaris-TopBar-Menu__Activator--userMenu"
+};
+var styles$1 = {
+  "Section": "Polaris-Menu-Message__Section"
+};
+function Message({
+  title,
+  description,
+  action: action2,
+  link,
+  badge
+}) {
+  const badgeMarkup = badge && /* @__PURE__ */ React.createElement(Badge, {
+    tone: badge.tone
+  }, badge.content);
+  const {
+    to,
+    content: linkContent
+  } = link;
+  const {
+    onClick,
+    content: actionContent
+  } = action2;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$1.Section
+  }, /* @__PURE__ */ React.createElement(Popover2.Section, null, /* @__PURE__ */ React.createElement(LegacyStack, {
+    vertical: true,
+    spacing: "tight"
+  }, /* @__PURE__ */ React.createElement(TextContainer, null, /* @__PURE__ */ React.createElement(Text, {
+    variant: "headingMd",
+    as: "h2"
+  }, title, badgeMarkup), /* @__PURE__ */ React.createElement("p", null, description)), /* @__PURE__ */ React.createElement(Link, {
+    url: to
+  }, linkContent), /* @__PURE__ */ React.createElement(Button, {
+    variant: "plain",
+    onClick
+  }, actionContent))));
+}
+function Menu(props) {
+  const {
+    actions,
+    onOpen,
+    onClose,
+    open,
+    activatorContent,
+    message,
+    accessibilityLabel,
+    customWidth,
+    userMenu
+  } = props;
+  const badgeProps = message && message.badge && {
+    content: message.badge.content,
+    tone: message.badge.tone
+  };
+  const messageMarkup = message && /* @__PURE__ */ React.createElement(Message, {
+    title: message.title,
+    description: message.description,
+    action: {
+      onClick: message.action.onClick,
+      content: message.action.content
+    },
+    link: {
+      to: message.link.to,
+      content: message.link.content
+    },
+    badge: badgeProps
+  });
+  return /* @__PURE__ */ React.createElement(Popover2, {
+    activator: /* @__PURE__ */ React.createElement("div", {
+      className: styles$2.ActivatorWrapper
+    }, /* @__PURE__ */ React.createElement("button", {
+      type: "button",
+      className: classNames(styles$2.Activator, userMenu && styles$2["Activator-userMenu"]),
+      onClick: onOpen,
+      "aria-label": accessibilityLabel
+    }, activatorContent)),
+    active: open,
+    onClose,
+    fixed: true,
+    fullHeight: true,
+    preferredAlignment: "right"
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$2.MenuItems
+  }, /* @__PURE__ */ React.createElement(Box, {
+    width: customWidth
+  }, /* @__PURE__ */ React.createElement(ActionList, {
+    actionRole: "menuitem",
+    onActionAnyItem: onClose,
+    sections: actions
+  }), messageMarkup)));
+}
+function UserMenu({
+  name,
+  detail,
+  avatar,
+  initials,
+  actions,
+  message,
+  onToggle,
+  open,
+  accessibilityLabel,
+  customActivator,
+  customWidth
+}) {
+  const showIndicator = Boolean(message);
+  const activatorContentMarkup = customActivator ? customActivator : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+    className: styles$4.Details
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "p",
+    variant: "bodySm",
+    alignment: "start",
+    fontWeight: "medium",
+    truncate: true
+  }, name), /* @__PURE__ */ React.createElement("span", {
+    className: styles$4.Message
+  }, /* @__PURE__ */ React.createElement(Text, {
+    as: "p",
+    variant: "bodyXs",
+    alignment: "start",
+    tone: "text-inverse-secondary",
+    truncate: true
+  }, detail))), /* @__PURE__ */ React.createElement(MessageIndicator, {
+    active: showIndicator
+  }, /* @__PURE__ */ React.createElement(Avatar, {
+    size: "md",
+    initials: initials && initials.replace(" ", ""),
+    source: avatar,
+    name
+  })));
+  return /* @__PURE__ */ React.createElement(Menu, {
+    activatorContent: activatorContentMarkup,
+    open,
+    onOpen: onToggle,
+    onClose: onToggle,
+    actions,
+    message,
+    accessibilityLabel,
+    customWidth,
+    userMenu: true
+  });
+}
+const TopBar = function TopBar2({
+  showNavigationToggle,
+  userMenu,
+  searchResults,
+  searchField,
+  secondaryMenu,
+  searchResultsVisible,
+  searchResultsOverlayVisible = false,
+  onNavigationToggle,
+  onSearchResultsDismiss,
+  contextControl,
+  logoSuffix
+}) {
+  const i18n = useI18n();
+  const {
+    logo
+  } = useFrame();
+  const {
+    value: focused,
+    setTrue: forceTrueFocused,
+    setFalse: forceFalseFocused
+  } = useToggle(false);
+  const iconClassName = classNames(styles$8.NavigationIcon, focused && styles$8.focused);
+  const navigationButtonMarkup = showNavigationToggle ? /* @__PURE__ */ React.createElement("button", {
+    type: "button",
+    className: iconClassName,
+    onClick: onNavigationToggle,
+    onFocus: forceTrueFocused,
+    onBlur: forceFalseFocused,
+    "aria-label": i18n.translate("Polaris.TopBar.toggleMenuLabel")
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.IconWrapper
+  }, /* @__PURE__ */ React.createElement(Icon, {
+    source: MenuIcon
+  }))) : null;
+  const width = getWidth(logo, 104);
+  let contextMarkup;
+  if (contextControl) {
+    contextMarkup = /* @__PURE__ */ React.createElement("div", {
+      className: styles$8.ContextControl
+    }, contextControl);
+  } else if (logo) {
+    const className = classNames(styles$8.LogoContainer, showNavigationToggle || searchField ? styles$8.LogoDisplayControl : styles$8.LogoDisplayContainer, logoSuffix && styles$8.hasLogoSuffix);
+    contextMarkup = /* @__PURE__ */ React.createElement("div", {
+      className
+    }, /* @__PURE__ */ React.createElement(UnstyledLink, {
+      url: logo.url || "",
+      className: styles$8.LogoLink,
+      style: {
+        width
+      }
+    }, /* @__PURE__ */ React.createElement(Image, {
+      source: logo.topBarSource || "",
+      alt: logo.accessibilityLabel || "",
+      className: styles$8.Logo,
+      style: {
+        width
+      }
+    })), logoSuffix);
+  }
+  const searchMarkup = searchField ? /* @__PURE__ */ React.createElement(React.Fragment, null, searchField, /* @__PURE__ */ React.createElement(Search, {
+    visible: searchResultsVisible,
+    onDismiss: onSearchResultsDismiss,
+    overlayVisible: searchResultsOverlayVisible
+  }, searchResults)) : null;
+  return /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.TopBar
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.Container
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.LeftContent
+  }, navigationButtonMarkup, contextMarkup), /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.Search
+  }, searchMarkup), /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.RightContent
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: styles$8.SecondaryMenu
+  }, secondaryMenu), userMenu)));
+};
+TopBar.Menu = Menu;
+TopBar.SearchField = SearchField;
+TopBar.UserMenu = UserMenu;
 const Polaris = /* @__PURE__ */ JSON.parse('{"ActionMenu":{"Actions":{"moreActions":"More actions"},"RollupActions":{"rollupButton":"View actions"}},"ActionList":{"SearchField":{"clearButtonLabel":"Clear","search":"Search","placeholder":"Search actions"}},"Avatar":{"label":"Avatar","labelWithInitials":"Avatar with initials {initials}"},"Autocomplete":{"spinnerAccessibilityLabel":"Loading","ellipsis":"{content}…"},"Badge":{"PROGRESS_LABELS":{"incomplete":"Incomplete","partiallyComplete":"Partially complete","complete":"Complete"},"TONE_LABELS":{"info":"Info","success":"Success","warning":"Warning","critical":"Critical","attention":"Attention","new":"New","readOnly":"Read-only","enabled":"Enabled"},"progressAndTone":"{toneLabel} {progressLabel}"},"Banner":{"dismissButton":"Dismiss notification"},"Button":{"spinnerAccessibilityLabel":"Loading"},"Common":{"checkbox":"checkbox","undo":"Undo","cancel":"Cancel","clear":"Clear","close":"Close","submit":"Submit","more":"More"},"ContextualSaveBar":{"save":"Save","discard":"Discard"},"DataTable":{"sortAccessibilityLabel":"sort {direction} by","navAccessibilityLabel":"Scroll table {direction} one column","totalsRowHeading":"Totals","totalRowHeading":"Total"},"DatePicker":{"previousMonth":"Show previous month, {previousMonthName} {showPreviousYear}","nextMonth":"Show next month, {nextMonth} {nextYear}","today":"Today ","start":"Start of range","end":"End of range","months":{"january":"January","february":"February","march":"March","april":"April","may":"May","june":"June","july":"July","august":"August","september":"September","october":"October","november":"November","december":"December"},"days":{"monday":"Monday","tuesday":"Tuesday","wednesday":"Wednesday","thursday":"Thursday","friday":"Friday","saturday":"Saturday","sunday":"Sunday"},"daysAbbreviated":{"monday":"Mo","tuesday":"Tu","wednesday":"We","thursday":"Th","friday":"Fr","saturday":"Sa","sunday":"Su"}},"DiscardConfirmationModal":{"title":"Discard all unsaved changes","message":"If you discard changes, you’ll delete any edits you made since you last saved.","primaryAction":"Discard changes","secondaryAction":"Continue editing"},"DropZone":{"single":{"overlayTextFile":"Drop file to upload","overlayTextImage":"Drop image to upload","overlayTextVideo":"Drop video to upload","actionTitleFile":"Add file","actionTitleImage":"Add image","actionTitleVideo":"Add video","actionHintFile":"or drop file to upload","actionHintImage":"or drop image to upload","actionHintVideo":"or drop video to upload","labelFile":"Upload file","labelImage":"Upload image","labelVideo":"Upload video"},"allowMultiple":{"overlayTextFile":"Drop files to upload","overlayTextImage":"Drop images to upload","overlayTextVideo":"Drop videos to upload","actionTitleFile":"Add files","actionTitleImage":"Add images","actionTitleVideo":"Add videos","actionHintFile":"or drop files to upload","actionHintImage":"or drop images to upload","actionHintVideo":"or drop videos to upload","labelFile":"Upload files","labelImage":"Upload images","labelVideo":"Upload videos"},"errorOverlayTextFile":"File type is not valid","errorOverlayTextImage":"Image type is not valid","errorOverlayTextVideo":"Video type is not valid"},"EmptySearchResult":{"altText":"Empty search results"},"Frame":{"skipToContent":"Skip to content","navigationLabel":"Navigation","Navigation":{"closeMobileNavigationLabel":"Close navigation"}},"FullscreenBar":{"back":"Back","accessibilityLabel":"Exit fullscreen mode"},"Filters":{"moreFilters":"More filters","moreFiltersWithCount":"More filters ({count})","filter":"Filter {resourceName}","noFiltersApplied":"No filters applied","cancel":"Cancel","done":"Done","clearAllFilters":"Clear all filters","clear":"Clear","clearLabel":"Clear {filterName}","addFilter":"Add filter","clearFilters":"Clear all","searchInView":"in:{viewName}"},"FilterPill":{"clear":"Clear","unsavedChanges":"Unsaved changes - {label}"},"IndexFilters":{"searchFilterTooltip":"Search and filter","searchFilterTooltipWithShortcut":"Search and filter (F)","searchFilterAccessibilityLabel":"Search and filter results","sort":"Sort your results","addView":"Add a new view","newView":"Custom search","SortButton":{"ariaLabel":"Sort the results","tooltip":"Sort","title":"Sort by","sorting":{"asc":"Ascending","desc":"Descending","az":"A-Z","za":"Z-A"}},"EditColumnsButton":{"tooltip":"Edit columns","accessibilityLabel":"Customize table column order and visibility"},"UpdateButtons":{"cancel":"Cancel","update":"Update","save":"Save","saveAs":"Save as","modal":{"title":"Save view as","label":"Name","sameName":"A view with this name already exists. Please choose a different name.","save":"Save","cancel":"Cancel"}}},"IndexProvider":{"defaultItemSingular":"Item","defaultItemPlural":"Items","allItemsSelected":"All {itemsLength}+ {resourceNamePlural} are selected","selected":"{selectedItemsCount} selected","a11yCheckboxDeselectAllSingle":"Deselect {resourceNameSingular}","a11yCheckboxSelectAllSingle":"Select {resourceNameSingular}","a11yCheckboxDeselectAllMultiple":"Deselect all {itemsLength} {resourceNamePlural}","a11yCheckboxSelectAllMultiple":"Select all {itemsLength} {resourceNamePlural}"},"IndexTable":{"emptySearchTitle":"No {resourceNamePlural} found","emptySearchDescription":"Try changing the filters or search term","onboardingBadgeText":"New","resourceLoadingAccessibilityLabel":"Loading {resourceNamePlural}…","selectAllLabel":"Select all {resourceNamePlural}","selected":"{selectedItemsCount} selected","undo":"Undo","selectAllItems":"Select all {itemsLength}+ {resourceNamePlural}","selectItem":"Select {resourceName}","selectButtonText":"Select","sortAccessibilityLabel":"sort {direction} by"},"Loading":{"label":"Page loading bar"},"Modal":{"iFrameTitle":"body markup","modalWarning":"These required properties are missing from Modal: {missingProps}"},"Page":{"Header":{"rollupActionsLabel":"View actions for {title}","pageReadyAccessibilityLabel":"{title}. This page is ready"}},"Pagination":{"previous":"Previous","next":"Next","pagination":"Pagination"},"ProgressBar":{"negativeWarningMessage":"Values passed to the progress prop shouldn’t be negative. Resetting {progress} to 0.","exceedWarningMessage":"Values passed to the progress prop shouldn’t exceed 100. Setting {progress} to 100."},"ResourceList":{"sortingLabel":"Sort by","defaultItemSingular":"item","defaultItemPlural":"items","showing":"Showing {itemsCount} {resource}","showingTotalCount":"Showing {itemsCount} of {totalItemsCount} {resource}","loading":"Loading {resource}","selected":"{selectedItemsCount} selected","allItemsSelected":"All {itemsLength}+ {resourceNamePlural} in your store are selected","allFilteredItemsSelected":"All {itemsLength}+ {resourceNamePlural} in this filter are selected","selectAllItems":"Select all {itemsLength}+ {resourceNamePlural} in your store","selectAllFilteredItems":"Select all {itemsLength}+ {resourceNamePlural} in this filter","emptySearchResultTitle":"No {resourceNamePlural} found","emptySearchResultDescription":"Try changing the filters or search term","selectButtonText":"Select","a11yCheckboxDeselectAllSingle":"Deselect {resourceNameSingular}","a11yCheckboxSelectAllSingle":"Select {resourceNameSingular}","a11yCheckboxDeselectAllMultiple":"Deselect all {itemsLength} {resourceNamePlural}","a11yCheckboxSelectAllMultiple":"Select all {itemsLength} {resourceNamePlural}","Item":{"actionsDropdownLabel":"Actions for {accessibilityLabel}","actionsDropdown":"Actions dropdown","viewItem":"View details for {itemName}"},"BulkActions":{"actionsActivatorLabel":"Actions","moreActionsActivatorLabel":"More actions"}},"SkeletonPage":{"loadingLabel":"Page loading"},"Tabs":{"newViewAccessibilityLabel":"Create new view","newViewTooltip":"Create view","toggleTabsLabel":"More views","Tab":{"rename":"Rename view","duplicate":"Duplicate view","edit":"Edit view","editColumns":"Edit columns","delete":"Delete view","copy":"Copy of {name}","deleteModal":{"title":"Delete view?","description":"This can’t be undone. {viewName} view will no longer be available in your admin.","cancel":"Cancel","delete":"Delete view"}},"RenameModal":{"title":"Rename view","label":"Name","cancel":"Cancel","create":"Save","errors":{"sameName":"A view with this name already exists. Please choose a different name."}},"DuplicateModal":{"title":"Duplicate view","label":"Name","cancel":"Cancel","create":"Create view","errors":{"sameName":"A view with this name already exists. Please choose a different name."}},"CreateViewModal":{"title":"Create new view","label":"Name","cancel":"Cancel","create":"Create view","errors":{"sameName":"A view with this name already exists. Please choose a different name."}}},"Tag":{"ariaLabel":"Remove {children}"},"TextField":{"characterCount":"{count} characters","characterCountWithMaxLength":"{count} of {limit} characters used"},"TooltipOverlay":{"accessibilityLabel":"Tooltip: {label}"},"TopBar":{"toggleMenuLabel":"Toggle menu","SearchField":{"clearButtonLabel":"Clear","search":"Search"}},"MediaCard":{"dismissButton":"Dismiss","popoverButton":"Actions"},"VideoThumbnail":{"playButtonA11yLabel":{"default":"Play video","defaultWithDuration":"Play video of length {duration}","duration":{"hours":{"other":{"only":"{hourCount} hours","andMinutes":"{hourCount} hours and {minuteCount} minutes","andMinute":"{hourCount} hours and {minuteCount} minute","minutesAndSeconds":"{hourCount} hours, {minuteCount} minutes, and {secondCount} seconds","minutesAndSecond":"{hourCount} hours, {minuteCount} minutes, and {secondCount} second","minuteAndSeconds":"{hourCount} hours, {minuteCount} minute, and {secondCount} seconds","minuteAndSecond":"{hourCount} hours, {minuteCount} minute, and {secondCount} second","andSeconds":"{hourCount} hours and {secondCount} seconds","andSecond":"{hourCount} hours and {secondCount} second"},"one":{"only":"{hourCount} hour","andMinutes":"{hourCount} hour and {minuteCount} minutes","andMinute":"{hourCount} hour and {minuteCount} minute","minutesAndSeconds":"{hourCount} hour, {minuteCount} minutes, and {secondCount} seconds","minutesAndSecond":"{hourCount} hour, {minuteCount} minutes, and {secondCount} second","minuteAndSeconds":"{hourCount} hour, {minuteCount} minute, and {secondCount} seconds","minuteAndSecond":"{hourCount} hour, {minuteCount} minute, and {secondCount} second","andSeconds":"{hourCount} hour and {secondCount} seconds","andSecond":"{hourCount} hour and {secondCount} second"}},"minutes":{"other":{"only":"{minuteCount} minutes","andSeconds":"{minuteCount} minutes and {secondCount} seconds","andSecond":"{minuteCount} minutes and {secondCount} second"},"one":{"only":"{minuteCount} minute","andSeconds":"{minuteCount} minute and {secondCount} seconds","andSecond":"{minuteCount} minute and {secondCount} second"}},"seconds":{"other":"{secondCount} seconds","one":"{secondCount} second"}}}}}');
 const polarisTranslations = {
   Polaris
@@ -4225,7 +15192,7 @@ function loginErrorMessage(loginErrors) {
   return {};
 }
 const links = () => [{ rel: "stylesheet", href: polarisStyles }];
-const loader$a = async ({ request }) => {
+const loader$b = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return { errors, polarisTranslations };
 };
@@ -4240,7 +15207,7 @@ function Auth() {
   const actionData = useActionData();
   const [shop, setShop] = useState("");
   const { errors } = actionData || loaderData;
-  return /* @__PURE__ */ jsx(AppProvider, { i18n: loaderData.polarisTranslations, children: /* @__PURE__ */ jsx(Page$5, { children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsx(Form, { method: "post", children: /* @__PURE__ */ jsxs(FormLayout, { children: [
+  return /* @__PURE__ */ jsx(AppProvider, { i18n: loaderData.polarisTranslations, children: /* @__PURE__ */ jsx(Page$5, { children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsx(Form$1, { method: "post", children: /* @__PURE__ */ jsxs(FormLayout, { children: [
     /* @__PURE__ */ jsx(Text, { variant: "headingMd", as: "h2", children: "Log in" }),
     /* @__PURE__ */ jsx(
       TextField,
@@ -4263,15 +15230,15 @@ const route30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   action: action$4,
   default: Auth,
   links,
-  loader: loader$a
+  loader: loader$b
 }, Symbol.toStringTag, { value: "Module" }));
-function Navigation({ createButtonText = "Create Campaign" }) {
+function Navigation2({ createButtonText = "Create Campaign" }) {
   const location = useLocation();
   const currentPath = location.pathname;
   return /* @__PURE__ */ jsxs("div", { className: "flex justify-between mb-8", children: [
     /* @__PURE__ */ jsxs("div", { className: "bg-gray-100 rounded-lg shadow-sm p-1 flex items-center flex-1 mr-4", children: [
       /* @__PURE__ */ jsx(
-        Link,
+        Link$1,
         {
           to: "/index",
           className: `${currentPath === "/app" || currentPath === "/app" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
@@ -4279,7 +15246,7 @@ function Navigation({ createButtonText = "Create Campaign" }) {
         }
       ),
       /* @__PURE__ */ jsx(
-        Link,
+        Link$1,
         {
           to: "/campaigns",
           className: `${currentPath.startsWith("/campaigns") ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
@@ -4287,7 +15254,7 @@ function Navigation({ createButtonText = "Create Campaign" }) {
         }
       ),
       /* @__PURE__ */ jsx(
-        Link,
+        Link$1,
         {
           to: "/tutorial",
           className: `${currentPath === "/tutorial" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
@@ -4296,7 +15263,7 @@ function Navigation({ createButtonText = "Create Campaign" }) {
       )
     ] }),
     /* @__PURE__ */ jsx("div", { className: "flex items-center space-x-4", children: /* @__PURE__ */ jsx(
-      Link,
+      Link$1,
       {
         to: currentPath.includes("/campaigns/create") ? "/campaigns" : "/campaigns/create",
         className: "bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap",
@@ -4328,7 +15295,7 @@ function CampaignActiveIndicator() {
     activeCampaign.name
   ] });
 }
-const loader$9 = async ({ request }) => {
+const loader$a = async ({ request }) => {
   const { authenticateWithFallback: authenticateWithFallback2, isClientSideNavigation: isClientSideNavigation2 } = await Promise.resolve().then(() => shopify_server);
   const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
   let campaigns = [];
@@ -4481,7 +15448,7 @@ function CampaignList() {
   const shouldShowFallback = (data == null ? void 0 : data.fallbackMode) && campaigns.length === 0;
   if (shouldShowFallback) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
         /* @__PURE__ */ jsx("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6", children: /* @__PURE__ */ jsx("p", { className: "text-yellow-800", children: "⚠️ Running in offline mode. Campaign data may not be current. Please refresh the page to restore full functionality." }) }),
         /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg shadow-sm p-8", children: [
@@ -4564,7 +15531,7 @@ function CampaignList() {
     }
   };
   return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-    /* @__PURE__ */ jsx(Navigation, {}),
+    /* @__PURE__ */ jsx(Navigation2, {}),
     /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
       /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center mb-8", children: /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "All Campaigns" }),
@@ -4861,7 +15828,7 @@ function Campaigns$1() {
 const route31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaigns$1,
-  loader: loader$9
+  loader: loader$a
 }, Symbol.toStringTag, { value: "Module" }));
 function CampaignPreview() {
   const { campaignData } = useCampaign();
@@ -5298,7 +16265,7 @@ function StepNavigation({
       updateCampaignName(localName);
     }
   };
-  const handleKeyDown = (e) => {
+  const handleKeyDown2 = (e) => {
     if (e.key === "Enter") {
       console.log("Enter key pressed in campaign name input");
       setIsEditing(false);
@@ -5359,7 +16326,7 @@ function StepNavigation({
             value: localName,
             onChange: handleCampaignNameChange,
             onBlur: handleCampaignNameBlur,
-            onKeyDown: handleKeyDown,
+            onKeyDown: handleKeyDown2,
             className: "border-b border-indigo-500 text-center font-medium text-lg px-2 py-1 focus:outline-none"
           }
         ) : /* @__PURE__ */ jsxs(
@@ -5500,7 +16467,7 @@ function StepSidebar({ activeStep, onStepClick }) {
   ] });
 }
 function StepTwo() {
-  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka;
+  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r2, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka;
   const { campaignData, updateCampaignData } = useCampaign();
   const [activePreviewTab, setActivePreviewTab] = useState("landing");
   const [previewDevice, setPreviewDevice] = useState("desktop");
@@ -6122,7 +17089,7 @@ function StepTwo() {
               /* @__PURE__ */ jsxs(
                 "div",
                 {
-                  className: `cursor-pointer ${((_r = campaignData.layout) == null ? void 0 : _r.floatingButtonPosition) === "topRight" ? "ring-2 ring-indigo-500 ring-offset-2" : ""}`,
+                  className: `cursor-pointer ${((_r2 = campaignData.layout) == null ? void 0 : _r2.floatingButtonPosition) === "topRight" ? "ring-2 ring-indigo-500 ring-offset-2" : ""}`,
                   onClick: () => handleFloatingButtonPositionChange("topRight"),
                   children: [
                     /* @__PURE__ */ jsxs("div", { className: "bg-gray-100 p-2 rounded-md h-20 relative", children: [
@@ -7017,7 +17984,7 @@ function StepTwo() {
   ] });
 }
 function StepThree() {
-  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb, _Nb, _Ob, _Pb, _Qb, _Rb, _Sb, _Tb, _Ub, _Vb, _Wb, _Xb, _Yb, _Zb, __b, _$b, _ac, _bc, _cc, _dc, _ec, _fc, _gc, _hc, _ic;
+  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r2, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb, _ib, _jb, _kb, _lb, _mb, _nb, _ob, _pb, _qb, _rb, _sb, _tb, _ub, _vb, _wb, _xb, _yb, _zb, _Ab, _Bb, _Cb, _Db, _Eb, _Fb, _Gb, _Hb, _Ib, _Jb, _Kb, _Lb, _Mb, _Nb, _Ob, _Pb, _Qb, _Rb, _Sb, _Tb, _Ub, _Vb, _Wb, _Xb, _Yb, _Zb, __b, _$b, _ac, _bc, _cc, _dc, _ec, _fc, _gc, _hc, _ic;
   const { campaignData, updateCampaignData } = useCampaign();
   const { discountCodes, setDiscountCodes, fetchAndSetDiscountCodes, currentPlan } = usePlan();
   const [activeTab, setActiveTab] = useState("landing");
@@ -7539,7 +18506,7 @@ function StepThree() {
               ] })
             ] })
           ] }),
-          ((_s = (_r = campaignData.content) == null ? void 0 : _r.landing) == null ? void 0 : _s.showEmail) && /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+          ((_s = (_r2 = campaignData.content) == null ? void 0 : _r2.landing) == null ? void 0 : _s.showEmail) && /* @__PURE__ */ jsxs("div", { className: "relative", children: [
             /* @__PURE__ */ jsx(
               "input",
               {
@@ -8662,7 +19629,7 @@ function StepThree() {
   ] });
 }
 function StepFour() {
-  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb;
+  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r2, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, __, _$, _aa, _ba, _ca, _da, _ea, _fa, _ga, _ha, _ia, _ja, _ka, _la, _ma, _na, _oa, _pa, _qa, _ra, _sa, _ta, _ua, _va, _wa, _xa, _ya, _za, _Aa, _Ba, _Ca, _Da, _Ea, _Fa, _Ga, _Ha, _Ia, _Ja, _Ka, _La, _Ma, _Na, _Oa, _Pa, _Qa, _Ra, _Sa, _Ta, _Ua, _Va, _Wa, _Xa, _Ya, _Za, __a, _$a, _ab, _bb, _cb, _db, _eb, _fb, _gb, _hb;
   const {
     campaignData,
     saveCampaign,
@@ -8869,7 +19836,7 @@ function StepFour() {
     updateCampaignRules("displayFrequency", updatedFrequency);
   };
   const renderWheel = (size, isMobile = false) => {
-    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j2, _k2, _l2, _m2, _n2, _o2, _p2, _q2, _r2, _s2, _t2, _u2, _v2, _w2, _x2, _y2, _z2, _A2, _B2, _C2, _D2, _E2, _F2, _G2, _H2, _I2, _J2, _K2;
+    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j2, _k2, _l2, _m2, _n2, _o2, _p2, _q2, _r3, _s2, _t2, _u2, _v2, _w2, _x2, _y2, _z2, _A2, _B2, _C2, _D2, _E2, _F2, _G2, _H2, _I2, _J2, _K2;
     const wheelSectors = ((_a3 = campaignData.layout) == null ? void 0 : _a3.wheelSectors) || "eight";
     const textSizeClass = isMobile ? "text-[6px]" : "text-sm";
     return /* @__PURE__ */ jsx("div", { className: `relative ${size}`, children: /* @__PURE__ */ jsxs(
@@ -8988,7 +19955,7 @@ function StepFour() {
               "div",
               {
                 className: `absolute top-[70%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 ${textSizeClass} font-bold -rotate-120`,
-                children: ((_s2 = (_r2 = campaignData.prizes) == null ? void 0 : _r2[4]) == null ? void 0 : _s2.text) || "5% OFF"
+                children: ((_s2 = (_r3 = campaignData.prizes) == null ? void 0 : _r3[4]) == null ? void 0 : _s2.text) || "5% OFF"
               }
             ),
             /* @__PURE__ */ jsx(
@@ -9993,7 +20960,7 @@ function StepFour() {
                 "input",
                 {
                   type: "email",
-                  placeholder: ((_r = (_q = campaignData.content) == null ? void 0 : _q.landing) == null ? void 0 : _r.emailPlaceholder) || "Enter your email",
+                  placeholder: ((_r2 = (_q = campaignData.content) == null ? void 0 : _q.landing) == null ? void 0 : _r2.emailPlaceholder) || "Enter your email",
                   className: "w-full p-3 border rounded-md mb-4 text-center"
                 }
               ),
@@ -10579,7 +21546,7 @@ function CampaignEdit$1() {
   };
   if (isLoading) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8 text-center", children: [
         /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto" }),
         /* @__PURE__ */ jsx("p", { className: "mt-4", children: "Loading campaign..." })
@@ -10667,7 +21634,7 @@ const route32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   default: CampaignEdit$1
 }, Symbol.toStringTag, { value: "Module" }));
 function CreateCampaign() {
-  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t;
+  var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r2, _s, _t;
   const {
     campaignData,
     updateCampaignData,
@@ -10744,7 +21711,7 @@ function CreateCampaign() {
     }
   };
   const renderWheel = () => {
-    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j2, _k2, _l2, _m2, _n2, _o2, _p2, _q2, _r2, _s2, _t2, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K;
+    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j2, _k2, _l2, _m2, _n2, _o2, _p2, _q2, _r3, _s2, _t2, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K;
     const wheelSectors = ((_a3 = campaignData.layout) == null ? void 0 : _a3.wheelSectors) || "eight";
     return /* @__PURE__ */ jsx("div", { className: "relative w-[220px] h-[220px]", children: /* @__PURE__ */ jsxs(
       "div",
@@ -10805,7 +21772,7 @@ function CreateCampaign() {
             /* @__PURE__ */ jsx("div", { className: "absolute top-[30%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold rotate-60", children: ((_m2 = (_l2 = campaignData.prizes) == null ? void 0 : _l2[1]) == null ? void 0 : _m2.text) || "FREE SHIP" }),
             /* @__PURE__ */ jsx("div", { className: "absolute top-[70%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold rotate-120", children: ((_o2 = (_n2 = campaignData.prizes) == null ? void 0 : _n2[2]) == null ? void 0 : _o2.text) || "15% OFF" }),
             /* @__PURE__ */ jsx("div", { className: "absolute top-[87%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold rotate-180", children: ((_q2 = (_p2 = campaignData.prizes) == null ? void 0 : _p2[3]) == null ? void 0 : _q2.text) || "20% OFF" }),
-            /* @__PURE__ */ jsx("div", { className: "absolute top-[70%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold -rotate-120", children: ((_s2 = (_r2 = campaignData.prizes) == null ? void 0 : _r2[4]) == null ? void 0 : _s2.text) || "5% OFF" }),
+            /* @__PURE__ */ jsx("div", { className: "absolute top-[70%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold -rotate-120", children: ((_s2 = (_r3 = campaignData.prizes) == null ? void 0 : _r3[4]) == null ? void 0 : _s2.text) || "5% OFF" }),
             /* @__PURE__ */ jsx("div", { className: "absolute top-[30%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 text-sm font-bold -rotate-60", children: ((_u = (_t2 = campaignData.prizes) == null ? void 0 : _t2[5]) == null ? void 0 : _u.text) || "NO LUCK" })
           ] }),
           (wheelSectors === "eight" || false) && /* @__PURE__ */ jsxs(Fragment, { children: [
@@ -10995,7 +21962,7 @@ function CreateCampaign() {
                 style: {
                   backgroundColor: campaignData.primaryColor || "#ff5722"
                 },
-                children: ((_r = (_q = campaignData.content) == null ? void 0 : _q.landing) == null ? void 0 : _r.buttonText) || "SPIN NOW"
+                children: ((_r2 = (_q = campaignData.content) == null ? void 0 : _q.landing) == null ? void 0 : _r2.buttonText) || "SPIN NOW"
               }
             ),
             /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-3 text-center", children: ((_t = (_s = campaignData.content) == null ? void 0 : _s.landing) == null ? void 0 : _t.noThanksText) || "No, I don't feel lucky today!" })
@@ -11111,7 +22078,7 @@ function Campaigns() {
     navigate("/pricing");
   };
   return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-    /* @__PURE__ */ jsx(Navigation, {}),
+    /* @__PURE__ */ jsx(Navigation2, {}),
     /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mb-8", children: [
         /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "All Campaigns" }),
@@ -11203,7 +22170,7 @@ function Campaigns() {
           /* @__PURE__ */ jsx("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500", children: campaign.createdAt ? formatDate(campaign.createdAt) : "N/A" }),
           /* @__PURE__ */ jsxs("td", { className: "px-6 py-4 whitespace-nowrap text-sm font-medium", children: [
             /* @__PURE__ */ jsx(
-              Link,
+              Link$1,
               {
                 to: `/campaigns/${campaign.id}`,
                 className: "text-indigo-600 hover:text-indigo-900 mr-4",
@@ -11211,7 +22178,7 @@ function Campaigns() {
               }
             ),
             /* @__PURE__ */ jsx(
-              Link,
+              Link$1,
               {
                 to: `/campaigns/${campaign.id}/edit`,
                 className: "text-indigo-600 hover:text-indigo-900 mr-4",
@@ -11340,7 +22307,7 @@ function CampaignView() {
   };
   if (isLoading) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8 text-center", children: [
         /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto" }),
         /* @__PURE__ */ jsx("p", { className: "mt-4", children: "Loading campaign..." })
@@ -11349,16 +22316,16 @@ function CampaignView() {
   }
   if (!campaign) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8 text-center", children: [
         /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Campaign Not Found" }),
         /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "The campaign you're looking for doesn't exist or has been deleted." }),
-        /* @__PURE__ */ jsx(Link, { to: "/campaigns", className: "text-indigo-600 hover:underline", children: "Back to Campaigns" })
+        /* @__PURE__ */ jsx(Link$1, { to: "/campaigns", className: "text-indigo-600 hover:underline", children: "Back to Campaigns" })
       ] })
     ] });
   }
   return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-    /* @__PURE__ */ jsx(Navigation, {}),
+    /* @__PURE__ */ jsx(Navigation2, {}),
     /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mb-8", children: [
         /* @__PURE__ */ jsxs("div", { children: [
@@ -11391,7 +22358,7 @@ function CampaignView() {
             }
           ),
           /* @__PURE__ */ jsx(
-            Link,
+            Link$1,
             {
               to: "/campaigns",
               className: "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors",
@@ -11616,7 +22583,7 @@ function CampaignEdit() {
   };
   if (isLoading) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8 text-center", children: [
         /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto" }),
         /* @__PURE__ */ jsx("p", { className: "mt-4", children: "Loading campaign..." })
@@ -11624,7 +22591,7 @@ function CampaignEdit() {
     ] });
   }
   return /* @__PURE__ */ jsx("div", { className: "min-h-screen bg-gray-50", children: /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-    /* @__PURE__ */ jsx(Navigation, { createButtonText: "Back to Campaigns" }),
+    /* @__PURE__ */ jsx(Navigation2, { createButtonText: "Back to Campaigns" }),
     /* @__PURE__ */ jsxs("div", { className: "mt-8 pb-32", children: [
       /* @__PURE__ */ jsxs("h1", { className: "text-3xl font-bold mb-8", children: [
         "Edit Campaign: ",
@@ -11675,7 +22642,7 @@ const route36 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: CampaignEdit
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$8({ request }) {
+async function loader$9({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const { shop } = session;
   const activeCampaign = await getActiveCampaign(shop);
@@ -11782,7 +22749,7 @@ function Settings() {
         ] }) : /* @__PURE__ */ jsx("div", { className: "bg-yellow-50 border border-yellow-200 rounded p-4", children: /* @__PURE__ */ jsx("p", { className: "text-yellow-700", children: "No active campaign found." }) })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs(Form, { method: "post", children: [
+        /* @__PURE__ */ jsxs(Form$1, { method: "post", children: [
           /* @__PURE__ */ jsx("input", { type: "hidden", name: "action", value: "test-db" }),
           /* @__PURE__ */ jsx(
             "button",
@@ -11794,7 +22761,7 @@ function Settings() {
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs(Form, { method: "post", children: [
+        /* @__PURE__ */ jsxs(Form$1, { method: "post", children: [
           /* @__PURE__ */ jsx("input", { type: "hidden", name: "action", value: "sync-metafields" }),
           /* @__PURE__ */ jsx(
             "button",
@@ -11858,7 +22825,7 @@ const route37 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   action: action$3,
   default: Settings,
-  loader: loader$8
+  loader: loader$9
 }, Symbol.toStringTag, { value: "Module" }));
 function Tutorial() {
   const navigate = useNavigate$1();
@@ -11866,7 +22833,7 @@ function Tutorial() {
     navigate("/campaigns/create");
   };
   return /* @__PURE__ */ jsx("div", { className: "bg-gray-100 min-h-screen p-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
-    /* @__PURE__ */ jsx(Navigation, { createButtonText: "Create Campaign" }),
+    /* @__PURE__ */ jsx(Navigation2, { createButtonText: "Create Campaign" }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-8 mt-8", children: [
       /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx("h1", { className: "text-4xl font-bold mb-4", children: "STEP-BY-STEP GUIDE" }),
@@ -11997,7 +22964,7 @@ const route42 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 const formatPrice = (price) => {
   return `$${price.toFixed(2)}`;
 };
-async function loader$7({ request }) {
+async function loader$8({ request }) {
   var _a2, _b, _c;
   try {
     const url = new URL(request.url);
@@ -12375,7 +23342,7 @@ function Pricing() {
   const plans = getPlansWithPricing();
   if (loaderData == null ? void 0 : loaderData.needsShopParam) {
     return /* @__PURE__ */ jsx("div", { className: "bg-gray-100 min-h-screen p-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
-      /* @__PURE__ */ jsx(Navigation, { createButtonText: "Create Pop-Up" }),
+      /* @__PURE__ */ jsx(Navigation2, { createButtonText: "Create Pop-Up" }),
       /* @__PURE__ */ jsx("div", { className: "bg-orange-50 border border-orange-200 text-orange-700 px-4 py-3 rounded mb-6", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
         /* @__PURE__ */ jsx("p", { className: "font-medium", children: "Shop Parameter Required" }),
         /* @__PURE__ */ jsx("p", { className: "text-sm mt-2", children: "Please access this page from your Shopify admin or include the shop parameter in the URL." }),
@@ -12392,7 +23359,7 @@ function Pricing() {
   }
   return /* @__PURE__ */ jsxs("div", { className: "bg-gray-100 min-h-screen p-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
-      /* @__PURE__ */ jsx(Navigation, { createButtonText: "Create Pop-Up" }),
+      /* @__PURE__ */ jsx(Navigation2, { createButtonText: "Create Pop-Up" }),
       !isAuthenticated && /* @__PURE__ */ jsx("div", { className: "bg-orange-50 border border-orange-200 text-orange-700 px-4 py-3 rounded mb-6", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsx("p", { className: "font-medium", children: "Authentication Required" }),
@@ -12696,7 +23663,7 @@ const route43 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   action,
   default: Pricing,
-  loader: loader$7
+  loader: loader$8
 }, Symbol.toStringTag, { value: "Module" }));
 const index = "_index_2zwis_6";
 const heading = "_heading_2zwis_16";
@@ -12718,7 +23685,7 @@ const styles = {
   button,
   list
 };
-const loader$6 = async ({ request }) => {
+const loader$7 = async ({ request }) => {
   const url = new URL(request.url);
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
@@ -12730,7 +23697,7 @@ function App$1() {
   return /* @__PURE__ */ jsx("div", { className: styles.index, children: /* @__PURE__ */ jsxs("div", { className: styles.content, children: [
     /* @__PURE__ */ jsx("h1", { className: styles.heading, children: "A short heading about [your app]" }),
     /* @__PURE__ */ jsx("p", { className: styles.text, children: "A tagline about [your app] that describes your value proposition." }),
-    showForm && /* @__PURE__ */ jsxs(Form, { className: styles.form, method: "post", action: "/auth/login", children: [
+    showForm && /* @__PURE__ */ jsxs(Form$1, { className: styles.form, method: "post", action: "/auth/login", children: [
       /* @__PURE__ */ jsxs("label", { className: styles.label, children: [
         /* @__PURE__ */ jsx("span", { children: "Shop domain" }),
         /* @__PURE__ */ jsx("input", { className: styles.input, type: "text", name: "shop" }),
@@ -12757,13 +23724,33 @@ function App$1() {
 const route44 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App$1,
-  loader: loader$6
+  loader: loader$7
 }, Symbol.toStringTag, { value: "Module" }));
-const loader$5 = async ({ request }) => {
+const loader$6 = async ({ request }) => {
   await authenticate.admin(request);
   return null;
 };
 const route45 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  loader: loader$6
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$5() {
+  return json(
+    {
+      status: "healthy",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      port: process.env.PORT || 3e3,
+      host: process.env.HOST || "localhost",
+      uptime: process.uptime()
+    },
+    {
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    }
+  );
+}
+const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   loader: loader$5
 }, Symbol.toStringTag, { value: "Module" }));
@@ -12790,7 +23777,7 @@ async function loader$4({ request }) {
 function Index$1() {
   return null;
 }
-const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1,
   loader: loader$4
@@ -12878,7 +23865,7 @@ function App() {
   }, [data]);
   if (data.fallbackMode && !data.isAuthenticated && !data.shop) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation, {}),
+      /* @__PURE__ */ jsx(Navigation2, {}),
       /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
         /* @__PURE__ */ jsx("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6", children: /* @__PURE__ */ jsx("p", { className: "text-yellow-800", children: "⚠️ Running in offline mode. Some features may be limited. Please refresh the page to restore full functionality." }) }),
         /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg shadow-sm p-8", children: [
@@ -12897,7 +23884,7 @@ function App() {
     ] });
   }
   return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-    /* @__PURE__ */ jsx(Navigation, {}),
+    /* @__PURE__ */ jsx(Navigation2, {}),
     /* @__PURE__ */ jsx("div", { className: "mt-8", children: /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg shadow-sm p-8", children: [
       /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center mb-4", children: /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "Welcome to Shopify Campaign Creator" }) }),
       /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "Create engaging spin-to-win campaigns for your Shopify store to boost conversions and customer engagement." }),
@@ -12914,7 +23901,7 @@ function App() {
           /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Quick Start" }),
           /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-4", children: "Create your first campaign in minutes with our easy-to-use wizard." }),
           /* @__PURE__ */ jsx(
-            Link,
+            Link$1,
             {
               to: "/campaigns/create",
               className: "bg-green-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-green-700 transition-colors",
@@ -12926,7 +23913,7 @@ function App() {
           /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Learn More" }),
           /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-4", children: "Check out our tutorial to learn how to create effective campaigns." }),
           /* @__PURE__ */ jsx(
-            Link,
+            Link$1,
             {
               to: "/tutorial",
               className: "bg-purple-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-purple-700 transition-colors",
@@ -12948,11 +23935,722 @@ function App() {
     ] }) })
   ] });
 }
-const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App,
   loader: loader$3
 }, Symbol.toStringTag, { value: "Module" }));
+var ee = { exports: {} }, L = {};
+/**
+ * @license React
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var Oe;
+function dr() {
+  if (Oe)
+    return L;
+  Oe = 1;
+  var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.fragment"), c = Object.prototype.hasOwnProperty, C = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, x = { key: true, ref: true, __self: true, __source: true };
+  function h(a, d, b) {
+    var m, T = {}, w = null, E = null;
+    b !== void 0 && (w = "" + b), d.key !== void 0 && (w = "" + d.key), d.ref !== void 0 && (E = d.ref);
+    for (m in d)
+      c.call(d, m) && !x.hasOwnProperty(m) && (T[m] = d[m]);
+    if (a && a.defaultProps)
+      for (m in d = a.defaultProps, d)
+        T[m] === void 0 && (T[m] = d[m]);
+    return { $$typeof: v, type: a, key: w, ref: E, props: T, _owner: C.current };
+  }
+  return L.Fragment = y, L.jsx = h, L.jsxs = h, L;
+}
+var $ = {};
+/**
+ * @license React
+ * react-jsx-runtime.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var Pe;
+function vr() {
+  return Pe || (Pe = 1, process.env.NODE_ENV !== "production" && function() {
+    var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.portal"), c = Symbol.for("react.fragment"), C = Symbol.for("react.strict_mode"), x = Symbol.for("react.profiler"), h = Symbol.for("react.provider"), a = Symbol.for("react.context"), d = Symbol.for("react.forward_ref"), b = Symbol.for("react.suspense"), m = Symbol.for("react.suspense_list"), T = Symbol.for("react.memo"), w = Symbol.for("react.lazy"), E = Symbol.for("react.offscreen"), k = Symbol.iterator, W = "@@iterator";
+    function Y(e) {
+      if (e === null || typeof e != "object")
+        return null;
+      var r = k && e[k] || e[W];
+      return typeof r == "function" ? r : null;
+    }
+    var O = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+    function p(e) {
+      {
+        for (var r = arguments.length, t = new Array(r > 1 ? r - 1 : 0), n = 1; n < r; n++)
+          t[n - 1] = arguments[n];
+        ke("error", e, t);
+      }
+    }
+    function ke(e, r, t) {
+      {
+        var n = O.ReactDebugCurrentFrame, u = n.getStackAddendum();
+        u !== "" && (r += "%s", t = t.concat([u]));
+        var s = t.map(function(o) {
+          return String(o);
+        });
+        s.unshift("Warning: " + r), Function.prototype.apply.call(console[e], console, s);
+      }
+    }
+    var De = false, Ae = false, Fe = false, Ie = false, Ne = false, te;
+    te = Symbol.for("react.module.reference");
+    function Le(e) {
+      return !!(typeof e == "string" || typeof e == "function" || e === c || e === x || Ne || e === C || e === b || e === m || Ie || e === E || De || Ae || Fe || typeof e == "object" && e !== null && (e.$$typeof === w || e.$$typeof === T || e.$$typeof === h || e.$$typeof === a || e.$$typeof === d || // This needs to include all possible module reference object
+      // types supported by any Flight configuration anywhere since
+      // we don't know which Flight build this will end up being used
+      // with.
+      e.$$typeof === te || e.getModuleId !== void 0));
+    }
+    function $e(e, r, t) {
+      var n = e.displayName;
+      if (n)
+        return n;
+      var u = r.displayName || r.name || "";
+      return u !== "" ? t + "(" + u + ")" : t;
+    }
+    function ne(e) {
+      return e.displayName || "Context";
+    }
+    function P(e) {
+      if (e == null)
+        return null;
+      if (typeof e.tag == "number" && p("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof e == "function")
+        return e.displayName || e.name || null;
+      if (typeof e == "string")
+        return e;
+      switch (e) {
+        case c:
+          return "Fragment";
+        case y:
+          return "Portal";
+        case x:
+          return "Profiler";
+        case C:
+          return "StrictMode";
+        case b:
+          return "Suspense";
+        case m:
+          return "SuspenseList";
+      }
+      if (typeof e == "object")
+        switch (e.$$typeof) {
+          case a:
+            var r = e;
+            return ne(r) + ".Consumer";
+          case h:
+            var t = e;
+            return ne(t._context) + ".Provider";
+          case d:
+            return $e(e, e.render, "ForwardRef");
+          case T:
+            var n = e.displayName || null;
+            return n !== null ? n : P(e.type) || "Memo";
+          case w: {
+            var u = e, s = u._payload, o = u._init;
+            try {
+              return P(o(s));
+            } catch {
+              return null;
+            }
+          }
+        }
+      return null;
+    }
+    var D = Object.assign, I = 0, ae, ie, oe, ue, se, le, fe;
+    function ce() {
+    }
+    ce.__reactDisabledLog = true;
+    function We() {
+      {
+        if (I === 0) {
+          ae = console.log, ie = console.info, oe = console.warn, ue = console.error, se = console.group, le = console.groupCollapsed, fe = console.groupEnd;
+          var e = {
+            configurable: true,
+            enumerable: true,
+            value: ce,
+            writable: true
+          };
+          Object.defineProperties(console, {
+            info: e,
+            log: e,
+            warn: e,
+            error: e,
+            group: e,
+            groupCollapsed: e,
+            groupEnd: e
+          });
+        }
+        I++;
+      }
+    }
+    function Ye() {
+      {
+        if (I--, I === 0) {
+          var e = {
+            configurable: true,
+            enumerable: true,
+            writable: true
+          };
+          Object.defineProperties(console, {
+            log: D({}, e, {
+              value: ae
+            }),
+            info: D({}, e, {
+              value: ie
+            }),
+            warn: D({}, e, {
+              value: oe
+            }),
+            error: D({}, e, {
+              value: ue
+            }),
+            group: D({}, e, {
+              value: se
+            }),
+            groupCollapsed: D({}, e, {
+              value: le
+            }),
+            groupEnd: D({}, e, {
+              value: fe
+            })
+          });
+        }
+        I < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+      }
+    }
+    var J = O.ReactCurrentDispatcher, G;
+    function M(e, r, t) {
+      {
+        if (G === void 0)
+          try {
+            throw Error();
+          } catch (u) {
+            var n = u.stack.trim().match(/\n( *(at )?)/);
+            G = n && n[1] || "";
+          }
+        return `
+` + G + e;
+      }
+    }
+    var z = false, B;
+    {
+      var Me = typeof WeakMap == "function" ? WeakMap : Map;
+      B = new Me();
+    }
+    function de(e, r) {
+      if (!e || z)
+        return "";
+      {
+        var t = B.get(e);
+        if (t !== void 0)
+          return t;
+      }
+      var n;
+      z = true;
+      var u = Error.prepareStackTrace;
+      Error.prepareStackTrace = void 0;
+      var s;
+      s = J.current, J.current = null, We();
+      try {
+        if (r) {
+          var o = function() {
+            throw Error();
+          };
+          if (Object.defineProperty(o.prototype, "props", {
+            set: function() {
+              throw Error();
+            }
+          }), typeof Reflect == "object" && Reflect.construct) {
+            try {
+              Reflect.construct(o, []);
+            } catch (S) {
+              n = S;
+            }
+            Reflect.construct(e, [], o);
+          } else {
+            try {
+              o.call();
+            } catch (S) {
+              n = S;
+            }
+            e.call(o.prototype);
+          }
+        } else {
+          try {
+            throw Error();
+          } catch (S) {
+            n = S;
+          }
+          e();
+        }
+      } catch (S) {
+        if (S && n && typeof S.stack == "string") {
+          for (var i = S.stack.split(`
+`), g = n.stack.split(`
+`), l = i.length - 1, f = g.length - 1; l >= 1 && f >= 0 && i[l] !== g[f]; )
+            f--;
+          for (; l >= 1 && f >= 0; l--, f--)
+            if (i[l] !== g[f]) {
+              if (l !== 1 || f !== 1)
+                do
+                  if (l--, f--, f < 0 || i[l] !== g[f]) {
+                    var _ = `
+` + i[l].replace(" at new ", " at ");
+                    return e.displayName && _.includes("<anonymous>") && (_ = _.replace("<anonymous>", e.displayName)), typeof e == "function" && B.set(e, _), _;
+                  }
+                while (l >= 1 && f >= 0);
+              break;
+            }
+        }
+      } finally {
+        z = false, J.current = s, Ye(), Error.prepareStackTrace = u;
+      }
+      var F = e ? e.displayName || e.name : "", we = F ? M(F) : "";
+      return typeof e == "function" && B.set(e, we), we;
+    }
+    function Be(e, r, t) {
+      return de(e, false);
+    }
+    function Ve(e) {
+      var r = e.prototype;
+      return !!(r && r.isReactComponent);
+    }
+    function V(e, r, t) {
+      if (e == null)
+        return "";
+      if (typeof e == "function")
+        return de(e, Ve(e));
+      if (typeof e == "string")
+        return M(e);
+      switch (e) {
+        case b:
+          return M("Suspense");
+        case m:
+          return M("SuspenseList");
+      }
+      if (typeof e == "object")
+        switch (e.$$typeof) {
+          case d:
+            return Be(e.render);
+          case T:
+            return V(e.type, r, t);
+          case w: {
+            var n = e, u = n._payload, s = n._init;
+            try {
+              return V(s(u), r, t);
+            } catch {
+            }
+          }
+        }
+      return "";
+    }
+    var U = Object.prototype.hasOwnProperty, ve = {}, pe = O.ReactDebugCurrentFrame;
+    function q(e) {
+      if (e) {
+        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
+        pe.setExtraStackFrame(t);
+      } else
+        pe.setExtraStackFrame(null);
+    }
+    function Ue(e, r, t, n, u) {
+      {
+        var s = Function.call.bind(U);
+        for (var o in e)
+          if (s(e, o)) {
+            var i = void 0;
+            try {
+              if (typeof e[o] != "function") {
+                var g = Error((n || "React class") + ": " + t + " type `" + o + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof e[o] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                throw g.name = "Invariant Violation", g;
+              }
+              i = e[o](r, o, n, t, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+            } catch (l) {
+              i = l;
+            }
+            i && !(i instanceof Error) && (q(u), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", n || "React class", t, o, typeof i), q(null)), i instanceof Error && !(i.message in ve) && (ve[i.message] = true, q(u), p("Failed %s type: %s", t, i.message), q(null));
+          }
+      }
+    }
+    var qe = Array.isArray;
+    function K(e) {
+      return qe(e);
+    }
+    function Je(e) {
+      {
+        var r = typeof Symbol == "function" && Symbol.toStringTag, t = r && e[Symbol.toStringTag] || e.constructor.name || "Object";
+        return t;
+      }
+    }
+    function Ge(e) {
+      try {
+        return ye(e), false;
+      } catch {
+        return true;
+      }
+    }
+    function ye(e) {
+      return "" + e;
+    }
+    function he(e) {
+      if (Ge(e))
+        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", Je(e)), ye(e);
+    }
+    var N = O.ReactCurrentOwner, ze = {
+      key: true,
+      ref: true,
+      __self: true,
+      __source: true
+    }, me, ge;
+    function Ke(e) {
+      if (U.call(e, "ref")) {
+        var r = Object.getOwnPropertyDescriptor(e, "ref").get;
+        if (r && r.isReactWarning)
+          return false;
+      }
+      return e.ref !== void 0;
+    }
+    function Xe(e) {
+      if (U.call(e, "key")) {
+        var r = Object.getOwnPropertyDescriptor(e, "key").get;
+        if (r && r.isReactWarning)
+          return false;
+      }
+      return e.key !== void 0;
+    }
+    function Ze(e, r) {
+      if (typeof e.ref == "string" && N.current && r) ;
+    }
+    function Qe(e, r) {
+      {
+        var t = function() {
+          me || (me = true, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
+        };
+        t.isReactWarning = true, Object.defineProperty(e, "key", {
+          get: t,
+          configurable: true
+        });
+      }
+    }
+    function He(e, r) {
+      {
+        var t = function() {
+          ge || (ge = true, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
+        };
+        t.isReactWarning = true, Object.defineProperty(e, "ref", {
+          get: t,
+          configurable: true
+        });
+      }
+    }
+    var er = function(e, r, t, n, u, s, o) {
+      var i = {
+        // This tag allows us to uniquely identify this as a React Element
+        $$typeof: v,
+        // Built-in properties that belong on the element
+        type: e,
+        key: r,
+        ref: t,
+        props: o,
+        // Record the component responsible for creating this element.
+        _owner: s
+      };
+      return i._store = {}, Object.defineProperty(i._store, "validated", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
+        value: false
+      }), Object.defineProperty(i, "_self", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: n
+      }), Object.defineProperty(i, "_source", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: u
+      }), Object.freeze && (Object.freeze(i.props), Object.freeze(i)), i;
+    };
+    function rr(e, r, t, n, u) {
+      {
+        var s, o = {}, i = null, g = null;
+        t !== void 0 && (he(t), i = "" + t), Xe(r) && (he(r.key), i = "" + r.key), Ke(r) && (g = r.ref, Ze(r, u));
+        for (s in r)
+          U.call(r, s) && !ze.hasOwnProperty(s) && (o[s] = r[s]);
+        if (e && e.defaultProps) {
+          var l = e.defaultProps;
+          for (s in l)
+            o[s] === void 0 && (o[s] = l[s]);
+        }
+        if (i || g) {
+          var f = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
+          i && Qe(o, f), g && He(o, f);
+        }
+        return er(e, i, g, u, n, N.current, o);
+      }
+    }
+    var Z = O.ReactCurrentOwner, Ee = O.ReactDebugCurrentFrame;
+    function A(e) {
+      if (e) {
+        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
+        Ee.setExtraStackFrame(t);
+      } else
+        Ee.setExtraStackFrame(null);
+    }
+    var Q;
+    Q = false;
+    function H(e) {
+      return typeof e == "object" && e !== null && e.$$typeof === v;
+    }
+    function be() {
+      {
+        if (Z.current) {
+          var e = P(Z.current.type);
+          if (e)
+            return `
+
+Check the render method of \`` + e + "`.";
+        }
+        return "";
+      }
+    }
+    function tr(e) {
+      {
+        return "";
+      }
+    }
+    var _e = {};
+    function nr(e) {
+      {
+        var r = be();
+        if (!r) {
+          var t = typeof e == "string" ? e : e.displayName || e.name;
+          t && (r = `
+
+Check the top-level render call using <` + t + ">.");
+        }
+        return r;
+      }
+    }
+    function Re(e, r) {
+      {
+        if (!e._store || e._store.validated || e.key != null)
+          return;
+        e._store.validated = true;
+        var t = nr(r);
+        if (_e[t])
+          return;
+        _e[t] = true;
+        var n = "";
+        e && e._owner && e._owner !== Z.current && (n = " It was passed a child from " + P(e._owner.type) + "."), A(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', t, n), A(null);
+      }
+    }
+    function Te(e, r) {
+      {
+        if (typeof e != "object")
+          return;
+        if (K(e))
+          for (var t = 0; t < e.length; t++) {
+            var n = e[t];
+            H(n) && Re(n, r);
+          }
+        else if (H(e))
+          e._store && (e._store.validated = true);
+        else if (e) {
+          var u = Y(e);
+          if (typeof u == "function" && u !== e.entries)
+            for (var s = u.call(e), o; !(o = s.next()).done; )
+              H(o.value) && Re(o.value, r);
+        }
+      }
+    }
+    function ar(e) {
+      {
+        var r = e.type;
+        if (r == null || typeof r == "string")
+          return;
+        var t;
+        if (typeof r == "function")
+          t = r.propTypes;
+        else if (typeof r == "object" && (r.$$typeof === d || // Note: Memo only checks outer props here.
+        // Inner props are checked in the reconciler.
+        r.$$typeof === T))
+          t = r.propTypes;
+        else
+          return;
+        if (t) {
+          var n = P(r);
+          Ue(t, e.props, "prop", n, e);
+        } else if (r.PropTypes !== void 0 && !Q) {
+          Q = true;
+          var u = P(r);
+          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", u || "Unknown");
+        }
+        typeof r.getDefaultProps == "function" && !r.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
+      }
+    }
+    function ir(e) {
+      {
+        for (var r = Object.keys(e.props), t = 0; t < r.length; t++) {
+          var n = r[t];
+          if (n !== "children" && n !== "key") {
+            A(e), p("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", n), A(null);
+            break;
+          }
+        }
+        e.ref !== null && (A(e), p("Invalid attribute `ref` supplied to `React.Fragment`."), A(null));
+      }
+    }
+    function Ce(e, r, t, n, u, s) {
+      {
+        var o = Le(e);
+        if (!o) {
+          var i = "";
+          (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (i += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
+          var g = tr();
+          g ? i += g : i += be();
+          var l;
+          e === null ? l = "null" : K(e) ? l = "array" : e !== void 0 && e.$$typeof === v ? (l = "<" + (P(e.type) || "Unknown") + " />", i = " Did you accidentally export a JSX literal instead of a component?") : l = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", l, i);
+        }
+        var f = rr(e, r, t, u, s);
+        if (f == null)
+          return f;
+        if (o) {
+          var _ = r.children;
+          if (_ !== void 0)
+            if (n)
+              if (K(_)) {
+                for (var F = 0; F < _.length; F++)
+                  Te(_[F], e);
+                Object.freeze && Object.freeze(_);
+              } else
+                p("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
+            else
+              Te(_, e);
+        }
+        return e === c ? ir(f) : ar(f), f;
+      }
+    }
+    function or(e, r, t) {
+      return Ce(e, r, t, true);
+    }
+    function ur(e, r, t) {
+      return Ce(e, r, t, false);
+    }
+    var sr = ur, lr = or;
+    $.Fragment = c, $.jsx = sr, $.jsxs = lr;
+  }()), $;
+}
+process.env.NODE_ENV === "production" ? ee.exports = dr() : ee.exports = vr();
+var re = ee.exports;
+const pr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
+  const [a, d] = useState(), { titleBar: b, saveBar: m, modalContent: T } = Children.toArray(C).reduce(
+    (E, k) => {
+      const W = yr(k), Y = W === "ui-title-bar", O = W === "ui-save-bar";
+      return !Y && !O && E.modalContent.push(k), {
+        ...E,
+        titleBar: Y ? k : E.titleBar,
+        saveBar: O ? k : E.saveBar
+      };
+    },
+    { modalContent: [] }
+  ), w = a && a.content ? cr.createPortal(T, a.content) : null;
+  return useEffect(() => {
+    a && (v ? a.show() : a.hide());
+  }, [a, v]), useEffect(() => {
+    if (!(!a || !y))
+      return a.addEventListener("show", y), () => {
+        a.removeEventListener("show", y);
+      };
+  }, [a, y]), useEffect(() => {
+    if (!(!a || !c))
+      return a.addEventListener("hide", c), () => {
+        a.removeEventListener("hide", c);
+      };
+  }, [a, c]), useEffect(() => {
+    if (a)
+      return () => {
+        a.hide();
+      };
+  }, [a]), /* @__PURE__ */ re.jsxs(
+    "ui-modal",
+    {
+      ...x,
+      ref: (E) => {
+        d(E), h && (typeof h == "function" ? h(E) : h.current = E);
+      },
+      children: [
+        b,
+        m,
+        /* @__PURE__ */ re.jsx("div", { children: w })
+      ]
+    }
+  );
+});
+pr.displayName = "ui-modal";
+function yr(R) {
+  if (!R)
+    return;
+  const v = typeof R == "object" && "type" in R ? R.type : void 0, y = typeof v == "string" ? v : void 0, c = typeof v == "object" ? v.displayName : void 0;
+  return y || (typeof c == "string" ? c : void 0);
+}
+const _r = "ui-title-bar", hr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
+  const [a, d] = useState();
+  return useEffect(() => {
+    a && (v ? a.show() : a.hide());
+  }, [a, v]), useEffect(() => {
+    if (!(!a || !y))
+      return a.addEventListener("show", y), () => {
+        a.removeEventListener("show", y);
+      };
+  }, [a, y]), useEffect(() => {
+    if (!(!a || !c))
+      return a.addEventListener("hide", c), () => {
+        a.removeEventListener("hide", c);
+      };
+  }, [a, c]), useEffect(() => {
+    if (a)
+      return () => {
+        a.hide();
+      };
+  }, [a]), /* @__PURE__ */ re.jsx(
+    "ui-save-bar",
+    {
+      ...x,
+      ref: (b) => {
+        d(b), h && (typeof h == "function" ? h(b) : h.current = b);
+      },
+      children: C
+    }
+  );
+});
+hr.displayName = "ui-save-bar";
+new Proxy(
+  {},
+  {
+    get(R, v) {
+      throw Error(
+        `shopify.${String(
+          v
+        )} can't be used in a server environment. You likely need to move this code into an Effect.`
+      );
+    }
+  }
+);
 function AdminLayout({ children }) {
   const location = useLocation();
   const [searchActive, setSearchActive] = useState(false);
@@ -13090,7 +24788,7 @@ function NewCampaign() {
         onAction: () => navigate("/app/campaigns")
       },
       children: [
-        /* @__PURE__ */ jsx(TitleBar, { title: "New Campaign" }),
+        /* @__PURE__ */ jsx(_r, { title: "New Campaign" }),
         /* @__PURE__ */ jsxs(BlockStack, { gap: "500", children: [
           /* @__PURE__ */ jsx(Text, { variant: "headingMd", as: "h2", fontWeight: "semibold", children: "SELECT CAMPAIGN TYPE" }),
           /* @__PURE__ */ jsxs(Layout, { children: [
@@ -13477,7 +25175,7 @@ function NewCampaign() {
     }
   ) });
 }
-const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: NewCampaign,
   loader: loader$2
@@ -13485,7 +25183,7 @@ const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 function Page$2() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13620,7 +25318,7 @@ function Subscribers() {
           }
         ],
         children: [
-          /* @__PURE__ */ jsx(TitleBar, { title: "Subscribers" }),
+          /* @__PURE__ */ jsx(_r, { title: "Subscribers" }),
           /* @__PURE__ */ jsxs(BlockStack, { gap: "500", children: [
             /* @__PURE__ */ jsx(Layout, { children: /* @__PURE__ */ jsx(Layout.Section, { children: /* @__PURE__ */ jsxs(InlineStack, { gap: "400", wrap: false, children: [
               /* @__PURE__ */ jsx(
@@ -13681,7 +25379,7 @@ function Subscribers() {
                       }
                     ) }),
                     /* @__PURE__ */ jsx(
-                      Popover,
+                      Popover2,
                       {
                         active: filterPopoverActive,
                         activator: /* @__PURE__ */ jsx(
@@ -13693,7 +25391,7 @@ function Subscribers() {
                           }
                         ),
                         onClose: () => setFilterPopoverActive(false),
-                        children: /* @__PURE__ */ jsx(Popover.Pane, { children: /* @__PURE__ */ jsx(Box, { padding: "400", children: /* @__PURE__ */ jsxs(BlockStack, { gap: "400", children: [
+                        children: /* @__PURE__ */ jsx(Popover2.Pane, { children: /* @__PURE__ */ jsx(Box, { padding: "400", children: /* @__PURE__ */ jsxs(BlockStack, { gap: "400", children: [
                           /* @__PURE__ */ jsx(Text, { variant: "headingSm", as: "h3", children: "Filter subscribers" }),
                           /* @__PURE__ */ jsx(
                             Select,
@@ -13757,7 +25455,7 @@ function Subscribers() {
                       }
                     ),
                     /* @__PURE__ */ jsx(
-                      Popover,
+                      Popover2,
                       {
                         active: sortPopoverActive,
                         activator: /* @__PURE__ */ jsx(
@@ -13769,7 +25467,7 @@ function Subscribers() {
                           }
                         ),
                         onClose: () => setSortPopoverActive(false),
-                        children: /* @__PURE__ */ jsx(Popover.Pane, { children: /* @__PURE__ */ jsx(Box, { padding: "400", children: /* @__PURE__ */ jsxs(BlockStack, { gap: "200", children: [
+                        children: /* @__PURE__ */ jsx(Popover2.Pane, { children: /* @__PURE__ */ jsx(Box, { padding: "400", children: /* @__PURE__ */ jsxs(BlockStack, { gap: "200", children: [
                           /* @__PURE__ */ jsx(Text, { variant: "headingSm", as: "h3", children: "Sort by" }),
                           /* @__PURE__ */ jsx(
                             Button,
@@ -13953,21 +25651,21 @@ function StatCard$1({ title, value, icon, color }) {
     /* @__PURE__ */ jsx(Text, { variant: "headingLg", children: value })
   ] }) });
 }
-const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Subscribers,
   loader: loader$1
 }, Symbol.toStringTag, { value: "Module" }));
 function AdditionalPage() {
   return /* @__PURE__ */ jsxs(Page$5, { children: [
-    /* @__PURE__ */ jsx(TitleBar, { title: "Additional page" }),
+    /* @__PURE__ */ jsx(_r, { title: "Additional page" }),
     /* @__PURE__ */ jsxs(Layout, { children: [
       /* @__PURE__ */ jsx(Layout.Section, { children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsxs(BlockStack, { gap: "300", children: [
         /* @__PURE__ */ jsxs(Text, { as: "p", variant: "bodyMd", children: [
           "The app template comes with an additional page which demonstrates how to create multiple pages within app navigation using",
           " ",
           /* @__PURE__ */ jsx(
-            Link$1,
+            Link,
             {
               url: "https://shopify.dev/docs/apps/tools/app-bridge",
               target: "_blank",
@@ -13990,7 +25688,7 @@ function AdditionalPage() {
       /* @__PURE__ */ jsx(Layout.Section, { variant: "oneThird", children: /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsxs(BlockStack, { gap: "200", children: [
         /* @__PURE__ */ jsx(Text, { as: "h2", variant: "headingMd", children: "Resources" }),
         /* @__PURE__ */ jsx(List, { children: /* @__PURE__ */ jsx(List.Item, { children: /* @__PURE__ */ jsx(
-          Link$1,
+          Link,
           {
             url: "https://shopify.dev/docs/apps/design-guidelines/navigation#app-nav",
             target: "_blank",
@@ -14018,21 +25716,21 @@ function Code({ children }) {
     }
   );
 }
-const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: AdditionalPage
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$1() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$1
 }, Symbol.toStringTag, { value: "Module" }));
 function Page() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14061,7 +25759,7 @@ function Revenue() {
         onAction: () => console.log("Export report")
       },
       children: [
-        /* @__PURE__ */ jsx(TitleBar, { title: "Revenue" }),
+        /* @__PURE__ */ jsx(_r, { title: "Revenue" }),
         /* @__PURE__ */ jsxs(BlockStack, { gap: "500", children: [
           /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsxs(InlineStack, { align: "space-between", children: [
             /* @__PURE__ */ jsx(Text, { variant: "headingMd", as: "h2", children: "Revenue Overview" }),
@@ -14271,14 +25969,14 @@ function StatCard({ title, value, trend, trendDirection, icon, color }) {
     ] })
   ] }) });
 }
-const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Revenue,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
 function Index() {
   return /* @__PURE__ */ jsx("div", { className: "bg-gray-100 min-h-screen p-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
-    /* @__PURE__ */ jsx(Navigation, {}),
+    /* @__PURE__ */ jsx(Navigation2, {}),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
       /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx("h2", { className: "text-3xl font-bold mb-4", children: "Ongoing Campaigns" }),
@@ -14639,11 +26337,11 @@ function Index() {
     ] })
   ] }) });
 }
-const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-CHkwI3Ij.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-TngPi3Mu.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Qof2dYF6.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/Page-wxI3g79T.js", "/assets/context-4r-eLkfq.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Cpd8pMbv.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-ST0f9MsK.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-DAEpyTH0.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-Dk0VkISE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-Cez-m3IL.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-q2iITwPx.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-BBuoj9lU.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-BQPDUs8c.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DW2dNxVS.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DWygtlqI.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": ["/assets/route-Cvk3W028.css"] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-Cq3fmYVo.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DnVI4rfE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/index-CKWc00xI.js", "/assets/Page-wxI3g79T.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-CYvFtMAf.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BG4UK4Wy.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-2Ph8AkJH.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-Cap_gh92.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] } }, "url": "/assets/manifest-973f6993.js", "version": "973f6993" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-CHkwI3Ij.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-TngPi3Mu.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Qof2dYF6.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/Page-wxI3g79T.js", "/assets/context-4r-eLkfq.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Cpd8pMbv.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-ST0f9MsK.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-DAEpyTH0.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-Dk0VkISE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-Cez-m3IL.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-q2iITwPx.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-BBuoj9lU.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-BQPDUs8c.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DW2dNxVS.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DWygtlqI.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": ["/assets/route-Cvk3W028.css"] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-Cq3fmYVo.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DnVI4rfE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/index-CKWc00xI.js", "/assets/Page-wxI3g79T.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-CYvFtMAf.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BG4UK4Wy.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-2Ph8AkJH.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-Cap_gh92.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] } }, "url": "/assets/manifest-5ec7ac0a.js", "version": "5ec7ac0a" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -15020,13 +26718,21 @@ const routes = {
     caseSensitive: void 0,
     module: route45
   },
+  "routes/health": {
+    id: "routes/health",
+    parentId: "root",
+    path: "health",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route46
+  },
   "routes/index": {
     id: "routes/index",
     parentId: "root",
     path: "index",
     index: void 0,
     caseSensitive: void 0,
-    module: route46
+    module: route47
   },
   "routes/app": {
     id: "routes/app",
@@ -15034,7 +26740,7 @@ const routes = {
     path: "app",
     index: void 0,
     caseSensitive: void 0,
-    module: route47
+    module: route48
   },
   "routes/app.campaigns.new": {
     id: "routes/app.campaigns.new",
@@ -15042,7 +26748,7 @@ const routes = {
     path: "campaigns/new",
     index: void 0,
     caseSensitive: void 0,
-    module: route48
+    module: route49
   },
   "routes/app.integrations": {
     id: "routes/app.integrations",
@@ -15050,7 +26756,7 @@ const routes = {
     path: "integrations",
     index: void 0,
     caseSensitive: void 0,
-    module: route49
+    module: route50
   },
   "routes/app.subscribers": {
     id: "routes/app.subscribers",
@@ -15058,7 +26764,7 @@ const routes = {
     path: "subscribers",
     index: void 0,
     caseSensitive: void 0,
-    module: route50
+    module: route51
   },
   "routes/app.additional": {
     id: "routes/app.additional",
@@ -15066,7 +26772,7 @@ const routes = {
     path: "additional",
     index: void 0,
     caseSensitive: void 0,
-    module: route51
+    module: route52
   },
   "routes/app.game.$id": {
     id: "routes/app.game.$id",
@@ -15074,7 +26780,7 @@ const routes = {
     path: "game/:id",
     index: void 0,
     caseSensitive: void 0,
-    module: route52
+    module: route53
   },
   "routes/app.game.add": {
     id: "routes/app.game.add",
@@ -15082,7 +26788,7 @@ const routes = {
     path: "game/add",
     index: void 0,
     caseSensitive: void 0,
-    module: route53
+    module: route54
   },
   "routes/app.revenue": {
     id: "routes/app.revenue",
@@ -15090,7 +26796,7 @@ const routes = {
     path: "revenue",
     index: void 0,
     caseSensitive: void 0,
-    module: route54
+    module: route55
   },
   "routes/app._index": {
     id: "routes/app._index",
@@ -15098,7 +26804,7 @@ const routes = {
     path: void 0,
     index: true,
     caseSensitive: void 0,
-    module: route55
+    module: route56
   }
 };
 export {

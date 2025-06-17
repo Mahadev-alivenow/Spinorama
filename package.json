@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
    "build": "remix vite:build",
-  "start": "node ./build/server/index.js",
+  "start": "HOST=0.0.0.0 PORT=${PORT:-3000} node ./build/server/index.js",
   "docker-start": "npm run build && npm start",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
