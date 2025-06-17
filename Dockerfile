@@ -40,4 +40,4 @@ HEALTHCHECK --interval=15s --timeout=10s --start-period=60s --retries=5 \
     CMD curl -f http://localhost:3000/health || exit 1
 
 # Start the server directly
-CMD ["node", "./build/server/index.js"]
+CMD ["npm", "run", "docker-start"]
