@@ -1,8 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
+import { useRef, useState } from "react";
 
 export default function Tutorial() {
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   // Handle create campaign click
   const handleCreateClick = () => {
@@ -40,7 +53,7 @@ export default function Tutorial() {
           </div>
 
           {/* Right Column - Video */}
-          <div className="relative rounded-lg overflow-hidden shadow-lg">
+          {/* <div className="relative rounded-lg overflow-hidden shadow-lg">
             <img
               src="/placeholder.svg?height=400&width=600"
               alt="Tutorial video thumbnail"
@@ -62,6 +75,42 @@ export default function Tutorial() {
             <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded">
               05:20
             </div>
+          </div> */}
+
+          {/* Right Column - Video */}
+          <div
+            className="relative rounded-lg overflow-hidden shadow-lg cursor-pointer"
+            onClick={handlePlayPause}
+          >
+            {/* Video tag without controls */}
+            <video
+              ref={videoRef}
+              src="/tutorial-video/tutorial.mp4"
+              poster="/placeholder.png?height=400&width=600"
+              className="w-full h-auto rounded-lg"
+            />
+
+            {/* Play icon if not playing */}
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-black bg-opacity-50 rounded-full p-4">
+                  {/* Play icon */}
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M5 3L19 12L5 21V3Z" fill="#ffffff" />
+                  </svg>
+                </div>
+              </div>
+            )}
+
+            {/* <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-gray-50 px-3 py-1 rounded">
+              05:20
+            </div> */}
           </div>
         </div>
       </div>

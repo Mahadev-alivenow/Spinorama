@@ -1419,8 +1419,7 @@ const shopify = shopifyApp({
       interval: BillingInterval.Every30Days,
       name: "Monthly Subscription",
       price: 0,
-      test: true,
-
+      test: true
     },
     [ANNUAL_PLAN]: {
       amount: 50,
@@ -1428,7 +1427,7 @@ const shopify = shopifyApp({
       interval: BillingInterval.Annual,
       name: "Annual Subscription",
       price: 0,
-      test: true,
+      test: true
     }
   },
   webhooks: {
