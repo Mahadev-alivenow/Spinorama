@@ -1,12 +1,11 @@
 {
-  "name": "spin-to-win",
+  "name": "wheels-of-wonders",
   "private": true,
   "scripts": {
    "build": "remix vite:build",
   "start": "HOST=0.0.0.0 PORT=${PORT:-3000} node ./build/server/index.js",
   "docker-start": "npm run build && npm start",
     "dev": "shopify app dev",
-    
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
