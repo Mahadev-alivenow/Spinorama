@@ -3,7 +3,7 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://insulation-auction-vienna-damages.trycloudflare.com"
+application_url = "https://bras-innovation-yet-forgot.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,9 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://insulation-auction-vienna-damages.trycloudflare.com/auth/callback",
-  "https://insulation-auction-vienna-damages.trycloudflare.com/auth/shopify/callback",
-  "https://insulation-auction-vienna-damages.trycloudflare.com/api/auth/callback"
+  "https://bras-innovation-yet-forgot.trycloudflare.com/auth/callback",
+  "https://bras-innovation-yet-forgot.trycloudflare.com/auth/shopify/callback",
+  "https://bras-innovation-yet-forgot.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -1,17 +1,17 @@
 var _a;
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
-import { PassThrough } from "stream";
+import { PassThrough } from "node:stream";
 import { renderToPipeableStream } from "react-dom/server";
 import { RemixServer, useLoaderData, Meta, Links, Outlet, ScrollRestoration, Scripts, useActionData, Form as Form$1, useLocation, Link as Link$1, useNavigate, useParams, useSearchParams, useNavigation, useFetcher } from "@remix-run/react";
-import { createReadableStreamFromReadable, json, redirect } from "@remix-run/node";
 import { isbot } from "isbot";
+import { json, redirect } from "@remix-run/node";
+import { toast, Toaster } from "react-hot-toast";
+import React, { createContext, useContext, useState, useEffect, useCallback, useLayoutEffect, useRef, PureComponent, useMemo, forwardRef, Component, memo, useId, useImperativeHandle, createElement, Children, isValidElement, createRef, useReducer } from "react";
 import "@shopify/shopify-app-remix/adapters/node";
 import { shopifyApp, BillingInterval, AppDistribution, ApiVersion, LoginErrorType } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { PrismaClient } from "@prisma/client";
 import { restResources } from "@shopify/shopify-api/rest/admin/2025-01";
-import { toast, Toaster } from "react-hot-toast";
-import React, { createContext, useContext, useState, useEffect, useCallback, useLayoutEffect, useRef, PureComponent, useMemo, forwardRef, Component, memo, useId, useImperativeHandle, createElement, Children, isValidElement, createRef, useReducer } from "react";
 import { MongoClient, ObjectId } from "mongodb";
 import { themes, breakpointsAliases, themeNameDefault, createThemeClassName, themeDefault, getMediaConditions, themeNames } from "@shopify/polaris-tokens";
 import { SelectIcon, ChevronDownIcon, ChevronUpIcon, AlertCircleIcon, XCircleIcon, SearchIcon, MenuHorizontalIcon, ArrowLeftIcon, SortDescendingIcon, SortAscendingIcon, ChevronLeftIcon, ChevronRightIcon, XIcon, AlertTriangleIcon, XSmallIcon, DeleteIcon, LayoutColumns3Icon, EditIcon, DuplicateIcon, InfoIcon, PlusIcon, MenuIcon, HomeIcon, ConfettiIcon, PersonIcon, FinanceIcon, AppsIcon, SettingsFilledIcon, NotificationIcon, ImportIcon, ExportIcon, FilterIcon, SortIcon, OrderIcon, ChartVerticalIcon, PageIcon } from "@shopify/polaris-icons";
@@ -19,199 +19,72 @@ import cr, { createPortal } from "react-dom";
 import { useNavigate as useNavigate$1 } from "react-router-dom";
 import isEqual from "react-fast-compare";
 import { Transition, CSSTransition, TransitionGroup } from "react-transition-group";
-if (process.env.NODE_ENV !== "production") {
-  if (!global.prismaGlobal) {
-    global.prismaGlobal = new PrismaClient();
+const streamTimeout = 5e3;
+function createReadableStreamFromReadable(readable) {
+  return new ReadableStream({
+    start(controller) {
+      readable.on("data", (chunk) => {
+        controller.enqueue(chunk);
+      });
+      readable.on("end", () => {
+        controller.close();
+      });
+      readable.on("error", (error) => {
+        controller.error(error);
+      });
+    }
+  });
+}
+function addDocumentResponseHeaders(request, responseHeaders) {
+  const url = new URL(request.url);
+  if (url.pathname.startsWith("/resources/")) {
+    responseHeaders.set("Cache-Control", "public, max-age=31536000, immutable");
   }
 }
-const prisma = global.prismaGlobal ?? new PrismaClient();
-const BILLING_PLANS = {
-  MONTHLY: "Monthly Plan",
-  ANNUAL: "Annual Plan"
-};
-const MONTLY_PLAN = "Monthly Subscription";
-const ANNUAL_PLAN = "Annual Subscription";
-const shopify = shopifyApp({
-  apiKey: process.env.SHOPIFY_API_KEY,
-  apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
-  apiVersion: ApiVersion.January25,
-  scopes: (_a = process.env.SCOPES) == null ? void 0 : _a.split(","),
-  appUrl: process.env.SHOPIFY_APP_URL || "",
-  authPathPrefix: "/auth",
-  sessionStorage: new PrismaSessionStorage(prisma),
-  distribution: AppDistribution.AppStore,
-  restResources,
-  // billing: {
-  //   [BILLING_PLANS.MONTHLY]: {
-  //     amount: 5,
-  //     currencyCode: "USD",
-  //     interval: BillingInterval.Every30Days,
-  //     name: "Monthly Subscription",
-  //     price: 0,
-  //     test: true,
-  //     trialDays: 14,
-  //     trialAmount: 0,
-  //     trialCurrencyCode: "USD",
-  //     trialInterval: BillingInterval.Every30Days,
-  //     trialName: "Monthly Subscription Trial",
-  //   },
-  //   [BILLING_PLANS.ANNUAL]: {
-  //     amount: 50,
-  //     currencyCode: "USD",
-  //     interval: BillingInterval.Annual,
-  //     name: "Annual Subscription",
-  //     price: 0,
-  //     test: true,
-  //     trialAmount: 0,
-  //     trialCurrencyCode: "USD",
-  //     trialInterval: BillingInterval.Annual,
-  //     trialName: "Annual Subscription Trial",
-  //     trialDays: 14,
-  //   },
-  // },
-  billing: {
-    [MONTLY_PLAN]: {
-      amount: 5,
-      currencyCode: "USD",
-      interval: BillingInterval.Every30Days,
-      name: "Monthly Subscription",
-      price: 0,
-      test: true,
-      trialDays: 14,
-      trialAmount: 0,
-      trialCurrencyCode: "USD",
-      trialInterval: BillingInterval.Every30Days,
-      trialName: "Monthly Subscription Trial"
-    },
-    [ANNUAL_PLAN]: {
-      amount: 50,
-      currencyCode: "USD",
-      interval: BillingInterval.Annual,
-      name: "Annual Subscription",
-      price: 0,
-      test: true,
-      trialAmount: 0,
-      trialCurrencyCode: "USD",
-      trialInterval: BillingInterval.Annual,
-      trialName: "Annual Subscription Trial",
-      trialDays: 14
-    }
-  },
-  webhooks: {
-    APP_UNINSTALLED: {
-      deliveryMethod: "http",
-      callbackUrl: "/webhooks"
-    },
-    APP_SUBSCRIPTIONS_UPDATE: {
-      deliveryMethod: "http",
-      callbackUrl: "/webhooks"
-    },
-    CUSTOMERS_DATA_REQUEST: {
-      deliveryMethod: "http",
-      callbackUrl: "/webhooks"
-    },
-    CUSTOMERS_REDACT: {
-      deliveryMethod: "http",
-      callbackUrl: "/webhooks"
-    },
-    SHOP_REDACT: {
-      deliveryMethod: "http",
-      callbackUrl: "/webhooks"
-    }
-  },
-  hooks: {
-    afterAuth: async ({ session }) => {
-      shopify.registerWebhooks({ session });
-    }
-  },
-  future: {
-    unstable_newEmbeddedAuthStrategy: true,
-    removeRest: true
-  },
-  // Fix X-Frame-Options issues by ensuring proper embedded app handling
-  isEmbeddedApp: true,
-  ...process.env.SHOP_CUSTOM_DOMAIN ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] } : {}
-});
-function isClientSideNavigation(request) {
-  const purpose = request.headers.get("purpose");
-  const fetchDest = request.headers.get("sec-fetch-dest");
-  const fetchMode = request.headers.get("sec-fetch-mode");
-  return purpose === "prefetch" || fetchDest === "empty" || fetchMode === "navigate" || request.headers.get("x-remix-transition") === "true";
-}
-async function authenticateWithFallback(request) {
+async function handleRequest(request, responseStatusCode, responseHeaders, remixContext) {
   try {
-    const result = await shopify.authenticate.admin(request);
-    return { success: true, ...result };
+    addDocumentResponseHeaders(request, responseHeaders);
+    const userAgent = request.headers.get("user-agent");
+    const callbackName = isbot(userAgent ?? "") ? "onAllReady" : "onShellReady";
+    console.log(
+      `[${(/* @__PURE__ */ new Date()).toISOString()}] ${request.method} ${request.url}`
+    );
+    return new Promise((resolve, reject) => {
+      const { pipe, abort } = renderToPipeableStream(
+        /* @__PURE__ */ jsx(RemixServer, { context: remixContext, url: request.url }),
+        {
+          [callbackName]: () => {
+            const body = new PassThrough();
+            const stream = createReadableStreamFromReadable(body);
+            responseHeaders.set("Content-Type", "text/html");
+            resolve(
+              new Response(stream, {
+                headers: responseHeaders,
+                status: responseStatusCode
+              })
+            );
+            pipe(body);
+          },
+          onShellError(error) {
+            console.error("Shell error:", error);
+            reject(error);
+          },
+          onError(error) {
+            responseStatusCode = 500;
+            console.error("Render error:", error);
+          }
+        }
+      );
+      setTimeout(abort, streamTimeout + 1e3);
+    });
   } catch (error) {
-    console.log("Authentication failed:", (error == null ? void 0 : error.message) || "Unknown error");
-    if (isClientSideNavigation(request)) {
-      console.log("Client-side navigation detected, providing fallback");
-      const url = new URL(request.url);
-      const shop = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || "unknown-shop";
-      return {
-        success: false,
-        fallback: true,
-        shop,
-        error
-      };
-    }
+    console.error("Request handling error:", error);
     throw error;
   }
 }
-ApiVersion.January25;
-const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
-const authenticate = shopify.authenticate;
-shopify.unauthenticated;
-const login = shopify.login;
-shopify.registerWebhooks;
-shopify.sessionStorage;
-const shopify_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  ANNUAL_PLAN,
-  MONTLY_PLAN,
-  addDocumentResponseHeaders,
-  authenticate,
-  authenticateWithFallback,
-  isClientSideNavigation,
-  login
-}, Symbol.toStringTag, { value: "Module" }));
-const streamTimeout = 5e3;
-async function handleRequest(request, responseStatusCode, responseHeaders, remixContext) {
-  addDocumentResponseHeaders(request, responseHeaders);
-  const userAgent = request.headers.get("user-agent");
-  const callbackName = isbot(userAgent ?? "") ? "onAllReady" : "onShellReady";
-  return new Promise((resolve, reject) => {
-    const { pipe, abort } = renderToPipeableStream(
-      /* @__PURE__ */ jsx(RemixServer, { context: remixContext, url: request.url }),
-      {
-        [callbackName]: () => {
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-          responseHeaders.set("Content-Type", "text/html");
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode
-            })
-          );
-          pipe(body);
-        },
-        onShellError(error) {
-          reject(error);
-        },
-        onError(error) {
-          responseStatusCode = 500;
-          console.error(error);
-        }
-      }
-    );
-    setTimeout(abort, streamTimeout + 1e3);
-  });
-}
 const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: handleRequest,
-  streamTimeout
+  default: handleRequest
 }, Symbol.toStringTag, { value: "Module" }));
 const PlanContext = createContext(null);
 const PLANS = {
@@ -1488,6 +1361,161 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   default: App$2,
   links: links$1,
   loader: loader$A
+}, Symbol.toStringTag, { value: "Module" }));
+if (process.env.NODE_ENV !== "production") {
+  if (!global.prismaGlobal) {
+    global.prismaGlobal = new PrismaClient();
+  }
+}
+const prisma = global.prismaGlobal ?? new PrismaClient();
+const BILLING_PLANS = {
+  MONTHLY: "Monthly Plan",
+  ANNUAL: "Annual Plan"
+};
+const MONTLY_PLAN = "Monthly Subscription";
+const ANNUAL_PLAN = "Annual Subscription";
+const shopify = shopifyApp({
+  apiKey: process.env.SHOPIFY_API_KEY,
+  apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
+  apiVersion: ApiVersion.January25,
+  scopes: (_a = process.env.SCOPES) == null ? void 0 : _a.split(","),
+  appUrl: process.env.SHOPIFY_APP_URL || "",
+  authPathPrefix: "/auth",
+  sessionStorage: new PrismaSessionStorage(prisma),
+  distribution: AppDistribution.AppStore,
+  restResources,
+  // billing: {
+  //   [BILLING_PLANS.MONTHLY]: {
+  //     amount: 5,
+  //     currencyCode: "USD",
+  //     interval: BillingInterval.Every30Days,
+  //     name: "Monthly Subscription",
+  //     price: 0,
+  //     test: true,
+  //     trialDays: 14,
+  //     trialAmount: 0,
+  //     trialCurrencyCode: "USD",
+  //     trialInterval: BillingInterval.Every30Days,
+  //     trialName: "Monthly Subscription Trial",
+  //   },
+  //   [BILLING_PLANS.ANNUAL]: {
+  //     amount: 50,
+  //     currencyCode: "USD",
+  //     interval: BillingInterval.Annual,
+  //     name: "Annual Subscription",
+  //     price: 0,
+  //     test: true,
+  //     trialAmount: 0,
+  //     trialCurrencyCode: "USD",
+  //     trialInterval: BillingInterval.Annual,
+  //     trialName: "Annual Subscription Trial",
+  //     trialDays: 14,
+  //   },
+  // },
+  billing: {
+    [MONTLY_PLAN]: {
+      amount: 5,
+      currencyCode: "USD",
+      interval: BillingInterval.Every30Days,
+      name: "Monthly Subscription",
+      price: 0,
+      test: true,
+      trialDays: 14,
+      trialAmount: 0,
+      trialCurrencyCode: "USD",
+      trialInterval: BillingInterval.Every30Days,
+      trialName: "Monthly Subscription Trial"
+    },
+    [ANNUAL_PLAN]: {
+      amount: 50,
+      currencyCode: "USD",
+      interval: BillingInterval.Annual,
+      name: "Annual Subscription",
+      price: 0,
+      test: true,
+      trialAmount: 0,
+      trialCurrencyCode: "USD",
+      trialInterval: BillingInterval.Annual,
+      trialName: "Annual Subscription Trial",
+      trialDays: 14
+    }
+  },
+  webhooks: {
+    APP_UNINSTALLED: {
+      deliveryMethod: "http",
+      callbackUrl: "/webhooks"
+    },
+    APP_SUBSCRIPTIONS_UPDATE: {
+      deliveryMethod: "http",
+      callbackUrl: "/webhooks"
+    },
+    CUSTOMERS_DATA_REQUEST: {
+      deliveryMethod: "http",
+      callbackUrl: "/webhooks"
+    },
+    CUSTOMERS_REDACT: {
+      deliveryMethod: "http",
+      callbackUrl: "/webhooks"
+    },
+    SHOP_REDACT: {
+      deliveryMethod: "http",
+      callbackUrl: "/webhooks"
+    }
+  },
+  hooks: {
+    afterAuth: async ({ session }) => {
+      shopify.registerWebhooks({ session });
+    }
+  },
+  future: {
+    unstable_newEmbeddedAuthStrategy: true,
+    removeRest: true
+  },
+  // Fix X-Frame-Options issues by ensuring proper embedded app handling
+  isEmbeddedApp: true,
+  ...process.env.SHOP_CUSTOM_DOMAIN ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] } : {}
+});
+function isClientSideNavigation(request) {
+  const purpose = request.headers.get("purpose");
+  const fetchDest = request.headers.get("sec-fetch-dest");
+  const fetchMode = request.headers.get("sec-fetch-mode");
+  return purpose === "prefetch" || fetchDest === "empty" || fetchMode === "navigate" || request.headers.get("x-remix-transition") === "true";
+}
+async function authenticateWithFallback(request) {
+  try {
+    const result = await shopify.authenticate.admin(request);
+    return { success: true, ...result };
+  } catch (error) {
+    console.log("Authentication failed:", (error == null ? void 0 : error.message) || "Unknown error");
+    if (isClientSideNavigation(request)) {
+      console.log("Client-side navigation detected, providing fallback");
+      const url = new URL(request.url);
+      const shop = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || "unknown-shop";
+      return {
+        success: false,
+        fallback: true,
+        shop,
+        error
+      };
+    }
+    throw error;
+  }
+}
+ApiVersion.January25;
+shopify.addDocumentResponseHeaders;
+const authenticate = shopify.authenticate;
+shopify.unauthenticated;
+const login = shopify.login;
+shopify.registerWebhooks;
+shopify.sessionStorage;
+const shopify_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  ANNUAL_PLAN,
+  MONTLY_PLAN,
+  authenticate,
+  authenticateWithFallback,
+  isClientSideNavigation,
+  login
 }, Symbol.toStringTag, { value: "Module" }));
 const uri$2 = process.env.MONGODB_URI;
 if (!uri$2) {
@@ -23734,24 +23762,48 @@ const route45 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   loader: loader$6
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$5() {
-  return json(
-    {
+async function loader$5({ request }) {
+  try {
+    const healthData = {
       status: "healthy",
       timestamp: (/* @__PURE__ */ new Date()).toISOString(),
       port: process.env.PORT || 3e3,
-      host: process.env.HOST || "localhost",
-      uptime: process.uptime()
-    },
-    {
+      host: process.env.HOST || "0.0.0.0",
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development",
+      url: request.url,
+      shopifyAppUrl: process.env.SHOPIFY_APP_URL
+    };
+    console.log("Health check accessed:", healthData);
+    return json(healthData, {
+      status: 200,
       headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate"
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Content-Type": "application/json"
       }
-    }
-  );
+    });
+  } catch (error) {
+    console.error("Health check error:", error);
+    return json(
+      {
+        status: "unhealthy",
+        error: error.message,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      },
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Content-Type": "application/json"
+        }
+      }
+    );
+  }
 }
+const GET = loader$5;
 const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
+  GET,
   loader: loader$5
 }, Symbol.toStringTag, { value: "Module" }));
 async function loader$4({ request }) {
@@ -26341,7 +26393,7 @@ const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: Index
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-CHkwI3Ij.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-TngPi3Mu.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Qof2dYF6.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/Page-wxI3g79T.js", "/assets/context-4r-eLkfq.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Cpd8pMbv.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-ST0f9MsK.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-DAEpyTH0.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-Dk0VkISE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-Cez-m3IL.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-q2iITwPx.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-BBuoj9lU.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-BQPDUs8c.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DW2dNxVS.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DWygtlqI.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": ["/assets/route-Cvk3W028.css"] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-Cq3fmYVo.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DnVI4rfE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/index-CKWc00xI.js", "/assets/Page-wxI3g79T.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-CYvFtMAf.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BG4UK4Wy.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-2Ph8AkJH.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-Cap_gh92.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] } }, "url": "/assets/manifest-5ec7ac0a.js", "version": "5ec7ac0a" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-CHkwI3Ij.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-TngPi3Mu.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Qof2dYF6.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/Page-wxI3g79T.js", "/assets/context-4r-eLkfq.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Cpd8pMbv.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-ST0f9MsK.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-DAEpyTH0.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-Dk0VkISE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-CD5DRML2.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-Cez-m3IL.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-q2iITwPx.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-5nLN8YYL.js", "/assets/Navigation-CD5DRML2.js", "/assets/StepFour-LL3KnXSO.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-BBuoj9lU.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-BQPDUs8c.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DW2dNxVS.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DWygtlqI.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": ["/assets/route-Cvk3W028.css"] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-Cq3fmYVo.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-BE-nyE5z.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DnVI4rfE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/index-CKWc00xI.js", "/assets/Page-wxI3g79T.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-CYvFtMAf.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BG4UK4Wy.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-2Ph8AkJH.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-Cap_gh92.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-CD5DRML2.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/components-BE-nyE5z.js", "/assets/index-K0fwup_a.js"], "css": [] } }, "url": "/assets/manifest-dcb26a20.js", "version": "dcb26a20" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";

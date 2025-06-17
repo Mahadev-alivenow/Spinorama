@@ -33,11 +33,26 @@ RUN npx prisma generate
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
 
+# Create a startup script
+COPY <<EOF /app/start.sh
+#!/bin/sh
+echo "Starting server..."
+echo "NODE_ENV: \$NODE_ENV"
+echo "HOST: \$HOST"
+echo "PORT: \$PORT"
+echo "SHOPIFY_APP_URL: \$SHOPIFY_APP_URL"
+
+# Start the server
+exec node ./build/server/index.js
+EOF
+
+RUN chmod +x /app/start.sh
+
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=15s --timeout=10s --start-period=60s --retries=5 \
-    CMD curl -f http://localhost:3000/health || exit 1
+# Updated health check with more retries and longer intervals
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
 
-# Start the server directly
-CMD ["node", "./build/server/index.js"]
+# Use the startup script
+CMD ["/app/start.sh"]
