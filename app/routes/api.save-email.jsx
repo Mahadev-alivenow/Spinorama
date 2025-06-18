@@ -54,8 +54,8 @@ export async function action({ request }) {
       );
     }
 
-    // Save the email and coupon to campaign's emails array
-    const result = await db.collection("campaigns").updateOne(
+    // First, try to update existing campaign
+    const updateResult = await db.collection("campaigns").updateOne(
       { id: campaignId },
       {
         $push: {
@@ -68,20 +68,76 @@ export async function action({ request }) {
       },
     );
 
-    if (result.matchedCount === 0) {
+    // If campaign exists, return success
+    if (updateResult.matchedCount > 0) {
       return json(
-        { error: "Campaign not found", campaignId },
-        { status: 404, headers: corsHeaders },
+        {
+          success: true,
+          message: "Email saved to existing campaign",
+          campaignId,
+        },
+        { headers: corsHeaders },
       );
     }
 
-    return json(
-      {
-        success: true,
-        message: "Email saved successfully",
+    // Campaign doesn't exist, create a new one
+    console.log(`Campaign ${campaignId} not found, creating new campaign...`);
+
+    const newCampaign = {
+      id: campaignId,
+      name: `Campaign ${campaignId}`,
+      status: "active",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      emails: [
+        {
+          email,
+          coupon,
+          submittedAt: new Date(),
+        },
+      ],
+      // Default campaign settings
+      settings: {
+        autoCreated: true,
+        source: "email-submission",
       },
-      { headers: corsHeaders },
-    );
+      // Basic campaign structure
+      layout: {
+        showFloatingButton: true,
+        floatingButtonPosition: "bottomRight",
+        floatingButtonText: "SPIN & WIN",
+        floatingButtonHasText: true,
+      },
+      primaryColor: "#fe5300",
+      // Campaign stats
+      stats: {
+        totalEmails: 1,
+        totalSpins: 0,
+        conversionRate: 0,
+      },
+    };
+
+    const insertResult = await db
+      .collection("campaigns")
+      .insertOne(newCampaign);
+
+    if (insertResult.acknowledged) {
+      console.log(
+        `Successfully created new campaign ${campaignId} and saved email`,
+      );
+
+      return json(
+        {
+          success: true,
+          message: "New campaign created and email saved",
+          campaignId,
+          campaignCreated: true,
+        },
+        { headers: corsHeaders },
+      );
+    } else {
+      throw new Error("Failed to create new campaign");
+    }
   } catch (error) {
     console.error("Error saving email:", error);
     return json(
@@ -94,4 +150,3 @@ export async function action({ request }) {
     );
   }
 }
-// adding a comment to ensure the code is complete asd

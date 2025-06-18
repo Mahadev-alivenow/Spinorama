@@ -305,6 +305,11 @@ function CampaignList() {
           `Campaign ${newStatus === "active" ? "activated and synced to storefront" : "deactivated"} successfully!`,
           { id: `toggle-${campaignId}` },
         );
+
+        // Refresh the page after a short delay to show the toast
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500); // 1.5 second delay to show the success toast
       } else {
         toast.error("Failed to update campaign status", {
           id: `toggle-${campaignId}`,

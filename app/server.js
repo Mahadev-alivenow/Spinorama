@@ -25,14 +25,63 @@ console.log("HOST:", process.env.HOST);
 console.log("============================");
 
 const app = express();
-
 const BUILD_DIR = path.join(process.cwd(), "build");
 
 // Serve static files first
 app.use(express.static(path.join(process.cwd(), "public")));
 
+// Parse JSON for regular API routes (but not webhooks)
+app.use("/apps", express.json());
+app.use("/health", express.json());
+app.use("/ping", express.json());
 
-app.use(express.json()); // Parse JSON request bodies
+// Webhook HMAC verification middleware - ONLY for webhook routes
+function verifyWebhookHmac(req, res, next) {
+  const shopifyHmac = req.headers["x-shopify-hmac-sha256"];
+  const secret = process.env.SHOPIFY_API_SECRET;
+
+  if (!secret) {
+    console.error("SHOPIFY_API_SECRET is not defined");
+    return res.status(500).send("Server configuration error");
+  }
+
+  if (!shopifyHmac) {
+    console.error("Missing HMAC header");
+    return res.status(401).send("Missing HMAC header");
+  }
+
+  // Get raw body for HMAC verification
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", () => {
+    const calculatedHmac = crypto
+      .createHmac("sha256", secret)
+      .update(body, "utf8")
+      .digest("base64");
+
+    const hmacValid = crypto.timingSafeEqual(
+      Buffer.from(calculatedHmac),
+      Buffer.from(shopifyHmac),
+    );
+
+    if (hmacValid) {
+      console.log("Webhook HMAC verification successful");
+      // Parse the body as JSON for the webhook handler
+      try {
+        req.body = JSON.parse(body);
+      } catch (e) {
+        req.body = body;
+      }
+      next();
+    } else {
+      console.error("Webhook HMAC verification failed");
+      res.status(401).send("HMAC verification failed");
+    }
+  });
+}
 
 // Verify Shopify HMAC for app proxy requests
 function verifyAppProxyHmac(req, res, next) {
@@ -42,7 +91,6 @@ function verifyAppProxyHmac(req, res, next) {
     return res.status(401).send("Unauthorized");
   }
 
-  // Get your Shopify API secret from environment variables
   const apiSecret = process.env.SHOPIFY_API_SECRET;
 
   if (!apiSecret) {
@@ -71,7 +119,7 @@ function verifyAppProxyHmac(req, res, next) {
   next();
 }
 
-// Enhanced health check endpoint - MUST be before other routes
+// Enhanced health check endpoint
 app.get("/health", async (req, res) => {
   try {
     const healthData = {
@@ -86,7 +134,6 @@ app.get("/health", async (req, res) => {
     };
 
     console.log("Health check accessed:", healthData);
-
     res.status(200).json(healthData);
   } catch (error) {
     console.error("Health check error:", error);
@@ -98,10 +145,39 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// Simple ping endpoint as backup
+// Simple ping endpoint
 app.get("/ping", (req, res) => {
   console.log("Ping endpoint accessed at:", new Date().toISOString());
   res.status(200).send("OK");
+});
+
+// Webhook endpoint - handle specific webhook routes with HMAC verification
+app.post("/webhooks", verifyWebhookHmac, (req, res) => {
+  console.log("Webhook received:", req.headers["x-shopify-topic"]);
+
+  // Let Remix handle the webhook processing
+  const remixHandler = createRequestHandler({
+    build: require(BUILD_DIR),
+    mode: process.env.NODE_ENV,
+  });
+
+  remixHandler(req, res);
+});
+
+// Handle GDPR webhooks specifically
+app.post("/SHOP_REDACT", verifyWebhookHmac, (req, res) => {
+  console.log("SHOP_REDACT webhook received");
+  res.status(200).send("SHOP_REDACT webhook processed");
+});
+
+app.post("/CUSTOMERS_REDACT", verifyWebhookHmac, (req, res) => {
+  console.log("CUSTOMERS_REDACT webhook received");
+  res.status(200).send("CUSTOMERS_REDACT webhook processed");
+});
+
+app.post("/CUSTOMERS_DATA_REQUEST", verifyWebhookHmac, (req, res) => {
+  console.log("CUSTOMERS_DATA_REQUEST webhook received");
+  res.status(200).send("CUSTOMERS_DATA_REQUEST webhook processed");
 });
 
 // App proxy routes
@@ -116,14 +192,12 @@ app.get(
         return res.status(400).json({ error: "Shop parameter is required" });
       }
 
-      // Get the active campaign from MongoDB
       const activeCampaign = await getActiveCampaign(shop);
 
       if (!activeCampaign) {
         return res.status(404).json({ error: "No active campaign found" });
       }
 
-      // Extract only the needed data for the button
       const buttonData = {
         floatingButtonPosition:
           activeCampaign.layout?.floatingButtonPosition || "bottomRight",
@@ -136,7 +210,6 @@ app.get(
         id: activeCampaign.id,
       };
 
-      // Return the button data
       return res.json(buttonData);
     } catch (error) {
       console.error("Error fetching active campaign:", error);
@@ -162,18 +235,14 @@ app.get(
         return res.status(400).json({ error: "Shop parameter is required" });
       }
 
-      // Connect to MongoDB
       const { db } = await connectToDatabase(shop);
       const campaignsCollection = db.collection("campaigns");
-
-      // Find the campaign by ID
       const campaign = await campaignsCollection.findOne({ id: id });
 
       if (!campaign) {
         return res.status(404).json({ error: "Campaign not found" });
       }
 
-      // Return the full campaign data
       return res.json(campaign);
     } catch (error) {
       console.error("Error fetching campaign:", error);
@@ -197,11 +266,9 @@ app.post(
         return res.status(400).json({ error: "Shop is required" });
       }
 
-      // Connect to MongoDB
       const { db } = await connectToDatabase(shop);
       const subscribersCollection = db.collection("subscribers");
 
-      // Save the email with campaign info and timestamp
       await subscribersCollection.insertOne({
         email,
         campaignId: campaign,
@@ -232,11 +299,9 @@ app.post(
         return res.status(400).json({ error: "Shop is required" });
       }
 
-      // Connect to MongoDB
       const { db } = await connectToDatabase(shop);
       const redemptionsCollection = db.collection("redemptions");
 
-      // Save the redemption data
       await redemptionsCollection.insertOne({
         email,
         coupon,
@@ -253,25 +318,37 @@ app.post(
   },
 );
 
-// Serve the Remix app
-app.all(
-  "*",
-  process.env.NODE_ENV === "development"
-    ? (req, res, next) => {
-        purgeRequireCache();
-        return createRequestHandler({
+// Serve the Remix app for all other routes
+app.all("*", (req, res, next) => {
+  // Skip webhook routes - they're handled above
+  if (
+    req.path.startsWith("/webhooks") ||
+    req.path === "/SHOP_REDACT" ||
+    req.path === "/CUSTOMERS_REDACT" ||
+    req.path === "/CUSTOMERS_DATA_REQUEST"
+  ) {
+    return next();
+  }
+
+  const remixHandler =
+    process.env.NODE_ENV === "development"
+      ? (req, res, next) => {
+          purgeRequireCache();
+          return createRequestHandler({
+            build: require(BUILD_DIR),
+            mode: process.env.NODE_ENV,
+          })(req, res, next);
+        }
+      : createRequestHandler({
           build: require(BUILD_DIR),
           mode: process.env.NODE_ENV,
-        })(req, res, next);
-      }
-    : createRequestHandler({
-        build: require(BUILD_DIR),
-        mode: process.env.NODE_ENV,
-      }),
-);
+        });
+
+  return remixHandler(req, res, next);
+});
 
 // FORCE port to 3000 - no exceptions for any environment
-const port = process.env.PORT || 3000;
+const port = 3000;
 const host = "0.0.0.0";
 
 // Start server with explicit host and port
@@ -290,11 +367,6 @@ app.listen(port, host, () => {
 });
 
 function purgeRequireCache() {
-  // purge require cache on requests for "server side HMR" this won't let
-  // you have in-memory objects between requests in development,
-  // alternatively you can set up nodemon/pm2-dev to restart the server on
-  // file changes, but then you'll have to reconnect to databases/etc on each
-  // change. We prefer the DX of this, so we've included it for you by default
   for (const key in require.cache) {
     if (key.startsWith(BUILD_DIR)) {
       delete require.cache[key];

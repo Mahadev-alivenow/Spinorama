@@ -3,7 +3,7 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://grant-looked-williams-fuji.trycloudflare.com"
+application_url = "https://liable-uploaded-game-internationally.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,13 +17,29 @@ scopes = "read_discounts,read_products,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://grant-looked-williams-fuji.trycloudflare.com/auth/callback",
-  "https://grant-looked-williams-fuji.trycloudflare.com/auth/shopify/callback",
-  "https://grant-looked-williams-fuji.trycloudflare.com/api/auth/callback"
+  "https://liable-uploaded-game-internationally.trycloudflare.com/auth/callback",
+  "https://liable-uploaded-game-internationally.trycloudflare.com/auth/shopify/callback",
+  "https://liable-uploaded-game-internationally.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2025-04"
+
+  [[webhooks.subscriptions]]
+  topics = [ "customers/data_request" ]
+  uri = "/CUSTOMERS_DATA_REQUEST"
+
+  [[webhooks.subscriptions]]
+  topics = [ "customers/redact" ]
+  uri = "/CUSTOMERS_REDACT"
+
+  [[webhooks.subscriptions]]
+  topics = [ "shop/redact" ]
+  uri = "/SHOP_REDACT"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks"
 
 [pos]
 embedded = false
