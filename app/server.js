@@ -9,26 +9,38 @@ import { getActiveCampaign } from "./models/Subscription.server";
 import { connectToDatabase } from "../lib/mongodb.server";
 
 // FORCE environment variables at the very top
-console.log("=== ORIGINAL ENV VALUES ===");
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("PORT:", process.env.PORT);
-console.log("HOST:", process.env.HOST);
-
-// Force the port to 3000 regardless of environment
 process.env.PORT = "3000";
 process.env.HOST = process.env.HOST || "0.0.0.0";
-
-console.log("=== FORCED ENV VALUES ===");
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("PORT:", process.env.PORT);
-console.log("HOST:", process.env.HOST);
-console.log("============================");
 
 const app = express();
 const BUILD_DIR = path.join(process.cwd(), "build");
 
-// Serve static files first
-app.use(express.static(path.join(process.cwd(), "public")));
+// Serve static files with proper headers for CSS
+app.use(
+  express.static(path.join(process.cwd(), "public"), {
+    maxAge: process.env.NODE_ENV === "production" ? "1y" : "0",
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".css")) {
+        res.setHeader("Content-Type", "text/css");
+        res.setHeader("Cache-Control", "public, max-age=31536000");
+      }
+    },
+  }),
+);
+
+// Serve build assets (including CSS) with proper headers
+app.use(
+  "/build",
+  express.static(path.join(process.cwd(), "build", "client"), {
+    maxAge: process.env.NODE_ENV === "production" ? "1y" : "0",
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".css")) {
+        res.setHeader("Content-Type", "text/css");
+        res.setHeader("Cache-Control", "public, max-age=31536000");
+      }
+    },
+  }),
+);
 
 // Parse JSON for regular API routes (but not webhooks)
 app.use("/apps", express.json());
@@ -41,12 +53,10 @@ function verifyWebhookHmac(req, res, next) {
   const secret = process.env.SHOPIFY_API_SECRET;
 
   if (!secret) {
-    console.error("SHOPIFY_API_SECRET is not defined");
     return res.status(500).send("Server configuration error");
   }
 
   if (!shopifyHmac) {
-    console.error("Missing HMAC header");
     return res.status(401).send("Missing HMAC header");
   }
 
@@ -68,7 +78,6 @@ function verifyWebhookHmac(req, res, next) {
     );
 
     if (hmacValid) {
-      console.log("Webhook HMAC verification successful");
       // Parse the body as JSON for the webhook handler
       try {
         req.body = JSON.parse(body);
@@ -77,7 +86,6 @@ function verifyWebhookHmac(req, res, next) {
       }
       next();
     } else {
-      console.error("Webhook HMAC verification failed");
       res.status(401).send("HMAC verification failed");
     }
   });
@@ -94,7 +102,6 @@ function verifyAppProxyHmac(req, res, next) {
   const apiSecret = process.env.SHOPIFY_API_SECRET;
 
   if (!apiSecret) {
-    console.error("SHOPIFY_API_SECRET is not defined in environment variables");
     return res.status(500).send("Server configuration error");
   }
 
@@ -133,10 +140,8 @@ app.get("/health", async (req, res) => {
       forcedPort: "3000",
     };
 
-    console.log("Health check accessed:", healthData);
     res.status(200).json(healthData);
   } catch (error) {
-    console.error("Health check error:", error);
     res.status(500).json({
       status: "unhealthy",
       error: error.message,
@@ -147,14 +152,11 @@ app.get("/health", async (req, res) => {
 
 // Simple ping endpoint
 app.get("/ping", (req, res) => {
-  console.log("Ping endpoint accessed at:", new Date().toISOString());
   res.status(200).send("OK");
 });
 
 // Webhook endpoint - handle specific webhook routes with HMAC verification
 app.post("/webhooks", verifyWebhookHmac, (req, res) => {
-  console.log("Webhook received:", req.headers["x-shopify-topic"]);
-
   // Let Remix handle the webhook processing
   const remixHandler = createRequestHandler({
     build: require(BUILD_DIR),
@@ -166,17 +168,14 @@ app.post("/webhooks", verifyWebhookHmac, (req, res) => {
 
 // Handle GDPR webhooks specifically
 app.post("/SHOP_REDACT", verifyWebhookHmac, (req, res) => {
-  console.log("SHOP_REDACT webhook received");
   res.status(200).send("SHOP_REDACT webhook processed");
 });
 
 app.post("/CUSTOMERS_REDACT", verifyWebhookHmac, (req, res) => {
-  console.log("CUSTOMERS_REDACT webhook received");
   res.status(200).send("CUSTOMERS_REDACT webhook processed");
 });
 
 app.post("/CUSTOMERS_DATA_REQUEST", verifyWebhookHmac, (req, res) => {
-  console.log("CUSTOMERS_DATA_REQUEST webhook received");
   res.status(200).send("CUSTOMERS_DATA_REQUEST webhook processed");
 });
 
@@ -212,7 +211,6 @@ app.get(
 
       return res.json(buttonData);
     } catch (error) {
-      console.error("Error fetching active campaign:", error);
       return res.status(500).json({ error: "Failed to fetch active campaign" });
     }
   },
@@ -245,7 +243,6 @@ app.get(
 
       return res.json(campaign);
     } catch (error) {
-      console.error("Error fetching campaign:", error);
       return res.status(500).json({ error: "Failed to fetch campaign" });
     }
   },
@@ -278,7 +275,6 @@ app.post(
 
       return res.json({ success: true });
     } catch (error) {
-      console.error("Error saving email:", error);
       return res.status(500).json({ error: "Failed to save email" });
     }
   },
@@ -312,7 +308,6 @@ app.post(
 
       return res.json({ success: true });
     } catch (error) {
-      console.error("Error redeeming coupon:", error);
       return res.status(500).json({ error: "Failed to redeem coupon" });
     }
   },
@@ -353,14 +348,6 @@ const host = "0.0.0.0";
 
 // Start server with explicit host and port
 app.listen(port, host, () => {
-  console.log(`=== Shopify App Server Started ===`);
-  console.log(`Server listening at http://${host}:${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`Shopify App URL: ${process.env.SHOPIFY_APP_URL}`);
-  console.log(`Health check: http://${host}:${port}/health`);
-  console.log(`FORCED PORT: ${port} (ignoring any other port settings)`);
-  console.log(`=====================================`);
-
   if (process.env.NODE_ENV === "development") {
     broadcastDevReady(require(BUILD_DIR));
   }

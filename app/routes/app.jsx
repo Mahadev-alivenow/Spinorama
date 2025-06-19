@@ -270,6 +270,7 @@ export default function App() {
               </p>
               <a
                 href={`https://apps.shopify.com/your-app-handle`}
+                target="_blank"
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
               >
                 Subscribe Now

@@ -13,13 +13,12 @@ import { Toaster } from "react-hot-toast";
 import { CampaignProvider } from "./context/CampaignContext";
 import { PlanProvider } from "./context/PlanContext";
 import { useEffect } from "react";
+import styles from "./styles/global.css?url";
 
 // Import styles using Remix's links export
 // import styles from "./styles/global.css"
 
-export const links = () => [
-  { rel: "stylesheet", href: "/app/styles/global.css" },
-];
+export const links = () => [{ rel: "stylesheet", href: styles }];
 
 // Update the loader function to handle authentication failures better
 export const loader = async ({ request }) => {

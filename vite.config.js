@@ -17,31 +17,19 @@ if (
   delete process.env.HOST;
 }
 
-const host = new URL(process.env.SHOPIFY_APP_URL || "http://localhost")
-  .hostname;
-
-// Force production port to 3000
-const port =
-  process.env.NODE_ENV === "production"
-    ? 3000
-    : Number(process.env.PORT || 3000);
-
-let hmrConfig;
-if (host === "localhost") {
-  hmrConfig = {
-    protocol: "ws",
-    host: "localhost",
-    port: 64999,
-    clientPort: 64999,
-  };
-} else {
-  hmrConfig = {
-    protocol: "wss",
-    host: host,
-    port: Number.parseInt(process.env.FRONTEND_PORT) || 8002,
-    clientPort: 443,
-  };
-}
+const port = Number.parseInt(process.env.PORT || "3000");
+const host = process.env.HOST
+  ? process.env.HOST.replace("https://", "")
+  : "localhost";
+const hmrConfig =
+  host === "localhost"
+    ? {
+        protocol: "ws",
+        host: "localhost",
+        port: 8002,
+        timeout: 30000,
+      }
+    : { protocol: "wss", host: host, timeout: 30000 };
 
 export default defineConfig({
   server: {
@@ -78,9 +66,17 @@ export default defineConfig({
   ],
   build: {
     assetsInlineLimit: 0,
+    cssCodeSplit: false, // Important: Keep CSS together
     rollupOptions: {
       output: {
         manualChunks: undefined,
+        assetFileNames: (assetInfo) => {
+          // Ensure CSS files have consistent naming
+          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+            return "assets/[name]-[hash][extname]";
+          }
+          return "assets/[name]-[hash][extname]";
+        },
       },
     },
   },
