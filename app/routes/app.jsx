@@ -266,45 +266,15 @@ export default function App() {
 
             <div className="space-y-4">
               <p className="text-gray-600">
-                Choose your subscription plan to get started.
+                Visit the Shopify App Store to subscribe.
               </p>
-
-              {/* Option 1: Link to create subscription charge (Recommended) */}
-              <Link
-                to="/billing"
-                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
-              >
-                Subscribe Now - $5/month
-              </Link>
-
-              {/* Option 2: If you have a published app in Shopify App Store */}
-              {/* 
               <a
-                href="https://apps.shopify.com/your-actual-app-handle"
+                href={`https://apps.shopify.com/spinorama`}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
               >
-                View in App Store
+                Subscribe Now
               </a>
-              */}
-
-              {/* Option 3: For development/testing - simulate subscription */}
-              {/* 
-              <button
-                onClick={() => {
-                  // Call API to simulate subscription
-                  fetch('/api/test-subscription', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'set_active' })
-                  }).then(() => window.location.reload())
-                }}
-                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors inline-block"
-              >
-                Activate Test Subscription
-              </button>
-              */}
             </div>
           </div>
         </div>

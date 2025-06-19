@@ -15,27 +15,30 @@ import { PlanProvider } from "./context/PlanContext";
 import { useEffect } from "react";
 import styles from "./styles/global.css?url";
 
-// Import styles using Remix's links export
-// import styles from "./styles/global.css"
-
+// Export CSS styles
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
-// Update the loader function to handle authentication failures better
+// ✅ STEP 1: Add Content-Security-Policy (CSP) headers to allow iframe embedding in Shopify
+export const headers = () => {
+  return {
+    "Content-Security-Policy":
+      "frame-ancestors https://*.myshopify.com https://admin.shopify.com;",
+  };
+};
+
+// Loader to fetch discount codes from Shopify (if authenticated)
 export const loader = async ({ request }) => {
   const discountCodes = [];
 
   try {
-    // Try to fetch discount codes if we can authenticate
     const { authenticate } = await import("./shopify.server");
     const { getDiscountCodes } = await import("./models/Subscription.server");
 
-    // Check if this is a proper app request (has the right headers/params)
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
     const embedded = url.searchParams.get("embedded");
     const host = url.searchParams.get("host");
 
-    // Only try to authenticate if this looks like a proper Shopify app request
     if (
       shop ||
       embedded ||
@@ -72,7 +75,6 @@ export const loader = async ({ request }) => {
               });
             }
           } else {
-            // Include discounts without specific codes
             discountCodes.push({
               id: node.id,
               title,
@@ -100,7 +102,6 @@ export const loader = async ({ request }) => {
       error?.message || "Unknown error",
     );
 
-    // If it's a redirect response (302), this is expected for unauthenticated requests
     if (error && error.status === 302) {
       console.log(
         "Root loader - received redirect response, this is normal for unauthenticated requests",
@@ -116,14 +117,11 @@ export const loader = async ({ request }) => {
   });
 };
 
-// Update the App component to handle global storage better
 export default function App() {
   const data = useLoaderData();
 
-  // Set global discount codes on the client
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Don't overwrite existing codes with empty array
       if (data.discountCodes && data.discountCodes.length > 0) {
         window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
         console.log(
@@ -131,7 +129,6 @@ export default function App() {
           data.discountCodes,
         );
 
-        // Also store in localStorage for persistence
         try {
           localStorage.setItem(
             "GLOBAL_DISCOUNT_CODES",
@@ -141,7 +138,6 @@ export default function App() {
           console.error("Failed to store discount codes in localStorage:", e);
         }
       } else {
-        // Try to get from localStorage if we don't have codes from the server
         try {
           const storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
           if (storedCodes) {
@@ -170,7 +166,7 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <title>Spinorama</title> {/* Add your custom title here */}
+        <title>Spinorama</title>
         <Meta />
         <Links />
       </head>
@@ -187,8 +183,6 @@ export default function App() {
           dangerouslySetInnerHTML={{
             __html: `
               window.ENV = ${JSON.stringify(data.ENV)};
-              
-              // Try to get codes from localStorage first
               let storedCodes;
               try {
                 storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
@@ -197,11 +191,8 @@ export default function App() {
                 console.error("Error parsing stored discount codes:", e);
                 storedCodes = [];
               }
-              
-              // Use server-provided codes if available, otherwise use stored codes
               const serverCodes = ${JSON.stringify(data.discountCodes || [])};
               window.GLOBAL_DISCOUNT_CODES = serverCodes.length > 0 ? serverCodes : storedCodes;
-              
               console.log("Global discount codes initialized:", window.GLOBAL_DISCOUNT_CODES);
             `,
           }}
