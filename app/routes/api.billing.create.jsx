@@ -7,7 +7,7 @@ export async function action({ request }) {
 
     // Parse request body
     const data = await request.json();
-    const { planName, returnUrl, isTest = true } = data;
+    const { planName, returnUrl, isTest = false } = data;
 
     if (!planName) {
       return json({ success: false, message: "Plan name is required" });

@@ -78,59 +78,99 @@ export function CampaignProvider({ children }) {
     const contentType = response.headers.get("content-type");
 
     if (!contentType || !contentType.includes("application/json")) {
-      console.warn(`Expected JSON but got ${contentType}`);
       return null;
     }
 
     try {
       return await response.json();
     } catch (error) {
-      console.error("Failed to parse JSON:", error);
       return null;
     }
   };
 
-  // Helper function to get shop info from various sources
+  // Enhanced helper function to get shop info from various sources
   const getShopFromSources = () => {
-    // Try to get from URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    let shop = urlParams.get("shop");
-
-    if (shop) {
-      console.log("Got shop from URL params:", shop);
-      return shop;
-    }
-
-    // Try to get from localStorage
     try {
-      shop = localStorage.getItem("shopify_shop_domain");
+      // Try to get from URL params first
+      const urlParams = new URLSearchParams(window.location.search);
+      let shop = urlParams.get("shop");
+
       if (shop) {
-        console.log("Got shop from localStorage:", shop);
         return shop;
       }
-    } catch (e) {
-      console.warn("Could not access localStorage");
-    }
 
-    // Try to get from global window object
-    if (window.shopOrigin) {
-      shop = window.shopOrigin;
-      console.log("Got shop from window.shopOrigin:", shop);
-      return shop;
-    }
+      // Try to get from URL hash (for embedded apps)
+      try {
+        const hash = window.location.hash;
+        if (hash) {
+          const hashParams = new URLSearchParams(hash.substring(1));
+          shop = hashParams.get("shop");
+          if (shop) {
+            return shop;
+          }
+        }
+      } catch (e) {
+        // Silent error handling
+      }
 
-    // Try to extract from current URL
-    const hostname = window.location.hostname;
-    if (hostname.includes(".myshopify.com")) {
-      shop = hostname;
-      console.log("Got shop from hostname:", shop);
-      return shop;
-    }
+      // Try to get from localStorage
+      try {
+        shop = localStorage.getItem("shopify_shop_domain");
+        if (shop) {
+          return shop;
+        }
+      } catch (e) {
+        // Silent error handling
+      }
 
-    return null;
+      // Try to get from global window object
+      if (window.shopOrigin) {
+        shop = window.shopOrigin;
+        return shop;
+      }
+
+      // Try to get from Shopify App Bridge (if available)
+      try {
+        if (
+          window.shopify &&
+          window.shopify.config &&
+          window.shopify.config.shop
+        ) {
+          shop = window.shopify.config.shop;
+          return shop;
+        }
+      } catch (e) {
+        // Silent error handling
+      }
+
+      // Try to extract from current URL hostname
+      const hostname = window.location.hostname;
+      if (hostname.includes(".myshopify.com")) {
+        shop = hostname;
+        return shop;
+      }
+
+      // Try to extract from referrer
+      try {
+        const referrer = document.referrer;
+        if (referrer && referrer.includes(".myshopify.com")) {
+          const referrerUrl = new URL(referrer);
+          if (referrerUrl.hostname.includes(".myshopify.com")) {
+            shop = referrerUrl.hostname;
+            return shop;
+          }
+        }
+      } catch (e) {
+        // Silent error handling
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
   };
 
-  // Get shop information with better error handling
+  // Get shop information with enhanced error handling and authentication
   useEffect(() => {
     const getShopInfo = async () => {
       try {
@@ -147,63 +187,64 @@ export function CampaignProvider({ children }) {
           try {
             localStorage.setItem("shopify_shop_domain", clientShop);
           } catch (e) {
-            console.warn("Could not store shop in localStorage");
-          }
-        }
-
-        // Try to fetch shop info from app route
-        console.log("Attempting to fetch shop info from /app...");
-        const response = await fetch("/app", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.warn("App route returned non-OK status:", response.status);
-          setIsOfflineMode(true);
-          return;
-        }
-
-        const data = await safeJsonParse(response);
-
-        if (data && data.shop) {
-          const shopName = data.shop;
-          const formattedName = shopName.replace(/\.myshopify\.com$/i, "");
-
-          console.log("Got shop name from /app:", shopName);
-          setShopInfo({
-            name: shopName,
-            formatted: formattedName,
-          });
-
-          // Store in localStorage
-          try {
-            localStorage.setItem("shopify_shop_domain", shopName);
-          } catch (e) {
-            console.warn("Could not store shop in localStorage");
+            // Silent error handling
           }
 
           // Update campaign data with shop name
           setCampaignData((prev) => ({
             ...prev,
-            shop: shopName,
+            shop: clientShop,
           }));
-
-          setIsOfflineMode(false);
-        } else {
-          console.warn("No shop data in response from /app");
-          setIsOfflineMode(true);
         }
-      } catch (error) {
-        console.warn("Error getting shop info from /app:", error.message);
-        setIsOfflineMode(true);
+
+        // Try to fetch shop info from app route with better authentication
+        try {
+          const response = await fetch("/", {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            credentials: "same-origin", // Include cookies for authentication
+          });
+
+          if (response.ok) {
+            const data = await safeJsonParse(response);
+
+            if (data && data.shop) {
+              const shopName = data.shop;
+              const formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+
+              setShopInfo({
+                name: shopName,
+                formatted: formattedName,
+              });
+
+              // Store in localStorage
+              try {
+                localStorage.setItem("shopify_shop_domain", shopName);
+              } catch (e) {
+                // Silent error handling
+              }
+
+              // Update campaign data with shop name
+              setCampaignData((prev) => ({
+                ...prev,
+                shop: shopName,
+              }));
+
+              setIsOfflineMode(false);
+              return; // Success, exit early
+            }
+          } else if (response.status === 401) {
+            // Don't set offline mode for auth issues, just continue with fallbacks
+          }
+        } catch (fetchError) {
+          // Silent error handling
+        }
 
         // Try fallback to db-status endpoint
         try {
-          console.log("Trying fallback to /api/db-status...");
           const statusResponse = await fetch("/api/db-status", {
             method: "GET",
             headers: {
@@ -218,7 +259,6 @@ export function CampaignProvider({ children }) {
               const shopName = statusData.shop;
               const formattedName = shopName.replace(/\.myshopify\.com$/i, "");
 
-              console.log("Got shop name from db-status:", shopName);
               setShopInfo({
                 name: shopName,
                 formatted: formattedName,
@@ -228,7 +268,7 @@ export function CampaignProvider({ children }) {
               try {
                 localStorage.setItem("shopify_shop_domain", shopName);
               } catch (e) {
-                console.warn("Could not store shop in localStorage");
+                // Silent error handling
               }
 
               // Update campaign data with shop name
@@ -238,13 +278,35 @@ export function CampaignProvider({ children }) {
               }));
 
               setIsOfflineMode(false);
+              return; // Success with fallback
             }
           }
         } catch (fallbackError) {
-          console.warn(
-            "Fallback to db-status also failed:",
-            fallbackError.message,
-          );
+          // Silent error handling
+        }
+
+        // If we have client-side shop info, don't set offline mode
+        if (clientShop) {
+          setIsOfflineMode(false);
+        } else {
+          setIsOfflineMode(true);
+        }
+      } catch (error) {
+        // Check if we have any shop info from client sources
+        const clientShop = getShopFromSources();
+        if (clientShop) {
+          const formattedName = clientShop.replace(/\.myshopify\.com$/i, "");
+          setShopInfo({
+            name: clientShop,
+            formatted: formattedName,
+          });
+          setCampaignData((prev) => ({
+            ...prev,
+            shop: clientShop,
+          }));
+          setIsOfflineMode(false);
+        } else {
+          setIsOfflineMode(true);
         }
       }
     };
@@ -256,7 +318,6 @@ export function CampaignProvider({ children }) {
   useEffect(() => {
     const checkDbConnection = async () => {
       try {
-        console.log("Checking database connection...");
         const response = await fetch("/api/db-status", {
           method: "GET",
           headers: {
@@ -295,7 +356,7 @@ export function CampaignProvider({ children }) {
           try {
             localStorage.setItem("shopify_shop_domain", data.shop);
           } catch (e) {
-            console.warn("Could not store shop in localStorage");
+            // Silent error handling
           }
 
           // Update campaign data with shop name
@@ -304,16 +365,7 @@ export function CampaignProvider({ children }) {
             shop: data.shop,
           }));
         }
-
-        if (data.connected) {
-          console.log(
-            `MongoDB connected successfully to database: ${data.dbName}`,
-          );
-        } else {
-          console.error("MongoDB connection failed:", data.error);
-        }
       } catch (error) {
-        console.error("Error checking DB connection:", error);
         setDbStatus({
           connected: false,
           checking: false,
@@ -336,7 +388,6 @@ export function CampaignProvider({ children }) {
 
       try {
         setIsLoading(true);
-        console.log("Loading campaigns from API...");
 
         const response = await fetch("/api/campaigns", {
           method: "GET",
@@ -360,9 +411,6 @@ export function CampaignProvider({ children }) {
 
         if (Array.isArray(campaigns) && campaigns.length > 0) {
           setAllCampaigns(campaigns);
-          console.log(
-            `Loaded ${campaigns.length} campaigns from MongoDB (${dbStatus.dbName})`,
-          );
 
           // Update shop info if available in response
           if (data.shop) {
@@ -372,14 +420,9 @@ export function CampaignProvider({ children }) {
               formatted: formattedName,
             });
           }
-        } else {
-          console.log(
-            `No campaigns found in MongoDB (${dbStatus.dbName}), using sample data`,
-          );
         }
       } catch (error) {
-        console.error("Error loading campaigns:", error);
-        toast.error("Failed to load campaigns");
+        // Silent error handling - don't show toast for loading errors
       } finally {
         setIsLoading(false);
       }
@@ -440,8 +483,6 @@ export function CampaignProvider({ children }) {
 
   // Update campaign rules
   const updateCampaignRules = useCallback((ruleType, ruleData) => {
-    console.log(`Updating campaign rules: ${ruleType}`, ruleData);
-
     setCampaignData((prevData) => {
       // Make sure we have a rules object
       const currentRules = prevData.rules || {};
@@ -459,8 +500,6 @@ export function CampaignProvider({ children }) {
           ...ruleData,
         },
       };
-
-      console.log("Updated rules:", updatedRules);
 
       return {
         ...prevData,
@@ -616,10 +655,6 @@ export function CampaignProvider({ children }) {
         return; // No other active campaigns to deactivate
       }
 
-      console.log(
-        `Deactivating ${otherActiveCampaigns.length} other active campaigns`,
-      );
-
       // Update in database if connected
       if (dbStatus.connected) {
         for (const campaign of otherActiveCampaigns) {
@@ -630,10 +665,7 @@ export function CampaignProvider({ children }) {
               body: JSON.stringify({ ...campaign, status: "draft" }),
             });
           } catch (error) {
-            console.error(
-              `Failed to deactivate campaign ${campaign.id}:`,
-              error,
-            );
+            // Silent error handling
           }
         }
       }
@@ -662,8 +694,6 @@ export function CampaignProvider({ children }) {
     async (campaign) => {
       let campaignWithId;
       try {
-        console.log("Saving campaign:", campaign);
-
         // Ensure we have all required fields
         campaignWithId = {
           ...campaign,
@@ -701,15 +731,14 @@ export function CampaignProvider({ children }) {
                 visitorType: "everyone",
               },
             },
-          shop: shopInfo.name || campaign.shop || "wheel-of-wonders.myshopify.com",
+          shop:
+            shopInfo.name || campaign.shop || "wheel-of-wonders.myshopify.com",
         };
 
         // If this campaign is being set to active, deactivate all other campaigns
         if (campaignWithId.status === "active") {
           await deactivateOtherCampaigns(campaignWithId.id);
         }
-
-        console.log("Campaign to save with shop info:", campaignWithId);
 
         // Only try to save to MongoDB if connected
         if (dbStatus.connected) {
@@ -719,9 +748,6 @@ export function CampaignProvider({ children }) {
 
           if (existingIndex >= 0) {
             // Update existing campaign
-            console.log(
-              `Updating existing campaign with ID: ${campaignWithId.id}`,
-            );
             const response = await fetch(
               `/api/campaigns/${campaignWithId.id}`,
               {
@@ -738,7 +764,6 @@ export function CampaignProvider({ children }) {
             }
 
             const updatedCampaign = await response.json();
-            console.log("Campaign updated successfully:", updatedCampaign);
 
             // Update shop info if available in response
             if (updatedCampaign.shop) {
@@ -753,7 +778,6 @@ export function CampaignProvider({ children }) {
             }
           } else {
             // Create new campaign
-            console.log("Creating new campaign");
             const response = await fetch("/api/campaigns", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -767,7 +791,6 @@ export function CampaignProvider({ children }) {
             }
 
             const newCampaign = await response.json();
-            console.log("Campaign created successfully:", newCampaign);
 
             // Update shop info if available in response
             if (newCampaign.shop) {
@@ -781,8 +804,6 @@ export function CampaignProvider({ children }) {
               });
             }
           }
-        } else {
-          console.log("Database not connected, only updating local state");
         }
 
         // Update local state
@@ -811,7 +832,6 @@ export function CampaignProvider({ children }) {
         // If campaign is active, immediately sync to metafields
         if (campaignWithId.status === "active") {
           try {
-            console.log("Syncing saved active campaign to metafields...");
             const syncResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -819,20 +839,13 @@ export function CampaignProvider({ children }) {
             });
 
             if (syncResponse.ok) {
-              const syncData = await syncResponse.json();
-              console.log(
-                "Campaign synced to metafields successfully:",
-                syncData,
-              );
               toast.success("Campaign saved and synced to storefront!");
             } else {
-              console.warn("Failed to sync campaign to metafields");
               toast.success(
                 "Campaign saved! Sync to storefront may take a moment.",
               );
             }
           } catch (syncError) {
-            console.error("Error syncing campaign to metafields:", syncError);
             toast.success(
               "Campaign saved! Sync to storefront may take a moment.",
             );
@@ -843,7 +856,6 @@ export function CampaignProvider({ children }) {
 
         return campaignWithId;
       } catch (error) {
-        console.error("Error saving campaign:", error);
         toast.error(`Failed to save campaign: ${error.message}`);
 
         // Still update local state even if MongoDB save fails
@@ -897,7 +909,6 @@ export function CampaignProvider({ children }) {
         toast.success("Campaign deleted successfully!");
         return { success: true };
       } catch (error) {
-        console.error("Error deleting campaign:", error);
         toast.error(`Failed to delete campaign: ${error.message}`);
 
         // Still update local state even if MongoDB delete fails
@@ -928,13 +939,13 @@ export function CampaignProvider({ children }) {
 
         // Update the campaign status in database if connected
         if (dbStatus.connected) {
-          // CHANGED: Use POST instead of PATCH and use FormData
+          // Use POST instead of PATCH and use FormData
           const formData = new FormData();
           formData.append("status", newStatus);
           formData.append("shop", shopInfo.name || "");
 
           const response = await fetch(`/api/campaigns/status/${campaignId}`, {
-            method: "POST", // Changed from PATCH to POST
+            method: "POST",
             body: formData,
           });
 
@@ -955,7 +966,6 @@ export function CampaignProvider({ children }) {
         // Immediately sync the active campaign to metafields for theme extension
         if (newStatus === "active") {
           try {
-            console.log("Syncing newly activated campaign to metafields...");
             const syncResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -963,20 +973,13 @@ export function CampaignProvider({ children }) {
             });
 
             if (syncResponse.ok) {
-              const syncData = await syncResponse.json();
-              console.log(
-                "Campaign synced to metafields successfully:",
-                syncData,
-              );
               toast.success("Campaign activated and synced to storefront!");
             } else {
-              console.warn("Failed to sync campaign to metafields");
               toast.success(
                 "Campaign activated! Sync to storefront may take a moment.",
               );
             }
           } catch (syncError) {
-            console.error("Error syncing campaign to metafields:", syncError);
             toast.success(
               "Campaign activated! Sync to storefront may take a moment.",
             );
@@ -984,7 +987,6 @@ export function CampaignProvider({ children }) {
         } else {
           // If deactivating, clear metafields
           try {
-            console.log("Clearing metafields for deactivated campaign...");
             const clearResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -992,23 +994,19 @@ export function CampaignProvider({ children }) {
             });
 
             if (clearResponse.ok) {
-              console.log("Metafields cleared successfully");
               toast.success(
                 "Campaign deactivated and removed from storefront!",
               );
             } else {
-              console.warn("Failed to clear metafields");
               toast.success("Campaign deactivated!");
             }
           } catch (clearError) {
-            console.error("Error clearing metafields:", clearError);
             toast.success("Campaign deactivated!");
           }
         }
 
         return { success: true, status: newStatus };
       } catch (error) {
-        console.error("Error toggling campaign status:", error);
         toast.error(`Failed to toggle campaign status: ${error.message}`);
 
         // Still update local state even if API calls fail

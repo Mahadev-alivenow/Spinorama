@@ -130,6 +130,7 @@ export async function getActiveCampaign(shopName = null) {
   }
 }
 
+// Get subscription status from Shopify GraphQL
 export async function getSubscriptionStatus(graphql) {
   const result = await graphql(
     `
@@ -158,18 +159,255 @@ export async function getSubscriptionStatus(graphql) {
   return res;
 }
 
-// Create metafields for the active campaign
-export async function syncActiveCampaignToMetafields(graphql, shopName) {
+// Enhanced function to check if app should be considered "subscribed"
+export async function hasActiveSubscription(
+  graphql,
+  shopName,
+  isDevelopment = false,
+) {
   try {
-    // Get the active campaign from MongoDB
-    const activeCampaign = await getActiveCampaign(shopName);
+    // In development mode, always return true for testing (you can modify this)
+    if (isDevelopment || process.env.NODE_ENV === "development") {
+      console.log("🔧 Development mode: Simulating active subscription");
+      return {
+        hasSubscription: true, // Change to false to test no subscription
+        plan: {
+          name: "Development Plan",
+          status: "ACTIVE",
+          test: true,
+        },
+        source: "development",
+      };
+    }
+
+    // Check Shopify subscription status first
+    const subscriptions = await getSubscriptionStatus(graphql);
+    const activeSubscriptions =
+      subscriptions.data.app.installation.activeSubscriptions;
+
+    if (activeSubscriptions.length > 0) {
+      console.log("✅ Found Shopify subscription:", activeSubscriptions[0]);
+      return {
+        hasSubscription: true,
+        plan: activeSubscriptions[0],
+        source: "shopify",
+      };
+    }
+
+    // Fallback: Check our own database for subscription tracking
+    // This is useful for public plans where Shopify manages billing
+    try {
+      const { db } = await connectToDatabase(shopName);
+      const subscriptionCollection = db.collection("app_subscriptions");
+
+      const localSubscription = await subscriptionCollection.findOne({
+        shop: shopName,
+        status: "active",
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (localSubscription) {
+        console.log("✅ Found local subscription record:", localSubscription);
+        return {
+          hasSubscription: true,
+          plan: localSubscription,
+          source: "local",
+        };
+      }
+    } catch (dbError) {
+      console.log("Could not check local subscription:", dbError.message);
+    }
+
+    console.log("❌ No active subscription found");
+    return {
+      hasSubscription: false,
+      plan: null,
+      source: "none",
+    };
+  } catch (error) {
+    console.error("Error checking subscription status:", error);
+    return {
+      hasSubscription: false,
+      plan: null,
+      source: "error",
+    };
+  }
+}
+
+// Function to manually set subscription status (for public plans)
+export async function setLocalSubscriptionStatus(
+  shopName,
+  status,
+  planName = "Monthly Plan",
+) {
+  try {
+    const { db } = await connectToDatabase(shopName);
+    const subscriptionCollection = db.collection("app_subscriptions");
+
+    const subscriptionData = {
+      shop: shopName,
+      status: status, // 'active' or 'inactive'
+      planName: planName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      source: "manual", // or 'shopify', 'stripe', etc.
+    };
+
+    await subscriptionCollection.updateOne(
+      { shop: shopName },
+      { $set: subscriptionData },
+      { upsert: true },
+    );
+
+    console.log(`✅ Set local subscription status for ${shopName}: ${status}`);
+    return true;
+  } catch (error) {
+    console.error("Error setting local subscription status:", error);
+    return false;
+  }
+}
+
+// Updated createSubscriptionMetafield that works with public plans
+export async function createSubscriptionMetafield(
+  graphql,
+  hasSubscription,
+  shopName = null,
+) {
+  try {
+    // Convert boolean to string for Shopify metafield
+    const value = hasSubscription ? "true" : "false";
+
+    console.log(
+      `🔄 Setting subscription metafield: ${value} for shop: ${shopName}`,
+    );
+
+    const appIdQuery = await graphql(`
+      #graphql
+      query {
+        currentAppInstallation {
+          id
+        }
+      }
+    `);
+
+    const appIdQueryData = await appIdQuery.json();
+    const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+    console.log("App Installation ID:", appInstallationID);
+
+    const appMetafield = await graphql(
+      `
+        #graphql
+        mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
+          metafieldsSet(metafields: $metafields) {
+            metafields {
+              id
+              namespace
+              key
+              value
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `,
+      {
+        variables: {
+          metafields: [
+            {
+              namespace: "mtappsremixbillingdemo",
+              key: "hasPlan",
+              type: "boolean",
+              value: value,
+              ownerId: appInstallationID,
+            },
+            {
+              namespace: "mtappsremixbillingdemo",
+              key: "lastChecked",
+              type: "single_line_text_field",
+              value: new Date().toISOString(),
+              ownerId: appInstallationID,
+            },
+          ],
+        },
+      },
+    );
+
+    const data = await appMetafield.json();
+
+    if (data.data?.metafieldsSet?.userErrors?.length > 0) {
+      console.error(
+        "Metafield userErrors:",
+        data.data.metafieldsSet.userErrors,
+      );
+      return { success: false, errors: data.data.metafieldsSet.userErrors };
+    }
+
+    console.log(
+      "✅ Successfully set subscription metafield:",
+      data.data.metafieldsSet.metafields,
+    );
+    return { success: true, metafields: data.data.metafieldsSet.metafields };
+  } catch (error) {
+    console.error("Error setting subscription metafield:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Updated syncActiveCampaignToMetafields with subscription checking
+export async function syncActiveCampaignToMetafields(
+  graphql,
+  campaignOrShopName,
+) {
+  try {
+    let activeCampaign = null;
+    let shopName = null;
+
+    // Handle both campaign object and shop name parameters
+    if (typeof campaignOrShopName === "string") {
+      shopName = campaignOrShopName;
+      activeCampaign = await getActiveCampaign(shopName);
+    } else if (campaignOrShopName && typeof campaignOrShopName === "object") {
+      activeCampaign = campaignOrShopName;
+      // Try to extract shop name from campaign or use a fallback
+      shopName = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
+    } else {
+      console.log("Invalid parameter for syncActiveCampaignToMetafields");
+      return { success: false, message: "Invalid parameter" };
+    }
+
+    // First check if we have an active subscription
+    const subscriptionStatus = await hasActiveSubscription(graphql, shopName);
+
+    // Always set the subscription metafield based on current status
+    await createSubscriptionMetafield(
+      graphql,
+      subscriptionStatus.hasSubscription,
+      shopName,
+    );
+
+    // Only sync campaign data if we have a subscription
+    if (!subscriptionStatus.hasSubscription) {
+      console.log("⚠️ No active subscription - not syncing campaign data");
+      return { success: false, message: "No active subscription" };
+    }
+
+    // Get the active campaign if we don't have it
+    if (!activeCampaign) {
+      activeCampaign = await getActiveCampaign(shopName);
+    }
 
     if (!activeCampaign) {
       console.log("No active campaign found to sync to metafields");
       return { success: false, message: "No active campaign found" };
     }
 
-    console.log("Syncing active campaign to metafields:", activeCampaign.name);
+    console.log(
+      "🔄 Syncing active campaign to metafields:",
+      activeCampaign.name,
+    );
 
     // Extract layout and content information
     const layout = activeCampaign.layout || {};
@@ -227,20 +465,15 @@ export async function syncActiveCampaignToMetafields(graphql, shopName) {
     const triggersJson = JSON.stringify({
       trigger_clicks_enabled: appearingRules.clicksCount?.enabled || false,
       trigger_clicks_value: appearingRules.clicksCount?.count || 0,
-
       trigger_exitIntent_enabled: appearingRules.exitIntent?.enabled || false,
-      trigger_exitIntent_device: "desktop", // or dynamically detect if needed
-
-      trigger_inactivity_enabled: false, // Not currently supported in rules, fallback
-      trigger_inactivity_seconds: 10, // Default fallback
-
+      trigger_exitIntent_device: "desktop",
+      trigger_inactivity_enabled: false,
+      trigger_inactivity_seconds: 10,
       trigger_pageCount_enabled: appearingRules.pageCount?.enabled || false,
       trigger_pageCount_pages: appearingRules.pageCount?.count || 1,
-
       trigger_pageScroll_enabled: appearingRules.pageScroll?.enabled || false,
       trigger_pageScroll_percentage:
         appearingRules.pageScroll?.percentage || 50,
-
       trigger_timeDelay_enabled: appearingRules.timeDelay?.enabled || false,
       trigger_timeDelay_seconds: appearingRules.timeDelay?.seconds || 5,
     });
@@ -259,8 +492,17 @@ export async function syncActiveCampaignToMetafields(graphql, shopName) {
 
     console.log("App Installation ID:", appInstallationID);
 
-    // Build all metafields
+    // Build all metafields including subscription status
     const metafieldsInput = [
+      // Subscription status
+      {
+        namespace: "wheel-of-wonders",
+        key: "hasActiveSubscription",
+        type: "boolean",
+        value: "true",
+        ownerId: appInstallationID,
+      },
+      // Layout metafields
       {
         namespace: "wheel-of-wonders",
         key: "floatingButtonHasText",
@@ -359,7 +601,6 @@ export async function syncActiveCampaignToMetafields(graphql, shopName) {
         value: colorTone,
         ownerId: appInstallationID,
       },
-      //{ namespace: "wheel-of-wonders", key: "logoImage", type: "single_line_text_field", value: logoImage, ownerId: appInstallationID },
       // Landing page metafields
       {
         namespace: "wheel-of-wonders",
@@ -470,229 +711,19 @@ export async function syncActiveCampaignToMetafields(graphql, shopName) {
       return { success: false, errors: data.data.metafieldsSet.userErrors };
     }
 
-    console.log(
-      "Successfully synced campaign to metafields :",
-      data.data.metafieldsSet.metafields,
-    );
+    console.log("✅ Successfully synced campaign to metafields");
     return {
       success: true,
       metafields: data.data.metafieldsSet.metafields,
       campaignId: activeCampaign.id,
     };
   } catch (error) {
-    console.error("Error syncing campaign to metafields:", error)
-    return { success: false, error: error.message }
+    console.error("Error syncing campaign to metafields:", error);
+    return { success: false, error: error.message };
   }
 }
 
-// Create metafields for the active campaign
-// export async function syncActiveCampaignToMetafieldsRules(graphql, shopName) {
-//   try {
-//     const activeCampaign = await getActiveCampaign(shopName);
-
-//     if (!activeCampaign) {
-//       console.log("No active campaign found to sync to metafields");
-//       return { success: false, message: "No active campaign found" };
-//     }
-
-//     console.log("Syncing active campaign to metafields:", activeCampaign.name);
-
-//     const layout = activeCampaign.layout || {};
-//     const content = activeCampaign.content || {};
-//     const triggers = activeCampaign.triggers || {};
-
-//     const floatingButtonHasText = layout.floatingButtonHasText === true ? "true" : "false";
-//     const floatingButtonPosition = layout.floatingButtonPosition || "bottomRight";
-//     const floatingButtonText = layout.floatingButtonText || "";
-//     const showFloatingButton = layout.showFloatingButton === true ? "true" : "false";
-//     const primaryColor = activeCampaign.primaryColor || "#ffc700";
-//     const secondaryColor = activeCampaign.secondaryColor || "#ffffff";
-//     const tertiaryColor = activeCampaign.tertiaryColor || "#000000";
-//     const wheelSectors = String(layout.wheelSectors || "six");
-//     const envSelection = layout.theme || "light";
-//     const versionSelection = layout.popupLayout || "bottom";
-//     const displayStyle = layout.displayStyle || "popup";
-//     const colorTone = activeCampaign.color || "dualTone";
-//     const logoImage = layout.logo || "";
-
-//     const landing = content.landing || {};
-//     const headlineText = landing.title || "TRY YOUR LUCK";
-//     const headlineChildText = landing.subtitle || "This is a demo of our Spin to Win";
-//     const showLandingSubtitle = landing.showSubtitle === true ? "true" : "false";
-//     const showEmail = landing.showEmail === true ? "true" : "false";
-//     const emailPlaceholder = landing.emailPlaceholder || "Enter your Email";
-//     const showPrivacyPolicy = landing.showPrivacyPolicy === true ? "true" : "false";
-//     const termCondText = landing.privacyPolicyText || "I accept the terms and conditions";
-//     const landingButtonText = landing.buttonText || "SPIN";
-
-//     const result = content.result || {};
-//     const headlineResultText = result.title || "CONGRATULATIONS";
-//     const showResultSubtitle = result.showSubtitle === true ? "true" : "false";
-//     const resultSubtitle = result.subtitle || "";
-//     const showResultButton = result.showButton === true ? "true" : "false";
-//     const resultButtonText = result.buttonText || "REDEEM NOW";
-
-//     const wheel = content.wheel || {};
-//     const wheelSectorsData = wheel.sectors || [];
-//     const copySameCode = wheel.copySameCode === true ? "true" : "false";
-//     const wheelSectorsJson = JSON.stringify(wheelSectorsData);
-
-//     // Trigger data (newly added)
-//     const trigger_clicks_enabled = (triggers.clicksCount?.enabled === true) ? "true" : "false";
-//     const trigger_clicks_value = String(triggers.clicksCount?.clicks ?? "2");
-
-//     const trigger_exitIntent_enabled = (triggers.exitIntent?.enabled === true) ? "true" : "false";
-//     const trigger_exitIntent_device = triggers.exitIntent?.device || "desktop";
-
-//     const trigger_inactivity_enabled = (triggers.inactivity?.enabled === true) ? "true" : "false";
-//     const trigger_inactivity_seconds = String(triggers.inactivity?.seconds ?? "30");
-
-//     const trigger_pageCount_enabled = (triggers.pageCount?.enabled === true) ? "true" : "false";
-//     const trigger_pageCount_pages = String(triggers.pageCount?.pages ?? "2");
-
-//     const trigger_pageScroll_enabled = (triggers.pageScroll?.enabled === true) ? "true" : "false";
-//     const trigger_pageScroll_percentage = String(triggers.pageScroll?.percentage ?? "20");
-
-//     const trigger_timeDelay_enabled = (triggers.timeDelay?.enabled === true) ? "true" : "false";
-//     const trigger_timeDelay_seconds = String(triggers.timeDelay?.seconds ?? "5");
-
-//     // App installation ID
-//     const appIdQuery = await graphql(`
-//       #graphql
-//       query {
-//         currentAppInstallation { id }
-//       }
-//     `);
-//     const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id;
-//     console.log("App Installation ID:", appInstallationID);
-
-//     const metafieldsInput = [
-      // // Trigger metafields
-      // { namespace: "wheel-of-wonders", key: "trigger_clicks_enabled", type: "boolean", value: trigger_clicks_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_clicks_value", type: "number_integer", value: trigger_clicks_value, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_exitIntent_enabled", type: "boolean", value: trigger_exitIntent_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_exitIntent_device", type: "single_line_text_field", value: trigger_exitIntent_device, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_inactivity_enabled", type: "boolean", value: trigger_inactivity_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_inactivity_seconds", type: "number_integer", value: trigger_inactivity_seconds, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_pageCount_enabled", type: "boolean", value: trigger_pageCount_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_pageCount_pages", type: "number_integer", value: trigger_pageCount_pages, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_pageScroll_enabled", type: "boolean", value: trigger_pageScroll_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_pageScroll_percentage", type: "number_integer", value: trigger_pageScroll_percentage, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_timeDelay_enabled", type: "boolean", value: trigger_timeDelay_enabled, ownerId: appInstallationID },
-      // { namespace: "wheel-of-wonders", key: "trigger_timeDelay_seconds", type: "number_integer", value: trigger_timeDelay_seconds, ownerId: appInstallationID },
-//     ];
-
-//     const filteredMetafields = metafieldsInput.filter(
-//       mf => mf.value !== undefined && mf.value !== null && mf.value !== ""
-//     );
-
-//     const metafieldsMutation = await graphql(
-//       `
-//         mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
-//           metafieldsSet(metafields: $metafields) {
-//             metafields { id namespace key value }
-//             userErrors { field message }
-//           }
-//         }
-//       `,
-//       { variables: { metafields: filteredMetafields } }
-//     );
-
-//     const data = await metafieldsMutation.json();
-//     if (data.data?.metafieldsSet?.userErrors?.length) {
-//       console.error("Metafield userErrors:", data.data.metafieldsSet.userErrors);
-//       return { success: false, errors: data.data.metafieldsSet.userErrors };
-//     }
-
-//     console.log("Successfully synced campaign to metafieldsRules:", data.data.metafieldsSet.metafields);
-//     return { success: true, metafields: data.data.metafieldsSet.metafields, campaignId: activeCampaign.id };
-//   } catch (error) {
-//     console.error("Error syncing campaign to metafields:", error);
-//     return { success: false, error: error.message };
-//   }
-// }
-
-
-
-
-export async function createSubscriptionMetafield(
-  graphql,
-  value,
-  position = "bottom-right",
-) {
-  if (!value || (value !== "true" && value !== "false")) {
-    throw new Error(
-      `Invalid 'value' for hasPlan: must be "true" or "false", got: ${value}`,
-    );
-  }
-
-  if (!position || typeof position !== "string") {
-    position = "bottom-right"; // fallback
-  }
-
-  const appIdQuery = await graphql(`
-    #graphql
-    query {
-      currentAppInstallation {
-        id
-      }
-    }
-  `);
-
-  const appIdQueryData = await appIdQuery.json();
-  const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
-  console.log("App Installation ID:", appInstallationID);
-
-  const appMetafield = await graphql(
-    `
-      #graphql
-      mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
-        metafieldsSet(metafields: $metafields) {
-          metafields {
-            id
-            namespace
-            key
-          }
-          userErrors {
-            field
-            message
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        metafields: [
-          {
-            namespace: "mtappsremixbillingdemo",
-            key: "hasPlan",
-            type: "boolean",
-            value: value, // must be a string "true" or "false"
-            ownerId: appInstallationID,
-          },
-          {
-            namespace: "mtappsremixbillingdemo",
-            key: "position",
-            type: "single_line_text_field",
-            value: position,
-            ownerId: appInstallationID,
-          },
-        ],
-      },
-    },
-  );
-
-  const data = await appMetafield.json();
-
-  // Log userErrors if present
-  if (data.data?.metafieldsSet?.userErrors?.length > 0) {
-    console.error("Metafield userErrors:", data.data.metafieldsSet.userErrors);
-  }
-
-  return data;
-}
-
-
+// Get discount codes from Shopify
 export async function getDiscountCodes(graphql) {
   const result = await graphql(
     `
@@ -750,7 +781,6 @@ export async function getDiscountCodes(graphql) {
   return res;
 }
 
-
 // Create metafields specifically for campaign layout
 export async function createCampaignLayoutMetafields(graphql, shopName) {
   try {
@@ -762,16 +792,22 @@ export async function createCampaignLayoutMetafields(graphql, shopName) {
       return null;
     }
 
-    console.log("Creating layout metafields for campaign:", activeCampaign.name);
+    console.log(
+      "Creating layout metafields for campaign:",
+      activeCampaign.name,
+    );
 
     // Extract layout information
     const layout = activeCampaign.layout || {};
-    
+
     // Layout-specific data
-    const floatingButtonHasText = layout.floatingButtonHasText === true ? "true" : "false";
-    const floatingButtonPosition = layout.floatingButtonPosition || "bottomRight";
+    const floatingButtonHasText =
+      layout.floatingButtonHasText === true ? "true" : "false";
+    const floatingButtonPosition =
+      layout.floatingButtonPosition || "bottomRight";
     const floatingButtonText = layout.floatingButtonText || "";
-    const showFloatingButton = layout.showFloatingButton === true ? "true" : "false";
+    const showFloatingButton =
+      layout.showFloatingButton === true ? "true" : "false";
     const wheelSectors = String(layout.wheelSectors || "six");
     const envSelection = layout.theme || "light";
     const versionSelection = layout.popupLayout || "bottom";
@@ -793,7 +829,8 @@ export async function createCampaignLayoutMetafields(graphql, shopName) {
         }
       }
     `);
-    const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id;
+    const appInstallationID = (await appIdQuery.json()).data
+      .currentAppInstallation.id;
 
     console.log("App Installation ID:", appInstallationID);
 
@@ -919,22 +956,171 @@ export async function createCampaignLayoutMetafields(graphql, shopName) {
     );
 
     const data = await metafieldsMutation.json();
-    
+
     if (data.data?.metafieldsSet?.userErrors?.length) {
-      console.error("Layout metafield userErrors:", data.data.metafieldsSet.userErrors);
+      console.error(
+        "Layout metafield userErrors:",
+        data.data.metafieldsSet.userErrors,
+      );
       return { success: false, errors: data.data.metafieldsSet.userErrors };
     }
 
-    console.log("Successfully created layout metafields:", data.data.metafieldsSet.metafields);
-    
+    console.log(
+      "Successfully created layout metafields:",
+      data.data.metafieldsSet.metafields,
+    );
+
     return {
       success: true,
       metafields: data.data.metafieldsSet.metafields,
       campaignId: activeCampaign.id,
     };
-
   } catch (error) {
     console.error("Error creating campaign layout metafields:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Legacy function for backward compatibility - now enhanced
+export async function hasActiveSubscriptionLegacy(shop) {
+  try {
+    const { db } = await connectToDatabase(shop);
+    const subscriptionCollection = db.collection("app_subscriptions");
+
+    // Check if shop has an active subscription record
+    const subscription = await subscriptionCollection.findOne({
+      shop: shop,
+      status: "active",
+      expiresAt: { $gt: new Date() },
+    });
+
+    return !!subscription;
+  } catch (error) {
+    console.error("Error checking subscription status:", error);
+    return false;
+  }
+}
+
+// Function to create/update subscription record
+export async function updateSubscriptionStatus(
+  shop,
+  status,
+  planName = null,
+  expiresAt = null,
+) {
+  try {
+    const { db } = await connectToDatabase(shop);
+    const subscriptionCollection = db.collection("app_subscriptions");
+
+    const subscriptionData = {
+      shop: shop,
+      status: status,
+      updatedAt: new Date(),
+    };
+
+    if (planName) {
+      subscriptionData.planName = planName;
+    }
+
+    if (expiresAt) {
+      subscriptionData.expiresAt = expiresAt;
+    } else if (status === "active") {
+      // Default to 30 days from now for active subscriptions
+      subscriptionData.expiresAt = new Date(
+        Date.now() + 30 * 24 * 60 * 60 * 1000,
+      );
+    }
+
+    // Upsert subscription record
+    await subscriptionCollection.updateOne(
+      { shop: shop },
+      { $set: subscriptionData },
+      { upsert: true },
+    );
+
+    console.log(`Updated subscription status for ${shop}: ${status}`);
+    return true;
+  } catch (error) {
+    console.error("Error updating subscription status:", error);
+    return false;
+  }
+}
+
+// Function to clear all metafields when deactivating
+export async function clearCampaignMetafields(graphql) {
+  try {
+    console.log("🧹 Clearing campaign metafields...");
+
+    const appIdQuery = await graphql(`
+      #graphql
+      query {
+        currentAppInstallation {
+          id
+        }
+      }
+    `);
+    const appInstallationID = (await appIdQuery.json()).data
+      .currentAppInstallation.id;
+
+    // Set key metafields to indicate no active campaign
+    const clearMetafields = [
+      {
+        namespace: "wheel-of-wonders",
+        key: "hasActiveSubscription",
+        type: "boolean",
+        value: "false",
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "activeCampaignId",
+        type: "single_line_text_field",
+        value: "",
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "showFloatingButton",
+        type: "boolean",
+        value: "false",
+        ownerId: appInstallationID,
+      },
+    ];
+
+    const metafieldsMutation = await graphql(
+      `
+        mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
+          metafieldsSet(metafields: $metafields) {
+            metafields {
+              id
+              namespace
+              key
+              value
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `,
+      { variables: { metafields: clearMetafields } },
+    );
+
+    const data = await metafieldsMutation.json();
+
+    if (data.data?.metafieldsSet?.userErrors?.length) {
+      console.error(
+        "Clear metafields userErrors:",
+        data.data.metafieldsSet.userErrors,
+      );
+      return { success: false, errors: data.data.metafieldsSet.userErrors };
+    }
+
+    console.log("✅ Successfully cleared campaign metafields");
+    return { success: true };
+  } catch (error) {
+    console.error("Error clearing campaign metafields:", error);
     return { success: false, error: error.message };
   }
 }

@@ -145,7 +145,7 @@
     // Get wheel slices from data attribute (set by Liquid)
     const mainContainer = document.querySelector( ".MainContainer" );
     const WheelSectorFromUser = parseInt( mainContainer.getAttribute( 'data-slices' ) || '6' );
-    console.log( "Wheel sectors from Liquid:", WheelSectorFromUser );
+    // console.log( "Wheel sectors from Liquid:", WheelSectorFromUser );
 
     // Add flag to prevent multiple wheel initializations
     let isWheelInitialized = false;
@@ -155,13 +155,13 @@
     {
       // Preload SVG for current wheel size
       const svgUrl = "{{ 'RedWheel-' | append: slices | append: '.svg' | asset_url }}";
-      console.log( "Preloading SVG:", svgUrl );
+      // console.log( "Preloading SVG:", svgUrl );
       const svgImg = new Image();
       svgImg.src = svgUrl;
 
       // Preload PNG fallback
       const pngUrl = "{{ 'RedWheel-' | append: slices | append: '.png' | asset_url }}";
-      console.log( "Preloading PNG:", pngUrl );
+      // console.log( "Preloading PNG:", pngUrl );
       const pngImg = new Image();
       pngImg.src = pngUrl;
 
@@ -276,14 +276,14 @@
       WheelFontColor2FromUser = getContrastColor( primaryColorFromUser );
     }
 
-    console.log( "Color settings:", {
-      colorTone: ColorToneFromUser,
-      primaryColor: primaryColorFromUser,
-      wheelColor1: WheelColor1FromUser,
-      wheelColor2: WheelColor2FromUser,
-      fontColor1: WheelFontColor1FromUser,
-      fontColor2: WheelFontColor2FromUser
-    } );
+    // console.log( "Color settings:", {
+    //   colorTone: ColorToneFromUser,
+    //   primaryColor: primaryColorFromUser,
+    //   wheelColor1: WheelColor1FromUser,
+    //   wheelColor2: WheelColor2FromUser,
+    //   fontColor1: WheelFontColor1FromUser,
+    //   fontColor2: WheelFontColor2FromUser
+    // } );
 
     // Define wheel prizes based on sector count
     let AllCoupons = [];
@@ -339,7 +339,7 @@
     {
       spinButton.addEventListener( 'click', function ()
       {
-        console.log( 'Spin wheel button clicked' );
+        // console.log( 'Spin wheel button clicked' );
         spinWheelModal.style.display = "block";
         MainContainer.style.display = "block";
         spinButton.style.display = "none";
@@ -347,12 +347,12 @@
         // Initialize the wheel only once
         if ( !isWheelInitialized )
         {
-          console.log( "Initializing wheel for the first time" );
+          // console.log( "Initializing wheel for the first time" );
           initializeWheel();
           isWheelInitialized = true;
         } else
         {
-          console.log( "Wheel already initialized, skipping initialization" );
+          // console.log( "Wheel already initialized, skipping initialization" );
         }
       } );
     }
@@ -375,7 +375,7 @@
 
       // Get SVG URL directly from Liquid
       const svgUrl = "{{ 'RedWheel-' | append: slices | append: '.svg' | asset_url }}";
-      console.log( "Loading SVG from:", svgUrl );
+      // console.log( "Loading SVG from:", svgUrl );
 
       fetch( svgUrl )
         .then( res =>
@@ -405,7 +405,7 @@
 
           // Use PNG URL directly from Liquid
           const pngUrl = "{{ 'RedWheel-' | append: slices | append: '.png' | asset_url }}";
-          console.log( "Falling back to PNG:", pngUrl );
+          // console.log( "Falling back to PNG:", pngUrl );
 
           wheelContainer.innerHTML = `<img src="${ pngUrl }" alt="Wheel" style="width: 100%;">`;
 
@@ -480,12 +480,12 @@
     // Set coupon text on wheel
     function selectCouponText( WheelBandCount )
     {
-      console.log( "Applying wheel colors:", {
-        color1: WheelColor1FromUser,
-        color2: WheelColor2FromUser,
-        fontColor1: WheelFontColor1FromUser,
-        fontColor2: WheelFontColor2FromUser
-      } );
+      // console.log( "Applying wheel colors:", {
+      //   color1: WheelColor1FromUser,
+      //   color2: WheelColor2FromUser,
+      //   fontColor1: WheelFontColor1FromUser,
+      //   fontColor2: WheelFontColor2FromUser
+      // } );
 
       // Apply wheel segment colors
       document.querySelectorAll( '.WheelColorSelect1' ).forEach( function ( el )
@@ -770,7 +770,7 @@
         const couponCode = document.getElementById( 'CouponsText' ).value.trim();
 
         // Apply the coupon to the cart
-        console.log( 'Applying coupon:', couponCode );
+        // console.log( 'Applying coupon:', couponCode );
 
         // Redirect to cart with discount code
         window.location.href = '/cart?discount=' + encodeURIComponent( couponCode );
@@ -833,14 +833,14 @@
     function saveWinningResult( coupon )
     {
       const email = document.querySelector( "#UserEnteredEmail" ).value.trim();
-      console.log( `User ${ email } won: ${ coupon }` );
+      // console.log( `User ${ email } won: ${ coupon }` );
       saveEmailToDatabase( email, coupon );
     }
 
     // Save email (+ optionally coupon) to database
     function saveEmailToDatabase( email, coupon = null )
     {
-      console.log( "Saving email:", email, "Coupon:", coupon );
+      // console.log( "Saving email:", email, "Coupon:", coupon );
 
       // FIXED: Use a local API endpoint instead of the external one that's returning 404
       // This will store data in the browser's localStorage as a fallback
@@ -850,8 +850,8 @@
       const campaignId = "{{ app.metafields.wheel-of-wonders.activeCampaignId | default: 'campaign-1749195725266' }}";
 
       // First try to save to the remote API
-      //const apiUrl = 'https://seal-app-2smk6.ondigitalocean.app/api/save-email';
-      const apiUrl = 'https://liable-uploaded-game-internationally.trycloudflare.com/api/save-email';
+      const apiUrl = 'https://seal-app-2smk6.ondigitalocean.app/api/save-email';
+      // const apiUrl = 'https://appearance-hierarchy-ww-here.trycloudflare.com/api/save-email';
       
 
       fetch( apiUrl, {
@@ -879,7 +879,7 @@
         } )
         .then( ( data ) =>
         {
-          console.log( "Email save response:", data );
+          // console.log( "Email save response:", data );
         } )
         .catch( ( error ) =>
         {
@@ -908,7 +908,7 @@
 
           // Save back to localStorage
           localStorage.setItem( 'wheelOfWonders_entries', JSON.stringify( entries ) );
-          console.log( "Email saved to localStorage as fallback" );
+          // console.log( "Email saved to localStorage as fallback" );
         } catch ( e )
         {
           console.error( "Failed to save to localStorage:", e );
