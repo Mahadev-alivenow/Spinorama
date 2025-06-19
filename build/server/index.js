@@ -1175,7 +1175,7 @@ function useCampaign() {
 }
 const styles$14 = "/assets/global-B-9vIcuz.css";
 const links$1 = () => [{ rel: "stylesheet", href: styles$14 }];
-const loader$F = async ({ request }) => {
+const loader$H = async ({ request }) => {
   var _a2, _b, _c, _d, _e;
   const discountCodes = [];
   try {
@@ -1339,7 +1339,7 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: App$2,
   links: links$1,
-  loader: loader$F
+  loader: loader$H
 }, Symbol.toStringTag, { value: "Module" }));
 if (process.env.NODE_ENV !== "production") {
   if (!global.prismaGlobal) {
@@ -2321,7 +2321,7 @@ const Subscription_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
   setLocalSubscriptionStatus,
   syncActiveCampaignToMetafields
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$n({ request }) {
+async function action$o({ request }) {
   const { admin, session } = await authenticate.admin(request);
   try {
     const shopName = session.shop;
@@ -2344,15 +2344,15 @@ async function action$n({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$E() {
+async function loader$G() {
   return json({ message: "Use POST to update campaign metafields" });
 }
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$n,
-  loader: loader$E
+  action: action$o,
+  loader: loader$G
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$m({ request }) {
+async function action$n({ request }) {
   var _a2, _b, _c;
   try {
     const { session, admin } = await authenticate.admin(request);
@@ -2486,7 +2486,7 @@ async function action$m({ request }) {
     );
   }
 }
-async function loader$D({ request }) {
+async function loader$F({ request }) {
   try {
     const { session, admin } = await authenticate.admin(request);
     const shopName = session.shop;
@@ -2522,11 +2522,11 @@ function SyncCampaignMetafieldsRoute() {
 }
 const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$m,
+  action: action$n,
   default: SyncCampaignMetafieldsRoute,
-  loader: loader$D
+  loader: loader$F
 }, Symbol.toStringTag, { value: "Module" }));
-const action$l = async ({ request }) => {
+const action$m = async ({ request }) => {
   console.log("Received app uninstalled webhook");
   try {
     const { topic, shop } = await authenticate.webhook(request);
@@ -2543,7 +2543,7 @@ const action$l = async ({ request }) => {
 };
 const route3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$l
+  action: action$m
 }, Symbol.toStringTag, { value: "Module" }));
 const uri$1 = process.env.MONGODB_URI;
 const client$1 = new MongoClient(uri$1);
@@ -2556,7 +2556,7 @@ function formatShopName$1(shopName) {
   }
   return formattedName;
 }
-async function loader$C({ request }) {
+async function loader$E({ request }) {
   var _a2, _b, _c, _d;
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -2612,7 +2612,7 @@ async function loader$C({ request }) {
 }
 const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$C
+  loader: loader$E
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler$1(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -2701,7 +2701,7 @@ const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: handler$1
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$B({ request, context }) {
+async function loader$D({ request, context }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2720,9 +2720,9 @@ async function loader$B({ request, context }) {
 }
 const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$B
+  loader: loader$D
 }, Symbol.toStringTag, { value: "Module" }));
-const action$k = async ({ request }) => {
+const action$l = async ({ request }) => {
   var _a2;
   console.log("CUSTOMERS_DATA_REQUEST webhook received");
   try {
@@ -2753,15 +2753,15 @@ const action$k = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$A = async () => {
+const loader$C = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
 const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$k,
-  loader: loader$A
+  action: action$l,
+  loader: loader$C
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$z({ request }) {
+async function loader$B({ request }) {
   const { session } = await authenticate.admin(request);
   try {
     const shopName = session.shop;
@@ -2799,9 +2799,9 @@ async function loader$z({ request }) {
 }
 const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$z
+  loader: loader$B
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$j({ request }) {
+async function action$k({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -2853,15 +2853,15 @@ async function action$j({ request }) {
     );
   }
 }
-async function loader$y() {
+async function loader$A() {
   return json({ message: "Use POST to test subscription functionality" });
 }
 const route9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$j,
-  loader: loader$y
+  action: action$k,
+  loader: loader$A
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$i({ request }) {
+async function action$j({ request }) {
   const { admin } = await authenticate.admin(request);
   try {
     const formData = await request.formData();
@@ -2878,15 +2878,15 @@ async function action$i({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$x() {
+async function loader$z() {
   return json({ message: "Use POST to update metafields" });
 }
 const route10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$i,
-  loader: loader$x
+  action: action$j,
+  loader: loader$z
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$w({ request }) {
+async function loader$y({ request }) {
   try {
     const { admin, session } = await authenticate.admin(request);
     const { shop } = session;
@@ -2925,9 +2925,9 @@ async function loader$w({ request }) {
 }
 const route11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$w
+  loader: loader$y
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$v({ request }) {
+async function loader$x({ request }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2960,9 +2960,9 @@ async function loader$v({ request }) {
 }
 const route12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$v
+  loader: loader$x
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$u({ request }) {
+async function loader$w({ request }) {
   const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
   const { getSubscriptionStatus: getSubscriptionStatus2 } = await Promise.resolve().then(() => Subscription_server);
   try {
@@ -2988,9 +2988,9 @@ async function loader$u({ request }) {
 }
 const route13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$u
+  loader: loader$w
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$t({ request }) {
+async function loader$v({ request }) {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -3183,9 +3183,9 @@ async function loader$t({ request }) {
 }
 const route14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$t
+  loader: loader$v
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$h({ request }) {
+async function action$i({ request }) {
   const { authenticate: authenticate2, billing } = await Promise.resolve().then(() => shopify_server);
   try {
     const { admin, session } = await authenticate2.admin(request);
@@ -3250,15 +3250,15 @@ async function action$h({ request }) {
     );
   }
 }
-async function loader$s() {
+async function loader$u() {
   return json({ message: "Use POST to cancel a subscription" });
 }
 const route15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$h,
-  loader: loader$s
+  action: action$i,
+  loader: loader$u
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$g({ request }) {
+async function action$h({ request }) {
   try {
     const { shopifyApp: shopifyApp2 } = await Promise.resolve().then(() => shopify_server);
     const data = await request.json();
@@ -3303,13 +3303,13 @@ async function action$g({ request }) {
     });
   }
 }
-async function loader$r() {
+async function loader$t() {
   return json({ message: "POST requests only" }, { status: 405 });
 }
 const route16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$g,
-  loader: loader$r
+  action: action$h,
+  loader: loader$t
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -3363,7 +3363,7 @@ const route17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: handler
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$q({ request }) {
+async function loader$s({ request }) {
   var _a2, _b;
   try {
     console.log("🔍 Authenticating admin...");
@@ -3462,7 +3462,7 @@ async function loader$q({ request }) {
 }
 const route18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$q
+  loader: loader$s
 }, Symbol.toStringTag, { value: "Module" }));
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -3541,7 +3541,7 @@ const mongodb_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   getShopName,
   setShopName
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$p({ request }) {
+async function loader$r({ request }) {
   var _a2, _b;
   try {
     let shopName = null;
@@ -3648,9 +3648,9 @@ function ServeCampaignRoute() {
 const route19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: ServeCampaignRoute,
-  loader: loader$p
+  loader: loader$r
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$f({ request }) {
+async function action$g({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3679,9 +3679,9 @@ async function action$f({ request }) {
 }
 const route20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$f
+  action: action$g
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$e({ request }) {
+async function action$f({ request }) {
   var _a2;
   const { admin, session } = await authenticate.admin(request);
   try {
@@ -3714,15 +3714,15 @@ async function action$e({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$o() {
+async function loader$q() {
   return json({ message: "Use POST to sync campaign" });
 }
 const route21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$e,
-  loader: loader$o
+  action: action$f,
+  loader: loader$q
 }, Symbol.toStringTag, { value: "Module" }));
-const action$d = async ({ request }) => {
+const action$e = async ({ request }) => {
   var _a2;
   console.log("CUSTOMERS_REDACT webhook received");
   try {
@@ -3753,15 +3753,15 @@ const action$d = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$n = async () => {
+const loader$p = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
 const route22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$d,
-  loader: loader$n
+  action: action$e,
+  loader: loader$p
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$c({ request }) {
+async function action$d({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3787,14 +3787,14 @@ async function action$c({ request }) {
 }
 const route23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$c
+  action: action$d
 }, Symbol.toStringTag, { value: "Module" }));
 const corsHeaders$1 = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$m({ request }) {
+async function loader$o({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders$1 });
   }
@@ -3803,7 +3803,7 @@ async function loader$m({ request }) {
     { status: 405, headers: corsHeaders$1 }
   );
 }
-async function action$b({ request }) {
+async function action$c({ request }) {
   if (request.method !== "POST") {
     return json(
       { error: "Method not allowed" },
@@ -3883,10 +3883,10 @@ async function action$b({ request }) {
 }
 const route24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$b,
-  loader: loader$m
+  action: action$c,
+  loader: loader$o
 }, Symbol.toStringTag, { value: "Module" }));
-const action$a = async ({ request }) => {
+const action$b = async ({ request }) => {
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3959,7 +3959,7 @@ const action$a = async ({ request }) => {
     );
   }
 };
-const loader$l = async ({ request }) => {
+const loader$n = async ({ request }) => {
   try {
     const url = new URL(request.url);
     const campaignId = url.searchParams.get("campaignId");
@@ -4001,10 +4001,10 @@ const loader$l = async ({ request }) => {
 };
 const route25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$a,
-  loader: loader$l
+  action: action$b,
+  loader: loader$n
 }, Symbol.toStringTag, { value: "Module" }));
-const loader$k = () => {
+const loader$m = () => {
   return redirect("/campaigns/create");
 };
 function CreateCampaignRedirect() {
@@ -4013,14 +4013,14 @@ function CreateCampaignRedirect() {
 const route26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CreateCampaignRedirect,
-  loader: loader$k
+  loader: loader$m
 }, Symbol.toStringTag, { value: "Module" }));
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$j({ request }) {
+async function loader$l({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -4029,7 +4029,7 @@ async function loader$j({ request }) {
     { status: 405, headers: corsHeaders }
   );
 }
-async function action$9({ request }) {
+async function action$a({ request }) {
   if (request.method !== "POST") {
     return json(
       { error: "Method not allowed" },
@@ -4146,8 +4146,8 @@ async function action$9({ request }) {
 }
 const route27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$9,
-  loader: loader$j
+  action: action$a,
+  loader: loader$l
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$2(request) {
   try {
@@ -4168,7 +4168,7 @@ async function getEffectiveShopName$2(request) {
     return shopName;
   }
 }
-async function loader$i({ request }) {
+async function loader$k({ request }) {
   try {
     const shopName = await getEffectiveShopName$2(request);
     const { db, dbName } = await connectToDatabase(shopName);
@@ -4184,7 +4184,7 @@ async function loader$i({ request }) {
     return json({ error: error.message }, { status: 500 });
   }
 }
-async function action$8({ request }) {
+async function action$9({ request }) {
   try {
     const campaignData = await request.json();
     const shopName = await getEffectiveShopName$2(request);
@@ -4211,8 +4211,8 @@ async function action$8({ request }) {
 }
 const route28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$8,
-  loader: loader$i
+  action: action$9,
+  loader: loader$k
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$1(request) {
   try {
@@ -4246,7 +4246,7 @@ async function getEffectiveShopName$1(request) {
     return "wheel-of-wonders.myshopify.com";
   }
 }
-async function action$7({ request, params }) {
+async function action$8({ request, params }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -4357,13 +4357,13 @@ async function action$7({ request, params }) {
     return json({ error: "Internal server error" }, { status: 500 });
   }
 }
-async function loader$h({ request, params }) {
+async function loader$j({ request, params }) {
   return json({ message: "Use POST to update campaign status" });
 }
 const route29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$7,
-  loader: loader$h
+  action: action$8,
+  loader: loader$j
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName(request) {
   try {
@@ -4384,7 +4384,7 @@ async function getEffectiveShopName(request) {
     return shopName;
   }
 }
-async function loader$g({ params, request }) {
+async function loader$i({ params, request }) {
   try {
     const { id } = params;
     const shopName = await getEffectiveShopName(request);
@@ -4404,7 +4404,7 @@ async function loader$g({ params, request }) {
     return json({ error: error.message }, { status: 500 });
   }
 }
-async function action$6({ request, params }) {
+async function action$7({ request, params }) {
   const method = request.method.toLowerCase();
   const shopName = await getEffectiveShopName(request);
   const { db, dbName } = await connectToDatabase(shopName);
@@ -4453,10 +4453,10 @@ async function action$6({ request, params }) {
 }
 const route30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$6,
-  loader: loader$g
+  action: action$7,
+  loader: loader$i
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$f({ request }) {
+async function loader$h({ request }) {
   try {
     let shopName = null;
     try {
@@ -4488,9 +4488,9 @@ async function loader$f({ request }) {
 }
 const route31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$f
+  loader: loader$h
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$e({ request }) {
+async function loader$g({ request }) {
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
@@ -4529,9 +4529,9 @@ async function loader$e({ request }) {
 }
 const route32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$e
+  loader: loader$g
 }, Symbol.toStringTag, { value: "Module" }));
-const action$5 = async ({ request }) => {
+const action$6 = async ({ request }) => {
   console.log("SHOP_REDACT webhook received");
   try {
     const shopifyHmac = request.headers.get("x-shopify-hmac-sha256");
@@ -4561,13 +4561,13 @@ const action$5 = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$d = async () => {
+const loader$f = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
 const route33 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$5,
-  loader: loader$d
+  action: action$6,
+  loader: loader$f
 }, Symbol.toStringTag, { value: "Module" }));
 let Key;
 (function(Key2) {
@@ -15548,11 +15548,11 @@ function loginErrorMessage(loginErrors) {
   return {};
 }
 const links = () => [{ rel: "stylesheet", href: polarisStyles }];
-const loader$c = async ({ request }) => {
+const loader$e = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return { errors, polarisTranslations };
 };
-const action$4 = async ({ request }) => {
+const action$5 = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return {
     errors
@@ -15583,10 +15583,10 @@ function Auth() {
 }
 const route34 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$4,
+  action: action$5,
   default: Auth,
   links,
-  loader: loader$c
+  loader: loader$e
 }, Symbol.toStringTag, { value: "Module" }));
 function Navigation2({ createButtonText = "Create Campaign" }) {
   const location = useLocation();
@@ -15651,7 +15651,7 @@ function CampaignActiveIndicator() {
     activeCampaign.name
   ] });
 }
-const loader$b = async ({ request }) => {
+const loader$d = async ({ request }) => {
   const { authenticateWithFallback: authenticateWithFallback2, isClientSideNavigation: isClientSideNavigation2 } = await Promise.resolve().then(() => shopify_server);
   const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
   let campaigns = [];
@@ -16187,7 +16187,7 @@ function Campaigns$1() {
 const route35 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaigns$1,
-  loader: loader$b
+  loader: loader$d
 }, Symbol.toStringTag, { value: "Module" }));
 function CampaignPreview() {
   const { campaignData } = useCampaign();
@@ -23001,7 +23001,7 @@ const route40 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: CampaignEdit
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$a({ request }) {
+async function loader$c({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const { shop } = session;
   const activeCampaign = await getActiveCampaign(shop);
@@ -23034,7 +23034,7 @@ async function loader$a({ request }) {
     metafields
   });
 }
-async function action$3({ request }) {
+async function action$4({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const { shop } = session;
   const formData = await request.formData();
@@ -23182,9 +23182,9 @@ function Settings() {
 }
 const route41 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$3,
+  action: action$4,
   default: Settings,
-  loader: loader$a
+  loader: loader$c
 }, Symbol.toStringTag, { value: "Module" }));
 function Tutorial() {
   const navigate = useNavigate$1();
@@ -23256,7 +23256,7 @@ const route42 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: Tutorial
 }, Symbol.toStringTag, { value: "Module" }));
-const action$2 = async ({ request }) => {
+const action$3 = async ({ request }) => {
   console.log("General webhook route called:", request.method, request.url);
   try {
     const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
@@ -23295,9 +23295,9 @@ const action$2 = async ({ request }) => {
 };
 const route43 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$2
+  action: action$3
 }, Symbol.toStringTag, { value: "Module" }));
-const action$1 = async ({ request }) => {
+const action$2 = async ({ request }) => {
   const { topic, shop, session } = await authenticate.webhook(request);
   console.log(`Received ${topic} webhook for ${shop}`);
   if (topic === "APP_UNINSTALLED") {
@@ -23317,7 +23317,7 @@ const action$1 = async ({ request }) => {
 };
 const route44 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$1
+  action: action$2
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$4() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
@@ -23332,6 +23332,159 @@ function Page$3() {
 const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$3
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$b({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    return json({
+      shop,
+      shopFormatted: shop.replace(/\.myshopify\.com$/i, "")
+    });
+  } catch (error) {
+    console.error("Billing loader error:", error);
+    return redirect("/auth");
+  }
+}
+async function action$1({ request }) {
+  var _a2, _b, _c, _d, _e;
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    const subscriptionMutation = await admin.graphql(
+      `#graphql
+      mutation AppSubscriptionCreate($name: String!, $returnUrl: URL!, $test: Boolean, $lineItems: [AppSubscriptionLineItemInput!]!) {
+        appSubscriptionCreate(name: $name, returnUrl: $returnUrl, test: $test, lineItems: $lineItems) {
+          appSubscription {
+            id
+            status
+          }
+          confirmationUrl
+          userErrors {
+            field
+            message
+          }
+        }
+      }`,
+      {
+        variables: {
+          name: "Spinorama Monthly Plan",
+          returnUrl: `${process.env.SHOPIFY_APP_URL}/billing/callback`,
+          test: process.env.NODE_ENV === "development",
+          // Set to false in production
+          lineItems: [
+            {
+              plan: {
+                appRecurringPricingDetails: {
+                  price: { amount: 5, currencyCode: "USD" },
+                  interval: "EVERY_30_DAYS"
+                }
+              }
+            }
+          ]
+        }
+      }
+    );
+    const subscriptionData = await subscriptionMutation.json();
+    if (((_c = (_b = (_a2 = subscriptionData.data) == null ? void 0 : _a2.appSubscriptionCreate) == null ? void 0 : _b.userErrors) == null ? void 0 : _c.length) > 0) {
+      console.error("Subscription creation errors:", subscriptionData.data.appSubscriptionCreate.userErrors);
+      return json({ error: "Failed to create subscription" }, { status: 400 });
+    }
+    const confirmationUrl = (_e = (_d = subscriptionData.data) == null ? void 0 : _d.appSubscriptionCreate) == null ? void 0 : _e.confirmationUrl;
+    if (confirmationUrl) {
+      return redirect(confirmationUrl);
+    } else {
+      return json({ error: "No confirmation URL received" }, { status: 400 });
+    }
+  } catch (error) {
+    console.error("Billing action error:", error);
+    return json({ error: "Failed to process subscription" }, { status: 500 });
+  }
+}
+function Billing() {
+  useLoaderData();
+  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-md mx-auto bg-white rounded-lg shadow-sm p-8", children: [
+    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Subscribe to Spinorama" }),
+    /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "Unlock all features with our monthly subscription plan." }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-indigo-50 p-6 rounded-lg mb-6", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Monthly Plan" }),
+      /* @__PURE__ */ jsx("p", { className: "text-3xl font-bold text-indigo-600 mb-2", children: "$5/month" }),
+      /* @__PURE__ */ jsxs("ul", { className: "text-sm text-gray-600 space-y-1", children: [
+        /* @__PURE__ */ jsx("li", { children: "✓ 20 spin-to-win campaigns" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Email collection & analytics" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Customizable wheels and rewards" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Lead collection with discounts" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Priority support" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx(Form$1, { method: "post", children: /* @__PURE__ */ jsx(
+      "button",
+      {
+        type: "submit",
+        className: "w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold",
+        children: "Subscribe Now"
+      }
+    ) }),
+    /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-4 text-center", children: "You will be redirected to Shopify to confirm your subscription. Cancel anytime from your Shopify admin." })
+  ] }) });
+}
+const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$1,
+  default: Billing,
+  loader: loader$b
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$a({ request }) {
+  var _a2;
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    const url = new URL(request.url);
+    const charge_id = url.searchParams.get("charge_id");
+    if (charge_id) {
+      const subscriptionQuery = await admin.graphql(
+        `#graphql
+        query GetAppSubscription($id: ID!) {
+          node(id: $id) {
+            ... on AppSubscription {
+              id
+              name
+              status
+              currentPeriodEnd
+            }
+          }
+        }`,
+        {
+          variables: {
+            id: `gid://shopify/AppSubscription/${charge_id}`
+          }
+        }
+      );
+      const subscriptionData = await subscriptionQuery.json();
+      const subscription = (_a2 = subscriptionData.data) == null ? void 0 : _a2.node;
+      if (subscription && subscription.status === "ACTIVE") {
+        await createSubscriptionMetafield(admin.graphql, true, shop);
+        return redirect("/app?subscription=success");
+      } else {
+        return redirect("/app?subscription=failed");
+      }
+    }
+    return redirect("/app");
+  } catch (error) {
+    console.error("Billing callback error:", error);
+    return redirect("/app?subscription=error");
+  }
+}
+function BillingCallback() {
+  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Processing Subscription..." }),
+    /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Please wait while we confirm your subscription." })
+  ] }) });
+}
+const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: BillingCallback,
+  loader: loader$a
 }, Symbol.toStringTag, { value: "Module" }));
 const formatPrice = (price) => {
   return `$${price.toFixed(2)}`;
@@ -24031,7 +24184,7 @@ function Pricing() {
     ] }) })
   ] });
 }
-const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action,
   default: Pricing,
@@ -24093,7 +24246,7 @@ function App$1() {
     ] })
   ] }) });
 }
-const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App$1,
   loader: loader$8
@@ -24102,7 +24255,7 @@ const loader$7 = async ({ request }) => {
   await authenticate.admin(request);
   return null;
 };
-const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   loader: loader$7
 }, Symbol.toStringTag, { value: "Module" }));
@@ -24145,7 +24298,7 @@ async function loader$6({ request }) {
   }
 }
 const GET$1 = loader$6;
-const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   GET: GET$1,
   loader: loader$6
@@ -24173,7 +24326,7 @@ async function loader$5({ request }) {
 function Index$1() {
   return null;
 }
-const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1,
   loader: loader$5
@@ -24189,7 +24342,7 @@ async function loader$4() {
   });
 }
 const GET = loader$4;
-const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   GET,
   loader: loader$4
@@ -24405,13 +24558,13 @@ function App() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Visit the Shopify App Store to subscribe." }),
+            /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Choose your subscription plan to get started." }),
             /* @__PURE__ */ jsx(
-              "a",
+              Link$1,
               {
-                href: `https://apps.shopify.com/your-app-handle`,
+                to: "/billing",
                 className: "bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block",
-                children: "Subscribe Now"
+                children: "Subscribe Now - $5/month"
               }
             )
           ] })
@@ -24472,7 +24625,7 @@ function App() {
     ] }) })
   ] });
 }
-const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App,
   loader: loader$3
@@ -25712,7 +25865,7 @@ function NewCampaign() {
     }
   ) });
 }
-const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: NewCampaign,
   loader: loader$2
@@ -25720,7 +25873,7 @@ const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 function Page$2() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route57 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -26188,7 +26341,7 @@ function StatCard$1({ title, value, icon, color }) {
     /* @__PURE__ */ jsx(Text, { variant: "headingLg", children: value })
   ] }) });
 }
-const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Subscribers,
   loader: loader$1
@@ -26253,21 +26406,21 @@ function Code({ children }) {
     }
   );
 }
-const route57 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route59 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: AdditionalPage
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$1() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$1
 }, Symbol.toStringTag, { value: "Module" }));
 function Page() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route59 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route61 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page
 }, Symbol.toStringTag, { value: "Module" }));
@@ -26506,7 +26659,7 @@ function StatCard({ title, value, trend, trendDirection, icon, color }) {
     ] })
   ] }) });
 }
-const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route62 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Revenue,
   loader
@@ -26874,11 +27027,11 @@ function Index() {
     ] })
   ] }) });
 }
-const route61 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route63 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-_s1SXM8W.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-D7Hj4AFn.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/PlanContext-CgoqeIeO.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DroYzYOU.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-DcZ5TJaC.js", "/assets/Page-wxI3g79T.js", "/assets/context-4r-eLkfq.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Coj26kgd.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-DNSlwuPt.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-BPacA0Mu.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/Navigation-DNSlwuPt.js", "/assets/StepFour-CQKgI8br.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-DcZ5TJaC.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-CRcmSQ3W.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/StepFour-CQKgI8br.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-5-36XrAM.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/Navigation-DNSlwuPt.js", "/assets/components-DcZ5TJaC.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-D6iC7LC8.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/Navigation-DNSlwuPt.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-Cgi9uVYS.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/CampaignContext-C7gPG95t.js", "/assets/Navigation-DNSlwuPt.js", "/assets/StepFour-CQKgI8br.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-DcZ5TJaC.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-D2pgfW94.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-DcZ5TJaC.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-ChEkUP1G.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-DNSlwuPt.js", "/assets/index-CKWc00xI.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-DcZ5TJaC.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-V6moya_I.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-DNSlwuPt.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-GoWKUx_4.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-BzUYervm.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-DNSlwuPt.js", "/assets/PlanContext-CgoqeIeO.js", "/assets/components-DcZ5TJaC.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DnVI4rfE.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/index-CKWc00xI.js", "/assets/Page-wxI3g79T.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-CYvFtMAf.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/FormLayout-BKn6Y4JZ.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BG4UK4Wy.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-Dc4gpkfY.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-2Ph8AkJH.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/index-Co8mFjs7.js", "/assets/AdminLayout-fcwE0Egu.js", "/assets/Page-wxI3g79T.js", "/assets/Card-OGnFM9d-.js", "/assets/Select-Cej0p8YT.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-K0fwup_a.js", "/assets/index-CKWc00xI.js", "/assets/context-4r-eLkfq.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-BRGBTjPI.js", "imports": ["/assets/index-Dxzwlmmu.js", "/assets/Navigation-DNSlwuPt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CKWc00xI.js", "/assets/components-DcZ5TJaC.js", "/assets/index-K0fwup_a.js"], "css": [] } }, "url": "/assets/manifest-74b97acb.js", "version": "74b97acb" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-CDb8fW0-.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-2aH2L_jH.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-CxnFPReF.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/Page-DKdyrWfp.js", "/assets/context-BgRRd8lc.js", "/assets/Card-ZfXEG-2S.js", "/assets/FormLayout-CaB1gIpA.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Xl6CS9yA.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-BV2rxmOf.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-B-2g2n3r.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-O-3Hd-rU.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/Navigation-tG41YSv9.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-D7kep_WQ.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DL0tHwE6.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/PlanContext-CABF9B4g.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-I6tFRT8l.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-DFqYEk6w.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-DCTM_ajF.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DL0tHwE6.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/billing": { "id": "routes/billing", "parentId": "root", "path": "billing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing-C1dFZL0T.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-DPlD0s3O.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/billing.callback": { "id": "routes/billing.callback", "parentId": "routes/billing", "path": "callback", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing.callback-DHjlUkH5.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-BIvIPbfx.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-tG41YSv9.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-DcBOxvHu.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-DPlD0s3O.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-4r9EJaCX.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DZVzGKml.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/index-DRO-3EAr.js", "/assets/Page-DKdyrWfp.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-Q2_0a1d0.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/FormLayout-CaB1gIpA.js", "/assets/Select-DQshlD66.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-H8BxCfMH.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-B8fuY-6V.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-B-YrrHoU.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/Select-DQshlD66.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-BZ-961z9.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DRO-3EAr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] } }, "url": "/assets/manifest-1a9faa77.js", "version": "1a9faa77" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -27263,13 +27416,29 @@ const routes = {
     caseSensitive: void 0,
     module: route46
   },
+  "routes/billing": {
+    id: "routes/billing",
+    parentId: "root",
+    path: "billing",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route47
+  },
+  "routes/billing.callback": {
+    id: "routes/billing.callback",
+    parentId: "routes/billing",
+    path: "callback",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route48
+  },
   "routes/pricing": {
     id: "routes/pricing",
     parentId: "root",
     path: "pricing",
     index: void 0,
     caseSensitive: void 0,
-    module: route47
+    module: route49
   },
   "routes/_index": {
     id: "routes/_index",
@@ -27277,7 +27446,7 @@ const routes = {
     path: void 0,
     index: true,
     caseSensitive: void 0,
-    module: route48
+    module: route50
   },
   "routes/auth.$": {
     id: "routes/auth.$",
@@ -27285,7 +27454,7 @@ const routes = {
     path: "auth/*",
     index: void 0,
     caseSensitive: void 0,
-    module: route49
+    module: route51
   },
   "routes/health": {
     id: "routes/health",
@@ -27293,7 +27462,7 @@ const routes = {
     path: "health",
     index: void 0,
     caseSensitive: void 0,
-    module: route50
+    module: route52
   },
   "routes/index": {
     id: "routes/index",
@@ -27301,7 +27470,7 @@ const routes = {
     path: "index",
     index: void 0,
     caseSensitive: void 0,
-    module: route51
+    module: route53
   },
   "routes/ping": {
     id: "routes/ping",
@@ -27309,7 +27478,7 @@ const routes = {
     path: "ping",
     index: void 0,
     caseSensitive: void 0,
-    module: route52
+    module: route54
   },
   "routes/app": {
     id: "routes/app",
@@ -27317,7 +27486,7 @@ const routes = {
     path: "app",
     index: void 0,
     caseSensitive: void 0,
-    module: route53
+    module: route55
   },
   "routes/app.campaigns.new": {
     id: "routes/app.campaigns.new",
@@ -27325,7 +27494,7 @@ const routes = {
     path: "campaigns/new",
     index: void 0,
     caseSensitive: void 0,
-    module: route54
+    module: route56
   },
   "routes/app.integrations": {
     id: "routes/app.integrations",
@@ -27333,7 +27502,7 @@ const routes = {
     path: "integrations",
     index: void 0,
     caseSensitive: void 0,
-    module: route55
+    module: route57
   },
   "routes/app.subscribers": {
     id: "routes/app.subscribers",
@@ -27341,7 +27510,7 @@ const routes = {
     path: "subscribers",
     index: void 0,
     caseSensitive: void 0,
-    module: route56
+    module: route58
   },
   "routes/app.additional": {
     id: "routes/app.additional",
@@ -27349,7 +27518,7 @@ const routes = {
     path: "additional",
     index: void 0,
     caseSensitive: void 0,
-    module: route57
+    module: route59
   },
   "routes/app.game.$id": {
     id: "routes/app.game.$id",
@@ -27357,7 +27526,7 @@ const routes = {
     path: "game/:id",
     index: void 0,
     caseSensitive: void 0,
-    module: route58
+    module: route60
   },
   "routes/app.game.add": {
     id: "routes/app.game.add",
@@ -27365,7 +27534,7 @@ const routes = {
     path: "game/add",
     index: void 0,
     caseSensitive: void 0,
-    module: route59
+    module: route61
   },
   "routes/app.revenue": {
     id: "routes/app.revenue",
@@ -27373,7 +27542,7 @@ const routes = {
     path: "revenue",
     index: void 0,
     caseSensitive: void 0,
-    module: route60
+    module: route62
   },
   "routes/app._index": {
     id: "routes/app._index",
@@ -27381,7 +27550,7 @@ const routes = {
     path: void 0,
     index: true,
     caseSensitive: void 0,
-    module: route61
+    module: route63
   }
 };
 export {
