@@ -13,22 +13,37 @@ import polarisTranslations from "@shopify/polaris/locales/en.json";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { login } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
+import { redirect } from "@remix-run/node";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
-  const errors = loginErrorMessage(await login(request));
+  const url = new URL(request.url);
+  const shop = url.searchParams.get("shop");
 
-  return { errors, polarisTranslations };
+  if (!shop) {
+    return redirect("/auth/login"); // fallback
+  }
+
+  // Start Shopify OAuth flow
+  return redirect(await beginShopifyAuth(shop)); // your logic
 };
+
 
 export const action = async ({ request }) => {
-  const errors = loginErrorMessage(await login(request));
+  const formData = await request.formData();
+  const shop = formData.get("shop");
 
-  return {
-    errors,
-  };
+  if (!shop || typeof shop !== "string") {
+    return {
+      errors: { shop: "Shop domain is required" },
+    };
+  }
+
+  // 🧠 Redirect to auth endpoint with shop param in query
+  return redirect(`/auth?shop=${encodeURIComponent(shop)}`);
 };
+
 
 export default function Auth() {
   const loaderData = useLoaderData();
