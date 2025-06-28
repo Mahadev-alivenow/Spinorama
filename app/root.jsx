@@ -30,14 +30,21 @@ export const headers = () => {
 export const loader = async ({ request }) => {
   const discountCodes = [];
 
+  const url = new URL(request.url);
+  const shop = url.searchParams.get("shop");
+  const embedded = url.searchParams.get("embedded");
+  const host =
+    url.searchParams.get("host") ||
+    request.headers.get("x-shopify-shop-domain");
+
   try {
     const { authenticate } = await import("./shopify.server");
     const { getDiscountCodes } = await import("./models/Subscription.server");
 
-    const url = new URL(request.url);
-    const shop = url.searchParams.get("shop");
-    const embedded = url.searchParams.get("embedded");
-    const host = url.searchParams.get("host");
+    // const url = new URL(request.url);
+    // const shop = url.searchParams.get("shop");
+    // const embedded = url.searchParams.get("embedded");
+    // const host = url.searchParams.get("host");
 
     if (
       shop ||
