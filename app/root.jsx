@@ -120,8 +120,11 @@ export const loader = async ({ request }) => {
 
 export default function App() {
    const data = useLoaderData();
-    const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
-  
+   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || ""; 
+   const host = typeof window !== "undefined"
+  ? new URLSearchParams(window.location.search).get("host")
+  : undefined;
+
 
       useEffect(() => {
         if (typeof window !== "undefined") {
@@ -176,10 +179,10 @@ export default function App() {
         <Links />
         {/* ✅ Load Shopify App Bridge scripts in head with blocking behavior */}
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-         <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
+        <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
       </head>
       <body>
-        <AppProvider apiKey={apiKey} isEmbeddedApp>
+        <AppProvider apiKey={apiKey} host={host} isEmbeddedApp>
           <PlanProvider initialDiscountCodes={data.discountCodes || []}>
             <CampaignProvider>
               <Outlet />
