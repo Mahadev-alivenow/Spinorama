@@ -122,10 +122,7 @@ export const loader = async ({ request }) => {
 export default function App() {
    const data = useLoaderData();
    const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || ""; 
-   const host =
-     typeof window !== "undefined"
-       ? new URLSearchParams(window.location.search).get("host")
-       : undefined || data.host || process.env.HOST || "";
+   const host = url.searchParams.get("host") || data.host || process.env.HOST || "";
 
 
       useEffect(() => {
