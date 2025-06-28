@@ -7,7 +7,7 @@ import {
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Toaster } from "react-hot-toast";
 import { CampaignProvider } from "./context/CampaignContext";
 import { PlanProvider } from "./context/PlanContext";
