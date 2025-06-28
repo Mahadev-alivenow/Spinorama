@@ -64,6 +64,9 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  define: {
+    global: 'globalThis'
+  },
   build: {
     assetsInlineLimit: 0,
     cssCodeSplit: false, // Important: Keep CSS together
