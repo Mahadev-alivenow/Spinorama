@@ -3,7 +3,7 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://sick-statutory-normally-assumption.trycloudflare.com"
+application_url = "https://per-ma-works-being.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_products,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://sick-statutory-normally-assumption.trycloudflare.com/auth/callback",
-  "https://sick-statutory-normally-assumption.trycloudflare.com/auth/shopify/callback",
-  "https://sick-statutory-normally-assumption.trycloudflare.com/api/auth/callback"
+  "https://per-ma-works-being.trycloudflare.com/auth/callback",
+  "https://per-ma-works-being.trycloudflare.com/auth/shopify/callback",
+  "https://per-ma-works-being.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
