@@ -125,7 +125,7 @@ export default function App() {
    const host =
      typeof window !== "undefined"
        ? new URLSearchParams(window.location.search).get("host")
-       : undefined || data.host;
+       : undefined || data.host || process.env.HOST || "";
 
 
       useEffect(() => {
