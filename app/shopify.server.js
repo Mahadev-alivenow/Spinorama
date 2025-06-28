@@ -157,6 +157,20 @@ export async function authenticateWithFallback(request) {
   }
 }
 
+export async function login(request) {
+  const url = new URL(request.url);
+  const shop = url.searchParams.get("shop");
+
+  if (!shop) {
+    // 🚨 this redirect must be avoided inside /auth route or you'll loop!
+    return redirect("/auth/login");
+  }
+
+  // Otherwise, initiate Shopify OAuth
+  return redirect(`https://${shop}/admin/oauth/authorize?...`);
+}
+
+
 export default shopify;
 export const apiVersion = ApiVersion.January25;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;

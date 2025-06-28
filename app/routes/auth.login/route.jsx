@@ -11,7 +11,7 @@ import {
 } from "@shopify/polaris";
 import polarisTranslations from "@shopify/polaris/locales/en.json";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
-// import { login } from "../../shopify.server";
+import { login } from "../../shopify.server";
 // import { loginErrorMessage } from "./error.server";
 import { redirect } from "@remix-run/node";
 
@@ -21,12 +21,13 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const shop = url.searchParams.get("shop");
 
-  if (!shop) {
-    return redirect("/auth/login"); // fallback
+  if (!shop || !shop.endsWith(".myshopify.com")) {
+    // invalid or missing shop, go back to login page
+    return redirect("/auth/login");
   }
 
-  // Start Shopify OAuth flow
-  return redirect(await beginShopifyAuth(shop)); // your logic
+  // Start the OAuth/login process
+  return await login(request); // Should redirect to Shopify OAuth
 };
 
 
