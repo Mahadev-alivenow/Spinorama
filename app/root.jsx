@@ -116,6 +116,7 @@ export const loader = async ({ request }) => {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
     host: process.env.HOST || "",
+    shop: shop || "", // ✅ Add this
   });
 };
 
@@ -125,7 +126,7 @@ export default function App() {
   const data = useLoaderData();
   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
   const query = new URLSearchParams(location.search);
-  const shop = query.get("shop");
+  const shop = data.shop || query.get("shop") || "";
   const host =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("host")
@@ -170,6 +171,11 @@ export default function App() {
       }
     }
   }, [data.discountCodes]);
+
+  if (!shop || !host) {
+    console.error("Missing shop or host for AppBridge", { shop, host });
+    return <div>Missing Shopify parameters.</div>; // Optional fallback
+  }
   return (
     <html>
       <head>
