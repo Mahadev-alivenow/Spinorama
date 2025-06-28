@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Links,
   Meta,
@@ -14,6 +12,8 @@ import { CampaignProvider } from "./context/CampaignContext";
 import { PlanProvider } from "./context/PlanContext";
 import { useEffect } from "react";
 import styles from "./styles/global.css?url";
+import { AppProvider } from "@shopify/shopify-app-remix/react";
+
 
 // Export CSS styles
 export const links = () => [{ rel: "stylesheet", href: styles }];
@@ -113,90 +113,97 @@ export const loader = async ({ request }) => {
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
     },
+    apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
   });
 };
 
 export default function App() {
-  const data = useLoaderData();
+   const data = useLoaderData();
+    const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
+  
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (data.discountCodes && data.discountCodes.length > 0) {
-        window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
-        console.log(
-          "Root - Setting global discount codes:",
-          data.discountCodes,
-        );
-
-        try {
-          localStorage.setItem(
-            "GLOBAL_DISCOUNT_CODES",
-            JSON.stringify(data.discountCodes),
-          );
-        } catch (e) {
-          console.error("Failed to store discount codes in localStorage:", e);
-        }
-      } else {
-        try {
-          const storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
-          if (storedCodes) {
-            const parsedCodes = JSON.parse(storedCodes);
-            if (parsedCodes && parsedCodes.length > 0) {
-              window.GLOBAL_DISCOUNT_CODES = parsedCodes;
-              console.log(
-                "Root - Using stored discount codes from localStorage:",
-                parsedCodes.length,
+      useEffect(() => {
+        if (typeof window !== "undefined") {
+          if (data.discountCodes && data.discountCodes.length > 0) {
+            window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
+            console.log(
+              "Root - Setting global discount codes:",
+              data.discountCodes,
+            );
+    
+            try {
+              localStorage.setItem(
+                "GLOBAL_DISCOUNT_CODES",
+                JSON.stringify(data.discountCodes),
+              );
+            } catch (e) {
+              console.error("Failed to store discount codes in localStorage:", e);
+            }
+          } else {
+            try {
+              const storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
+              if (storedCodes) {
+                const parsedCodes = JSON.parse(storedCodes);
+                if (parsedCodes && parsedCodes.length > 0) {
+                  window.GLOBAL_DISCOUNT_CODES = parsedCodes;
+                  console.log(
+                    "Root - Using stored discount codes from localStorage:",
+                    parsedCodes.length,
+                  );
+                }
+              }
+            } catch (e) {
+              console.error(
+                "Failed to retrieve discount codes from localStorage:",
+                e,
               );
             }
           }
-        } catch (e) {
-          console.error(
-            "Failed to retrieve discount codes from localStorage:",
-            e,
-          );
         }
-      }
-    }
-  }, [data.discountCodes]);
-
+      }, [data.discountCodes]);
   return (
-    <html lang="en">
+    <html>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <title>Spinorama</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="preconnect" href="https://cdn.shopify.com/" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
+        />
         <Meta />
         <Links />
       </head>
       <body>
-        <PlanProvider initialDiscountCodes={data.discountCodes || []}>
-          <CampaignProvider>
-            <Outlet />
-            <Toaster position="top-right" />
-          </CampaignProvider>
-        </PlanProvider>
-        <ScrollRestoration />
-        <Scripts />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.ENV = ${JSON.stringify(data.ENV)};
-              let storedCodes;
-              try {
-                storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
-                storedCodes = storedCodes ? JSON.parse(storedCodes) : [];
-              } catch (e) {
-                console.error("Error parsing stored discount codes:", e);
-                storedCodes = [];
-              }
-              const serverCodes = ${JSON.stringify(data.discountCodes || [])};
-              window.GLOBAL_DISCOUNT_CODES = serverCodes.length > 0 ? serverCodes : storedCodes;
-              console.log("Global discount codes initialized:", window.GLOBAL_DISCOUNT_CODES);
-            `,
-          }}
-        />
+        <AppProvider apiKey={apiKey} isEmbeddedApp>
+          <PlanProvider initialDiscountCodes={data.discountCodes || []}>
+            <CampaignProvider>
+              <Outlet />
+              <Toaster position="top-right" />
+            </CampaignProvider>
+          </PlanProvider>
+          <ScrollRestoration />
+          <Scripts />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                    window.ENV = ${JSON.stringify(data.ENV)};
+                    let storedCodes;
+                    try {
+                      storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
+                      storedCodes = storedCodes ? JSON.parse(storedCodes) : [];
+                    } catch (e) {
+                      console.error("Error parsing stored discount codes:", e);
+                      storedCodes = [];
+                    }
+                    const serverCodes = ${JSON.stringify(data.discountCodes || [])};
+                    window.GLOBAL_DISCOUNT_CODES = serverCodes.length > 0 ? serverCodes : storedCodes;
+                    console.log("Global discount codes initialized:", window.GLOBAL_DISCOUNT_CODES);
+                  `,
+            }}
+          />
+        </AppProvider>
       </body>
     </html>
   );

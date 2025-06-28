@@ -13,6 +13,8 @@ process.env.PORT = "3000";
 process.env.HOST = process.env.HOST || "0.0.0.0";
 
 const app = express();
+app.use(express.json());
+
 const BUILD_DIR = path.join(process.cwd(), "build");
 
 // Serve static files with proper headers for CSS

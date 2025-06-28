@@ -9,6 +9,11 @@ import {
 } from "react";
 import { usePlan } from "./PlanContext";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+import { authenticatedFetch } from "@shopify/app-bridge-utils";
+import { getSessionToken } from "@shopify/app-bridge-utils";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Create a context for campaign data
 const CampaignContext = createContext(null);
@@ -44,11 +49,15 @@ const DEFAULT_RULES = {
 
 // Campaign provider component
 export function CampaignProvider({ children }) {
+  const app = useAppBridge();
+  const fetchWithAuth = authenticatedFetch(app); // app = App Bridge instance
+
   const { currentPlan } = usePlan();
   const [dbStatus, setDbStatus] = useState({
     connected: false,
     checking: true,
   });
+  const navigate = useNavigate();
   const [shopInfo, setShopInfo] = useState({
     name: "wheel-of-wonders",
     formatted: "wheel-of-wonders",
@@ -205,7 +214,7 @@ export function CampaignProvider({ children }) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
-            credentials: "same-origin", // Include cookies for authentication
+            credentials: "include",
           });
 
           if (response.ok) {
@@ -251,6 +260,7 @@ export function CampaignProvider({ children }) {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
+            credentials: "include",
           });
 
           if (statusResponse.ok) {
@@ -324,6 +334,7 @@ export function CampaignProvider({ children }) {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          credentials: "include",
         });
 
         if (!response.ok) {
@@ -395,6 +406,7 @@ export function CampaignProvider({ children }) {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          credentials: "include",
         });
 
         if (!response.ok) {
@@ -662,6 +674,7 @@ export function CampaignProvider({ children }) {
             await fetch(`/api/campaigns/${campaign.id}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({ ...campaign, status: "draft" }),
             });
           } catch (error) {
@@ -753,6 +766,7 @@ export function CampaignProvider({ children }) {
               {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(campaignWithId),
               },
             );
@@ -781,6 +795,7 @@ export function CampaignProvider({ children }) {
             const response = await fetch("/api/campaigns", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify(campaignWithId),
             });
 
@@ -832,11 +847,17 @@ export function CampaignProvider({ children }) {
         // If campaign is active, immediately sync to metafields
         if (campaignWithId.status === "active") {
           try {
-            const syncResponse = await fetch("/api/sync-campaign-metafields", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ campaignId: campaignWithId.id }),
-            });
+            const syncResponse = await fetchWithAuth(
+              "/sync-campaign-metafields",
+              {
+                method: "POST",
+                body: JSON.stringify({ campaignId: campaignWithId.id }),
+
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              },
+            );
 
             if (syncResponse.ok) {
               toast.success("Campaign saved and synced to storefront!");
@@ -946,6 +967,7 @@ export function CampaignProvider({ children }) {
 
           const response = await fetch(`/api/campaigns/status/${campaignId}`, {
             method: "POST",
+            credentials: "include",
             body: formData,
           });
 
@@ -963,23 +985,34 @@ export function CampaignProvider({ children }) {
           ),
         );
 
+        console.log("activated new campaign", newStatus, campaignId);
+
         // Immediately sync the active campaign to metafields for theme extension
         if (newStatus === "active") {
           try {
             const syncResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ campaignId }),
+              credentials: "include",
+              body: JSON.stringify({ campaignId: campaignId }),
             });
 
             if (syncResponse.ok) {
               toast.success("Campaign activated and synced to storefront!");
+              // console.log("syncing campaign metafields: ",syncResponse);
+              // window.location.reload();
             } else {
+              console.log("RELOADING PAGE not ok", syncResponse);
+
+              // navigate("/");
+
               toast.success(
                 "Campaign activated! Sync to storefront may take a moment.",
               );
             }
           } catch (syncError) {
+            console.log("RELOADING PAGE", syncError);
+            // window.location.reload();
             toast.success(
               "Campaign activated! Sync to storefront may take a moment.",
             );
@@ -990,6 +1023,7 @@ export function CampaignProvider({ children }) {
             const clearResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({ campaignId: null, clear: true }),
             });
 

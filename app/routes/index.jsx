@@ -2,6 +2,7 @@ import { redirect } from "@remix-run/node";
 import { authenticate, isClientSideNavigation } from "../shopify.server";
 
 export async function loader({ request }) {
+  console.log("Index loader - checking authentication... app/routes/index.jsx");
   try {
     // Check if user is already authenticated
     const { admin, session } = await authenticate.admin(request);

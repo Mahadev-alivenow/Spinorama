@@ -2,11 +2,15 @@ var _a;
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import { PassThrough } from "node:stream";
 import { renderToPipeableStream } from "react-dom/server";
-import { RemixServer, useLoaderData, Meta, Links, Outlet, ScrollRestoration, Scripts, useActionData, Form as Form$1, useLocation, Link as Link$1, useNavigate, useParams, useSearchParams, useNavigation, useFetcher } from "@remix-run/react";
+import { RemixServer, useLoaderData, Meta, Links, Outlet, ScrollRestoration, Scripts, useActionData, Form as Form$1, useLocation, Link as Link$1, useNavigate as useNavigate$1, useParams, useSearchParams, useNavigation, useFetcher } from "@remix-run/react";
 import { isbot } from "isbot";
 import { json, redirect } from "@remix-run/node";
 import { toast, Toaster } from "react-hot-toast";
-import React, { createContext, useContext, useState, useEffect, useCallback, useLayoutEffect, useRef, PureComponent, useMemo, forwardRef, Component, memo, useId, useImperativeHandle, createElement, Children, isValidElement, createRef, useReducer } from "react";
+import React, { createContext, useContext, useState, useEffect, forwardRef, Children, useCallback, useLayoutEffect, useRef, PureComponent, useMemo, Component, memo, useId, useImperativeHandle, createElement, isValidElement, createRef, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
+import { authenticatedFetch } from "@shopify/app-bridge-utils";
+import cr, { createPortal } from "react-dom";
+import { AppProvider as AppProvider$1 } from "@shopify/shopify-app-remix/react";
 import "@shopify/shopify-app-remix/adapters/node";
 import { shopifyApp, BillingInterval, AppDistribution, ApiVersion, LoginErrorType } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -16,8 +20,6 @@ import { MongoClient, ObjectId } from "mongodb";
 import crypto from "crypto";
 import { themes, breakpointsAliases, themeNameDefault, createThemeClassName, themeDefault, getMediaConditions, themeNames } from "@shopify/polaris-tokens";
 import { SelectIcon, ChevronDownIcon, ChevronUpIcon, AlertCircleIcon, XCircleIcon, SearchIcon, MenuHorizontalIcon, ArrowLeftIcon, SortDescendingIcon, SortAscendingIcon, ChevronLeftIcon, ChevronRightIcon, XIcon, AlertTriangleIcon, XSmallIcon, DeleteIcon, LayoutColumns3Icon, EditIcon, DuplicateIcon, InfoIcon, PlusIcon, MenuIcon, HomeIcon, ConfettiIcon, PersonIcon, FinanceIcon, AppsIcon, SettingsFilledIcon, NotificationIcon, ImportIcon, ExportIcon, FilterIcon, SortIcon, OrderIcon, ChartVerticalIcon, PageIcon } from "@shopify/polaris-icons";
-import cr, { createPortal } from "react-dom";
-import { useNavigate as useNavigate$1 } from "react-router-dom";
 import isEqual from "react-fast-compare";
 import { Transition, CSSTransition, TransitionGroup } from "react-transition-group";
 const streamTimeout = 5e3;
@@ -327,6 +329,726 @@ function usePlan() {
   }
   return context;
 }
+var ee = { exports: {} }, L = {};
+/**
+ * @license React
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var Oe;
+function dr() {
+  if (Oe)
+    return L;
+  Oe = 1;
+  var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.fragment"), c = Object.prototype.hasOwnProperty, C = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, x = { key: true, ref: true, __self: true, __source: true };
+  function h(a, d, b) {
+    var m, T = {}, w = null, E = null;
+    b !== void 0 && (w = "" + b), d.key !== void 0 && (w = "" + d.key), d.ref !== void 0 && (E = d.ref);
+    for (m in d)
+      c.call(d, m) && !x.hasOwnProperty(m) && (T[m] = d[m]);
+    if (a && a.defaultProps)
+      for (m in d = a.defaultProps, d)
+        T[m] === void 0 && (T[m] = d[m]);
+    return { $$typeof: v, type: a, key: w, ref: E, props: T, _owner: C.current };
+  }
+  return L.Fragment = y, L.jsx = h, L.jsxs = h, L;
+}
+var $ = {};
+/**
+ * @license React
+ * react-jsx-runtime.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var Pe;
+function vr() {
+  return Pe || (Pe = 1, process.env.NODE_ENV !== "production" && function() {
+    var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.portal"), c = Symbol.for("react.fragment"), C = Symbol.for("react.strict_mode"), x = Symbol.for("react.profiler"), h = Symbol.for("react.provider"), a = Symbol.for("react.context"), d = Symbol.for("react.forward_ref"), b = Symbol.for("react.suspense"), m = Symbol.for("react.suspense_list"), T = Symbol.for("react.memo"), w = Symbol.for("react.lazy"), E = Symbol.for("react.offscreen"), k = Symbol.iterator, W = "@@iterator";
+    function Y(e) {
+      if (e === null || typeof e != "object")
+        return null;
+      var r = k && e[k] || e[W];
+      return typeof r == "function" ? r : null;
+    }
+    var O = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+    function p(e) {
+      {
+        for (var r = arguments.length, t = new Array(r > 1 ? r - 1 : 0), n = 1; n < r; n++)
+          t[n - 1] = arguments[n];
+        ke("error", e, t);
+      }
+    }
+    function ke(e, r, t) {
+      {
+        var n = O.ReactDebugCurrentFrame, u = n.getStackAddendum();
+        u !== "" && (r += "%s", t = t.concat([u]));
+        var s = t.map(function(o) {
+          return String(o);
+        });
+        s.unshift("Warning: " + r), Function.prototype.apply.call(console[e], console, s);
+      }
+    }
+    var De = false, Ae = false, Fe = false, Ie = false, Ne = false, te;
+    te = Symbol.for("react.module.reference");
+    function Le(e) {
+      return !!(typeof e == "string" || typeof e == "function" || e === c || e === x || Ne || e === C || e === b || e === m || Ie || e === E || De || Ae || Fe || typeof e == "object" && e !== null && (e.$$typeof === w || e.$$typeof === T || e.$$typeof === h || e.$$typeof === a || e.$$typeof === d || // This needs to include all possible module reference object
+      // types supported by any Flight configuration anywhere since
+      // we don't know which Flight build this will end up being used
+      // with.
+      e.$$typeof === te || e.getModuleId !== void 0));
+    }
+    function $e(e, r, t) {
+      var n = e.displayName;
+      if (n)
+        return n;
+      var u = r.displayName || r.name || "";
+      return u !== "" ? t + "(" + u + ")" : t;
+    }
+    function ne(e) {
+      return e.displayName || "Context";
+    }
+    function P(e) {
+      if (e == null)
+        return null;
+      if (typeof e.tag == "number" && p("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof e == "function")
+        return e.displayName || e.name || null;
+      if (typeof e == "string")
+        return e;
+      switch (e) {
+        case c:
+          return "Fragment";
+        case y:
+          return "Portal";
+        case x:
+          return "Profiler";
+        case C:
+          return "StrictMode";
+        case b:
+          return "Suspense";
+        case m:
+          return "SuspenseList";
+      }
+      if (typeof e == "object")
+        switch (e.$$typeof) {
+          case a:
+            var r = e;
+            return ne(r) + ".Consumer";
+          case h:
+            var t = e;
+            return ne(t._context) + ".Provider";
+          case d:
+            return $e(e, e.render, "ForwardRef");
+          case T:
+            var n = e.displayName || null;
+            return n !== null ? n : P(e.type) || "Memo";
+          case w: {
+            var u = e, s = u._payload, o = u._init;
+            try {
+              return P(o(s));
+            } catch {
+              return null;
+            }
+          }
+        }
+      return null;
+    }
+    var D = Object.assign, I = 0, ae, ie, oe, ue, se, le, fe;
+    function ce() {
+    }
+    ce.__reactDisabledLog = true;
+    function We() {
+      {
+        if (I === 0) {
+          ae = console.log, ie = console.info, oe = console.warn, ue = console.error, se = console.group, le = console.groupCollapsed, fe = console.groupEnd;
+          var e = {
+            configurable: true,
+            enumerable: true,
+            value: ce,
+            writable: true
+          };
+          Object.defineProperties(console, {
+            info: e,
+            log: e,
+            warn: e,
+            error: e,
+            group: e,
+            groupCollapsed: e,
+            groupEnd: e
+          });
+        }
+        I++;
+      }
+    }
+    function Ye() {
+      {
+        if (I--, I === 0) {
+          var e = {
+            configurable: true,
+            enumerable: true,
+            writable: true
+          };
+          Object.defineProperties(console, {
+            log: D({}, e, {
+              value: ae
+            }),
+            info: D({}, e, {
+              value: ie
+            }),
+            warn: D({}, e, {
+              value: oe
+            }),
+            error: D({}, e, {
+              value: ue
+            }),
+            group: D({}, e, {
+              value: se
+            }),
+            groupCollapsed: D({}, e, {
+              value: le
+            }),
+            groupEnd: D({}, e, {
+              value: fe
+            })
+          });
+        }
+        I < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+      }
+    }
+    var J = O.ReactCurrentDispatcher, G;
+    function M(e, r, t) {
+      {
+        if (G === void 0)
+          try {
+            throw Error();
+          } catch (u) {
+            var n = u.stack.trim().match(/\n( *(at )?)/);
+            G = n && n[1] || "";
+          }
+        return `
+` + G + e;
+      }
+    }
+    var z = false, B;
+    {
+      var Me = typeof WeakMap == "function" ? WeakMap : Map;
+      B = new Me();
+    }
+    function de(e, r) {
+      if (!e || z)
+        return "";
+      {
+        var t = B.get(e);
+        if (t !== void 0)
+          return t;
+      }
+      var n;
+      z = true;
+      var u = Error.prepareStackTrace;
+      Error.prepareStackTrace = void 0;
+      var s;
+      s = J.current, J.current = null, We();
+      try {
+        if (r) {
+          var o = function() {
+            throw Error();
+          };
+          if (Object.defineProperty(o.prototype, "props", {
+            set: function() {
+              throw Error();
+            }
+          }), typeof Reflect == "object" && Reflect.construct) {
+            try {
+              Reflect.construct(o, []);
+            } catch (S) {
+              n = S;
+            }
+            Reflect.construct(e, [], o);
+          } else {
+            try {
+              o.call();
+            } catch (S) {
+              n = S;
+            }
+            e.call(o.prototype);
+          }
+        } else {
+          try {
+            throw Error();
+          } catch (S) {
+            n = S;
+          }
+          e();
+        }
+      } catch (S) {
+        if (S && n && typeof S.stack == "string") {
+          for (var i = S.stack.split(`
+`), g = n.stack.split(`
+`), l = i.length - 1, f = g.length - 1; l >= 1 && f >= 0 && i[l] !== g[f]; )
+            f--;
+          for (; l >= 1 && f >= 0; l--, f--)
+            if (i[l] !== g[f]) {
+              if (l !== 1 || f !== 1)
+                do
+                  if (l--, f--, f < 0 || i[l] !== g[f]) {
+                    var _ = `
+` + i[l].replace(" at new ", " at ");
+                    return e.displayName && _.includes("<anonymous>") && (_ = _.replace("<anonymous>", e.displayName)), typeof e == "function" && B.set(e, _), _;
+                  }
+                while (l >= 1 && f >= 0);
+              break;
+            }
+        }
+      } finally {
+        z = false, J.current = s, Ye(), Error.prepareStackTrace = u;
+      }
+      var F = e ? e.displayName || e.name : "", we = F ? M(F) : "";
+      return typeof e == "function" && B.set(e, we), we;
+    }
+    function Be(e, r, t) {
+      return de(e, false);
+    }
+    function Ve(e) {
+      var r = e.prototype;
+      return !!(r && r.isReactComponent);
+    }
+    function V(e, r, t) {
+      if (e == null)
+        return "";
+      if (typeof e == "function")
+        return de(e, Ve(e));
+      if (typeof e == "string")
+        return M(e);
+      switch (e) {
+        case b:
+          return M("Suspense");
+        case m:
+          return M("SuspenseList");
+      }
+      if (typeof e == "object")
+        switch (e.$$typeof) {
+          case d:
+            return Be(e.render);
+          case T:
+            return V(e.type, r, t);
+          case w: {
+            var n = e, u = n._payload, s = n._init;
+            try {
+              return V(s(u), r, t);
+            } catch {
+            }
+          }
+        }
+      return "";
+    }
+    var U = Object.prototype.hasOwnProperty, ve = {}, pe = O.ReactDebugCurrentFrame;
+    function q(e) {
+      if (e) {
+        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
+        pe.setExtraStackFrame(t);
+      } else
+        pe.setExtraStackFrame(null);
+    }
+    function Ue(e, r, t, n, u) {
+      {
+        var s = Function.call.bind(U);
+        for (var o in e)
+          if (s(e, o)) {
+            var i = void 0;
+            try {
+              if (typeof e[o] != "function") {
+                var g = Error((n || "React class") + ": " + t + " type `" + o + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof e[o] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                throw g.name = "Invariant Violation", g;
+              }
+              i = e[o](r, o, n, t, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+            } catch (l) {
+              i = l;
+            }
+            i && !(i instanceof Error) && (q(u), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", n || "React class", t, o, typeof i), q(null)), i instanceof Error && !(i.message in ve) && (ve[i.message] = true, q(u), p("Failed %s type: %s", t, i.message), q(null));
+          }
+      }
+    }
+    var qe = Array.isArray;
+    function K(e) {
+      return qe(e);
+    }
+    function Je(e) {
+      {
+        var r = typeof Symbol == "function" && Symbol.toStringTag, t = r && e[Symbol.toStringTag] || e.constructor.name || "Object";
+        return t;
+      }
+    }
+    function Ge(e) {
+      try {
+        return ye(e), false;
+      } catch {
+        return true;
+      }
+    }
+    function ye(e) {
+      return "" + e;
+    }
+    function he(e) {
+      if (Ge(e))
+        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", Je(e)), ye(e);
+    }
+    var N = O.ReactCurrentOwner, ze = {
+      key: true,
+      ref: true,
+      __self: true,
+      __source: true
+    }, me, ge;
+    function Ke(e) {
+      if (U.call(e, "ref")) {
+        var r = Object.getOwnPropertyDescriptor(e, "ref").get;
+        if (r && r.isReactWarning)
+          return false;
+      }
+      return e.ref !== void 0;
+    }
+    function Xe(e) {
+      if (U.call(e, "key")) {
+        var r = Object.getOwnPropertyDescriptor(e, "key").get;
+        if (r && r.isReactWarning)
+          return false;
+      }
+      return e.key !== void 0;
+    }
+    function Ze(e, r) {
+      if (typeof e.ref == "string" && N.current && r) ;
+    }
+    function Qe(e, r) {
+      {
+        var t = function() {
+          me || (me = true, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
+        };
+        t.isReactWarning = true, Object.defineProperty(e, "key", {
+          get: t,
+          configurable: true
+        });
+      }
+    }
+    function He(e, r) {
+      {
+        var t = function() {
+          ge || (ge = true, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
+        };
+        t.isReactWarning = true, Object.defineProperty(e, "ref", {
+          get: t,
+          configurable: true
+        });
+      }
+    }
+    var er = function(e, r, t, n, u, s, o) {
+      var i = {
+        // This tag allows us to uniquely identify this as a React Element
+        $$typeof: v,
+        // Built-in properties that belong on the element
+        type: e,
+        key: r,
+        ref: t,
+        props: o,
+        // Record the component responsible for creating this element.
+        _owner: s
+      };
+      return i._store = {}, Object.defineProperty(i._store, "validated", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
+        value: false
+      }), Object.defineProperty(i, "_self", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: n
+      }), Object.defineProperty(i, "_source", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: u
+      }), Object.freeze && (Object.freeze(i.props), Object.freeze(i)), i;
+    };
+    function rr(e, r, t, n, u) {
+      {
+        var s, o = {}, i = null, g = null;
+        t !== void 0 && (he(t), i = "" + t), Xe(r) && (he(r.key), i = "" + r.key), Ke(r) && (g = r.ref, Ze(r, u));
+        for (s in r)
+          U.call(r, s) && !ze.hasOwnProperty(s) && (o[s] = r[s]);
+        if (e && e.defaultProps) {
+          var l = e.defaultProps;
+          for (s in l)
+            o[s] === void 0 && (o[s] = l[s]);
+        }
+        if (i || g) {
+          var f = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
+          i && Qe(o, f), g && He(o, f);
+        }
+        return er(e, i, g, u, n, N.current, o);
+      }
+    }
+    var Z = O.ReactCurrentOwner, Ee = O.ReactDebugCurrentFrame;
+    function A(e) {
+      if (e) {
+        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
+        Ee.setExtraStackFrame(t);
+      } else
+        Ee.setExtraStackFrame(null);
+    }
+    var Q;
+    Q = false;
+    function H(e) {
+      return typeof e == "object" && e !== null && e.$$typeof === v;
+    }
+    function be() {
+      {
+        if (Z.current) {
+          var e = P(Z.current.type);
+          if (e)
+            return `
+
+Check the render method of \`` + e + "`.";
+        }
+        return "";
+      }
+    }
+    function tr(e) {
+      {
+        return "";
+      }
+    }
+    var _e = {};
+    function nr(e) {
+      {
+        var r = be();
+        if (!r) {
+          var t = typeof e == "string" ? e : e.displayName || e.name;
+          t && (r = `
+
+Check the top-level render call using <` + t + ">.");
+        }
+        return r;
+      }
+    }
+    function Re(e, r) {
+      {
+        if (!e._store || e._store.validated || e.key != null)
+          return;
+        e._store.validated = true;
+        var t = nr(r);
+        if (_e[t])
+          return;
+        _e[t] = true;
+        var n = "";
+        e && e._owner && e._owner !== Z.current && (n = " It was passed a child from " + P(e._owner.type) + "."), A(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', t, n), A(null);
+      }
+    }
+    function Te(e, r) {
+      {
+        if (typeof e != "object")
+          return;
+        if (K(e))
+          for (var t = 0; t < e.length; t++) {
+            var n = e[t];
+            H(n) && Re(n, r);
+          }
+        else if (H(e))
+          e._store && (e._store.validated = true);
+        else if (e) {
+          var u = Y(e);
+          if (typeof u == "function" && u !== e.entries)
+            for (var s = u.call(e), o; !(o = s.next()).done; )
+              H(o.value) && Re(o.value, r);
+        }
+      }
+    }
+    function ar(e) {
+      {
+        var r = e.type;
+        if (r == null || typeof r == "string")
+          return;
+        var t;
+        if (typeof r == "function")
+          t = r.propTypes;
+        else if (typeof r == "object" && (r.$$typeof === d || // Note: Memo only checks outer props here.
+        // Inner props are checked in the reconciler.
+        r.$$typeof === T))
+          t = r.propTypes;
+        else
+          return;
+        if (t) {
+          var n = P(r);
+          Ue(t, e.props, "prop", n, e);
+        } else if (r.PropTypes !== void 0 && !Q) {
+          Q = true;
+          var u = P(r);
+          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", u || "Unknown");
+        }
+        typeof r.getDefaultProps == "function" && !r.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
+      }
+    }
+    function ir(e) {
+      {
+        for (var r = Object.keys(e.props), t = 0; t < r.length; t++) {
+          var n = r[t];
+          if (n !== "children" && n !== "key") {
+            A(e), p("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", n), A(null);
+            break;
+          }
+        }
+        e.ref !== null && (A(e), p("Invalid attribute `ref` supplied to `React.Fragment`."), A(null));
+      }
+    }
+    function Ce(e, r, t, n, u, s) {
+      {
+        var o = Le(e);
+        if (!o) {
+          var i = "";
+          (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (i += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
+          var g = tr();
+          g ? i += g : i += be();
+          var l;
+          e === null ? l = "null" : K(e) ? l = "array" : e !== void 0 && e.$$typeof === v ? (l = "<" + (P(e.type) || "Unknown") + " />", i = " Did you accidentally export a JSX literal instead of a component?") : l = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", l, i);
+        }
+        var f = rr(e, r, t, u, s);
+        if (f == null)
+          return f;
+        if (o) {
+          var _ = r.children;
+          if (_ !== void 0)
+            if (n)
+              if (K(_)) {
+                for (var F = 0; F < _.length; F++)
+                  Te(_[F], e);
+                Object.freeze && Object.freeze(_);
+              } else
+                p("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
+            else
+              Te(_, e);
+        }
+        return e === c ? ir(f) : ar(f), f;
+      }
+    }
+    function or(e, r, t) {
+      return Ce(e, r, t, true);
+    }
+    function ur(e, r, t) {
+      return Ce(e, r, t, false);
+    }
+    var sr = ur, lr = or;
+    $.Fragment = c, $.jsx = sr, $.jsxs = lr;
+  }()), $;
+}
+process.env.NODE_ENV === "production" ? ee.exports = dr() : ee.exports = vr();
+var re = ee.exports;
+const pr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
+  const [a, d] = useState(), { titleBar: b, saveBar: m, modalContent: T } = Children.toArray(C).reduce(
+    (E, k) => {
+      const W = yr(k), Y = W === "ui-title-bar", O = W === "ui-save-bar";
+      return !Y && !O && E.modalContent.push(k), {
+        ...E,
+        titleBar: Y ? k : E.titleBar,
+        saveBar: O ? k : E.saveBar
+      };
+    },
+    { modalContent: [] }
+  ), w = a && a.content ? cr.createPortal(T, a.content) : null;
+  return useEffect(() => {
+    a && (v ? a.show() : a.hide());
+  }, [a, v]), useEffect(() => {
+    if (!(!a || !y))
+      return a.addEventListener("show", y), () => {
+        a.removeEventListener("show", y);
+      };
+  }, [a, y]), useEffect(() => {
+    if (!(!a || !c))
+      return a.addEventListener("hide", c), () => {
+        a.removeEventListener("hide", c);
+      };
+  }, [a, c]), useEffect(() => {
+    if (a)
+      return () => {
+        a.hide();
+      };
+  }, [a]), /* @__PURE__ */ re.jsxs(
+    "ui-modal",
+    {
+      ...x,
+      ref: (E) => {
+        d(E), h && (typeof h == "function" ? h(E) : h.current = E);
+      },
+      children: [
+        b,
+        m,
+        /* @__PURE__ */ re.jsx("div", { children: w })
+      ]
+    }
+  );
+});
+pr.displayName = "ui-modal";
+function yr(R) {
+  if (!R)
+    return;
+  const v = typeof R == "object" && "type" in R ? R.type : void 0, y = typeof v == "string" ? v : void 0, c = typeof v == "object" ? v.displayName : void 0;
+  return y || (typeof c == "string" ? c : void 0);
+}
+const _r = "ui-title-bar", hr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
+  const [a, d] = useState();
+  return useEffect(() => {
+    a && (v ? a.show() : a.hide());
+  }, [a, v]), useEffect(() => {
+    if (!(!a || !y))
+      return a.addEventListener("show", y), () => {
+        a.removeEventListener("show", y);
+      };
+  }, [a, y]), useEffect(() => {
+    if (!(!a || !c))
+      return a.addEventListener("hide", c), () => {
+        a.removeEventListener("hide", c);
+      };
+  }, [a, c]), useEffect(() => {
+    if (a)
+      return () => {
+        a.hide();
+      };
+  }, [a]), /* @__PURE__ */ re.jsx(
+    "ui-save-bar",
+    {
+      ...x,
+      ref: (b) => {
+        d(b), h && (typeof h == "function" ? h(b) : h.current = b);
+      },
+      children: C
+    }
+  );
+});
+hr.displayName = "ui-save-bar";
+const mr = new Proxy(
+  {},
+  {
+    get(R, v) {
+      throw Error(
+        `shopify.${String(
+          v
+        )} can't be used in a server environment. You likely need to move this code into an Effect.`
+      );
+    }
+  }
+);
+function Rr() {
+  if (typeof window > "u")
+    return mr;
+  if (!window.shopify)
+    throw Error(
+      "The shopify global is not defined. This likely means the App Bridge script tag was not added correctly to this page"
+    );
+  return window.shopify;
+}
 const CampaignContext = createContext(null);
 const SAMPLE_CAMPAIGNS = [];
 const DEFAULT_RULES = {
@@ -355,11 +1077,14 @@ const DEFAULT_RULES = {
   }
 };
 function CampaignProvider({ children }) {
+  const app = Rr();
+  const fetchWithAuth = authenticatedFetch(app);
   const { currentPlan } = usePlan();
   const [dbStatus, setDbStatus] = useState({
     connected: false,
     checking: true
   });
+  useNavigate();
   const [shopInfo, setShopInfo] = useState({
     name: "wheel-of-wonders",
     formatted: "wheel-of-wonders"
@@ -476,8 +1201,7 @@ function CampaignProvider({ children }) {
               Accept: "application/json",
               "Content-Type": "application/json"
             },
-            credentials: "same-origin"
-            // Include cookies for authentication
+            credentials: "include"
           });
           if (response.ok) {
             const data = await safeJsonParse(response);
@@ -509,7 +1233,8 @@ function CampaignProvider({ children }) {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json"
-            }
+            },
+            credentials: "include"
           });
           if (statusResponse.ok) {
             const statusData = await safeJsonParse(statusResponse);
@@ -567,7 +1292,8 @@ function CampaignProvider({ children }) {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json"
-          }
+          },
+          credentials: "include"
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -621,7 +1347,8 @@ function CampaignProvider({ children }) {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json"
-          }
+          },
+          credentials: "include"
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -825,6 +1552,7 @@ function CampaignProvider({ children }) {
             await fetch(`/api/campaigns/${campaign.id}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({ ...campaign, status: "draft" })
             });
           } catch (error) {
@@ -898,6 +1626,7 @@ function CampaignProvider({ children }) {
               {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(campaignWithId)
               }
             );
@@ -921,6 +1650,7 @@ function CampaignProvider({ children }) {
             const response = await fetch("/api/campaigns", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify(campaignWithId)
             });
             if (!response.ok) {
@@ -959,11 +1689,16 @@ function CampaignProvider({ children }) {
         }));
         if (campaignWithId.status === "active") {
           try {
-            const syncResponse = await fetch("/api/sync-campaign-metafields", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ campaignId: campaignWithId.id })
-            });
+            const syncResponse = await fetchWithAuth(
+              "/sync-campaign-metafields",
+              {
+                method: "POST",
+                body: JSON.stringify({ campaignId: campaignWithId.id }),
+                headers: {
+                  "Content-Type": "application/json"
+                }
+              }
+            );
             if (syncResponse.ok) {
               toast.success("Campaign saved and synced to storefront!");
             } else {
@@ -1050,6 +1785,7 @@ function CampaignProvider({ children }) {
           formData.append("shop", shopInfo.name || "");
           const response = await fetch(`/api/campaigns/status/${campaignId}`, {
             method: "POST",
+            credentials: "include",
             body: formData
           });
           if (!response.ok) {
@@ -1063,21 +1799,25 @@ function CampaignProvider({ children }) {
             (c) => c.id === campaignId ? { ...c, status: newStatus } : c
           )
         );
+        console.log("activated new campaign", newStatus, campaignId);
         if (newStatus === "active") {
           try {
             const syncResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({ campaignId })
             });
             if (syncResponse.ok) {
               toast.success("Campaign activated and synced to storefront!");
             } else {
+              console.log("RELOADING PAGE not ok", syncResponse);
               toast.success(
                 "Campaign activated! Sync to storefront may take a moment."
               );
             }
           } catch (syncError) {
+            console.log("RELOADING PAGE", syncError);
             toast.success(
               "Campaign activated! Sync to storefront may take a moment."
             );
@@ -1087,6 +1827,7 @@ function CampaignProvider({ children }) {
             const clearResponse = await fetch("/api/sync-campaign-metafields", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({ campaignId: null, clear: true })
             });
             if (clearResponse.ok) {
@@ -1173,14 +1914,14 @@ function useCampaign() {
   }
   return context;
 }
-const styles$13 = "/assets/global-04Y11dG9.css";
+const styles$13 = "/assets/global-BaVPN7Pj.css";
 const links$1 = () => [{ rel: "stylesheet", href: styles$13 }];
 const headers = () => {
   return {
     "Content-Security-Policy": "frame-ancestors https://*.myshopify.com https://admin.shopify.com;"
   };
 };
-const loader$H = async ({ request }) => {
+const loader$K = async ({ request }) => {
   var _a2, _b, _c, _d, _e;
   const discountCodes = [];
   try {
@@ -1251,11 +1992,13 @@ const loader$H = async ({ request }) => {
     ENV: {
       NODE_ENV: process.env.NODE_ENV
     },
+    apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes
   });
 };
 function App$2() {
   const data = useLoaderData();
+  const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (data.discountCodes && data.discountCodes.length > 0) {
@@ -1294,16 +2037,22 @@ function App$2() {
       }
     }
   }, [data.discountCodes]);
-  return /* @__PURE__ */ jsxs("html", { lang: "en", children: [
+  return /* @__PURE__ */ jsxs("html", { children: [
     /* @__PURE__ */ jsxs("head", { children: [
       /* @__PURE__ */ jsx("meta", { charSet: "utf-8" }),
-      /* @__PURE__ */ jsx("meta", { name: "viewport", content: "width=device-width, initial-scale=1" }),
-      /* @__PURE__ */ jsx("link", { rel: "icon", href: "/favicon.ico", type: "image/x-icon" }),
-      /* @__PURE__ */ jsx("title", { children: "Spinorama" }),
+      /* @__PURE__ */ jsx("meta", { name: "viewport", content: "width=device-width,initial-scale=1" }),
+      /* @__PURE__ */ jsx("link", { rel: "preconnect", href: "https://cdn.shopify.com/" }),
+      /* @__PURE__ */ jsx(
+        "link",
+        {
+          rel: "stylesheet",
+          href: "https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
+        }
+      ),
       /* @__PURE__ */ jsx(Meta, {}),
       /* @__PURE__ */ jsx(Links, {})
     ] }),
-    /* @__PURE__ */ jsxs("body", { children: [
+    /* @__PURE__ */ jsx("body", { children: /* @__PURE__ */ jsxs(AppProvider$1, { apiKey, isEmbeddedApp: true, children: [
       /* @__PURE__ */ jsx(PlanProvider, { initialDiscountCodes: data.discountCodes || [], children: /* @__PURE__ */ jsxs(CampaignProvider, { children: [
         /* @__PURE__ */ jsx(Outlet, {}),
         /* @__PURE__ */ jsx(Toaster, { position: "top-right" })
@@ -1315,23 +2064,23 @@ function App$2() {
         {
           dangerouslySetInnerHTML: {
             __html: `
-              window.ENV = ${JSON.stringify(data.ENV)};
-              let storedCodes;
-              try {
-                storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
-                storedCodes = storedCodes ? JSON.parse(storedCodes) : [];
-              } catch (e) {
-                console.error("Error parsing stored discount codes:", e);
-                storedCodes = [];
-              }
-              const serverCodes = ${JSON.stringify(data.discountCodes || [])};
-              window.GLOBAL_DISCOUNT_CODES = serverCodes.length > 0 ? serverCodes : storedCodes;
-              console.log("Global discount codes initialized:", window.GLOBAL_DISCOUNT_CODES);
-            `
+                    window.ENV = ${JSON.stringify(data.ENV)};
+                    let storedCodes;
+                    try {
+                      storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
+                      storedCodes = storedCodes ? JSON.parse(storedCodes) : [];
+                    } catch (e) {
+                      console.error("Error parsing stored discount codes:", e);
+                      storedCodes = [];
+                    }
+                    const serverCodes = ${JSON.stringify(data.discountCodes || [])};
+                    window.GLOBAL_DISCOUNT_CODES = serverCodes.length > 0 ? serverCodes : storedCodes;
+                    console.log("Global discount codes initialized:", window.GLOBAL_DISCOUNT_CODES);
+                  `
           }
         }
       )
-    ] })
+    ] }) })
   ] });
 }
 const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -1339,7 +2088,7 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   default: App$2,
   headers,
   links: links$1,
-  loader: loader$H
+  loader: loader$K
 }, Symbol.toStringTag, { value: "Module" }));
 if (process.env.NODE_ENV !== "production") {
   if (!global.prismaGlobal) {
@@ -1602,7 +2351,7 @@ async function getSubscriptionStatus(graphql) {
 }
 async function hasActiveSubscription(graphql, shopName, isDevelopment = false) {
   try {
-    if (isDevelopment || process.env.NODE_ENV === "development") {
+    if (isDevelopment || process.env.NODE_ENV === "production") {
       console.log("🔧 Development mode: Simulating active subscription");
       return {
         hasSubscription: true,
@@ -1698,6 +2447,9 @@ async function createSubscriptionMetafield(graphql, hasSubscription, shopName = 
       #graphql
       query {
         currentAppInstallation {
+          id
+        }
+        shop {
           id
         }
       }
@@ -1854,10 +2606,14 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
         currentAppInstallation {
           id
         }
+        shop {
+          id
+        }
       }
     `);
-    const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id;
-    console.log("App Installation ID:", appInstallationID);
+    const appIdQueryData = await appIdQuery.json();
+    const appInstallationID = appIdQueryData.data.shop.id;
+    console.log("Shop Installation ID:", appInstallationID);
     const metafieldsInput = [
       // Subscription status
       {
@@ -2070,7 +2826,8 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
       );
       return { success: false, errors: data.data.metafieldsSet.userErrors };
     }
-    console.log("✅ Successfully synced campaign to metafields");
+    console.log("from subscription.server.js");
+    console.log("✅ Successfully synced campaign to metafields :", data.data.metafieldsSet.metafields);
     return {
       success: true,
       metafields: data.data.metafieldsSet.metafields,
@@ -2321,7 +3078,7 @@ const Subscription_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
   setLocalSubscriptionStatus,
   syncActiveCampaignToMetafields
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$o({ request }) {
+async function action$s({ request }) {
   const { admin, session } = await authenticate.admin(request);
   try {
     const shopName = session.shop;
@@ -2344,20 +3101,25 @@ async function action$o({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$G() {
+async function loader$J() {
   return json({ message: "Use POST to update campaign metafields" });
 }
 const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$o,
-  loader: loader$G
+  action: action$s,
+  loader: loader$J
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$n({ request }) {
+async function action$r({ request }) {
   var _a2, _b, _c;
+  console.log("=== Sync Campaign Metafields Route maha Called ===");
+  const { session, admin } = await authenticate.admin(request);
+  const shopName = session.shop;
+  console.log("session");
+  console.log("session check:", shopName);
   try {
-    const { session, admin } = await authenticate.admin(request);
-    const shopName = session.shop;
-    const graphql = admin.graphql;
+    const { session: session2, admin: admin2 } = await authenticate.admin(request);
+    const shopName2 = session2.shop;
+    const graphql = admin2.graphql;
     const requestBody = await request.json();
     const { campaignId, clear } = requestBody;
     if (clear) {
@@ -2365,12 +3127,14 @@ async function action$n({ request }) {
       const appIdQuery = await graphql(`
         #graphql
         query {
-          currentAppInstallation {
+          shop {
             id
           }
         }
       `);
-      const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id;
+      const appIdQueryData = await appIdQuery.json();
+      const appInstallationID = appIdQueryData.data.shop.id;
+      console.log("Shop Installation ID:", appInstallationID);
       const clearMetafields = [
         {
           namespace: "wheel-of-wonders",
@@ -2427,7 +3191,12 @@ async function action$n({ request }) {
         `,
         { variables: { metafields: clearMetafields } }
       );
+      console.log("Test metafield mutation executed");
       const data = await metafieldsMutation.json();
+      console.log("Raw GraphQL response:", data);
+      if (data.errors) {
+        console.error("GraphQL top-level errors:", data.errors);
+      }
       if ((_c = (_b = (_a2 = data.data) == null ? void 0 : _a2.metafieldsSet) == null ? void 0 : _b.userErrors) == null ? void 0 : _c.length) {
         console.error(
           "Metafield userErrors:",
@@ -2447,7 +3216,7 @@ async function action$n({ request }) {
     if (!campaignId) {
       return json({ error: "Campaign ID is required" }, { status: 400 });
     }
-    const { db } = await connectToDatabase$1(shopName);
+    const { db } = await connectToDatabase$1(shopName2);
     const campaign = await db.collection("campaigns").findOne({
       id: campaignId,
       status: "active"
@@ -2456,7 +3225,7 @@ async function action$n({ request }) {
       return json({ error: "Active campaign not found" }, { status: 404 });
     }
     console.log("Syncing campaign to metafields:", campaign.name);
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
+    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName2);
     if (syncResult.success) {
       return json({
         success: true,
@@ -2477,6 +3246,7 @@ async function action$n({ request }) {
     }
   } catch (error) {
     console.error("Error syncing campaign to metafields:", error);
+    console.log("catch");
     return json(
       {
         success: false,
@@ -2486,12 +3256,17 @@ async function action$n({ request }) {
     );
   }
 }
-async function loader$F({ request }) {
+async function loader$I({ request }) {
+  console.log("=== Sync Campaign Metafields Route loader Called ===");
+  const { session, admin } = await authenticate.admin(request);
+  const shopName = session.shop;
+  console.log("session");
+  console.log("session check:", shopName);
   try {
-    const { session, admin } = await authenticate.admin(request);
-    const shopName = session.shop;
-    const graphql = admin.graphql;
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
+    const { session: session2, admin: admin2 } = await authenticate.admin(request);
+    const shopName2 = session2.shop;
+    const graphql = admin2.graphql;
+    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName2);
     if (syncResult.success) {
       return json({
         success: true,
@@ -2522,11 +3297,11 @@ function SyncCampaignMetafieldsRoute() {
 }
 const route2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$n,
+  action: action$r,
   default: SyncCampaignMetafieldsRoute,
-  loader: loader$F
+  loader: loader$I
 }, Symbol.toStringTag, { value: "Module" }));
-const action$m = async ({ request }) => {
+const action$q = async ({ request }) => {
   console.log("Received app uninstalled webhook");
   try {
     const { topic, shop } = await authenticate.webhook(request);
@@ -2543,7 +3318,7 @@ const action$m = async ({ request }) => {
 };
 const route3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$m
+  action: action$q
 }, Symbol.toStringTag, { value: "Module" }));
 const uri$1 = process.env.MONGODB_URI;
 const client$1 = new MongoClient(uri$1);
@@ -2556,7 +3331,7 @@ function formatShopName$1(shopName) {
   }
   return formattedName;
 }
-async function loader$E({ request }) {
+async function loader$H({ request }) {
   var _a2, _b, _c, _d;
   const headers2 = {
     "Access-Control-Allow-Origin": "*",
@@ -2612,7 +3387,7 @@ async function loader$E({ request }) {
 }
 const route4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$E
+  loader: loader$H
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler$1(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -2701,7 +3476,7 @@ const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: handler$1
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$D({ request, context }) {
+async function loader$G({ request, context }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2720,9 +3495,9 @@ async function loader$D({ request, context }) {
 }
 const route6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$D
+  loader: loader$G
 }, Symbol.toStringTag, { value: "Module" }));
-const action$l = async ({ request }) => {
+const action$p = async ({ request }) => {
   var _a2;
   console.log("CUSTOMERS_DATA_REQUEST webhook received");
   try {
@@ -2753,15 +3528,15 @@ const action$l = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$C = async () => {
+const loader$F = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
 const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$l,
-  loader: loader$C
+  action: action$p,
+  loader: loader$F
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$B({ request }) {
+async function loader$E({ request }) {
   const { session } = await authenticate.admin(request);
   try {
     const shopName = session.shop;
@@ -2799,9 +3574,9 @@ async function loader$B({ request }) {
 }
 const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$B
+  loader: loader$E
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$k({ request }) {
+async function action$o({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -2853,15 +3628,15 @@ async function action$k({ request }) {
     );
   }
 }
-async function loader$A() {
+async function loader$D() {
   return json({ message: "Use POST to test subscription functionality" });
 }
 const route9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$k,
-  loader: loader$A
+  action: action$o,
+  loader: loader$D
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$j({ request }) {
+async function action$n({ request }) {
   const { admin } = await authenticate.admin(request);
   try {
     const formData = await request.formData();
@@ -2878,15 +3653,15 @@ async function action$j({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$z() {
+async function loader$C() {
   return json({ message: "Use POST to update metafields" });
 }
 const route10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$j,
-  loader: loader$z
+  action: action$n,
+  loader: loader$C
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$y({ request }) {
+async function loader$B({ request }) {
   try {
     const { admin, session } = await authenticate.admin(request);
     const { shop } = session;
@@ -2925,9 +3700,9 @@ async function loader$y({ request }) {
 }
 const route11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$y
+  loader: loader$B
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$x({ request }) {
+async function loader$A({ request }) {
   try {
     const url = new URL(request.url);
     const shop = url.searchParams.get("shop");
@@ -2960,9 +3735,9 @@ async function loader$x({ request }) {
 }
 const route12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$x
+  loader: loader$A
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$w({ request }) {
+async function loader$z({ request }) {
   const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
   const { getSubscriptionStatus: getSubscriptionStatus2 } = await Promise.resolve().then(() => Subscription_server);
   try {
@@ -2988,9 +3763,9 @@ async function loader$w({ request }) {
 }
 const route13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$w
+  loader: loader$z
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$v({ request }) {
+async function loader$y({ request }) {
   const headers2 = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -3183,9 +3958,9 @@ async function loader$v({ request }) {
 }
 const route14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$v
+  loader: loader$y
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$i({ request }) {
+async function action$m({ request }) {
   const { authenticate: authenticate2, billing } = await Promise.resolve().then(() => shopify_server);
   try {
     const { admin, session } = await authenticate2.admin(request);
@@ -3250,15 +4025,15 @@ async function action$i({ request }) {
     );
   }
 }
-async function loader$u() {
+async function loader$x() {
   return json({ message: "Use POST to cancel a subscription" });
 }
 const route15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$i,
-  loader: loader$u
+  action: action$m,
+  loader: loader$x
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$h({ request }) {
+async function action$l({ request }) {
   try {
     const { shopifyApp: shopifyApp2 } = await Promise.resolve().then(() => shopify_server);
     const data = await request.json();
@@ -3303,13 +4078,13 @@ async function action$h({ request }) {
     });
   }
 }
-async function loader$t() {
+async function loader$w() {
   return json({ message: "POST requests only" }, { status: 405 });
 }
 const route16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$h,
-  loader: loader$t
+  action: action$l,
+  loader: loader$w
 }, Symbol.toStringTag, { value: "Module" }));
 async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -3363,7 +4138,7 @@ const route17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   default: handler
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$s({ request }) {
+async function loader$v({ request }) {
   var _a2, _b;
   try {
     console.log("🔍 Authenticating admin...");
@@ -3462,7 +4237,7 @@ async function loader$s({ request }) {
 }
 const route18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$s
+  loader: loader$v
 }, Symbol.toStringTag, { value: "Module" }));
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -3541,7 +4316,7 @@ const mongodb_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   getShopName,
   setShopName
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$r({ request }) {
+async function loader$u({ request }) {
   var _a2, _b;
   try {
     let shopName = null;
@@ -3648,9 +4423,9 @@ function ServeCampaignRoute() {
 const route19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: ServeCampaignRoute,
-  loader: loader$r
+  loader: loader$u
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$g({ request }) {
+async function action$k({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3679,9 +4454,9 @@ async function action$g({ request }) {
 }
 const route20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$g
+  action: action$k
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$f({ request }) {
+async function action$j({ request }) {
   var _a2;
   const { admin, session } = await authenticate.admin(request);
   try {
@@ -3714,15 +4489,15 @@ async function action$f({ request }) {
     return json({ success: false, message: error.message }, { status: 500 });
   }
 }
-async function loader$q() {
+async function loader$t() {
   return json({ message: "Use POST to sync campaign" });
 }
 const route21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$f,
-  loader: loader$q
+  action: action$j,
+  loader: loader$t
 }, Symbol.toStringTag, { value: "Module" }));
-const action$e = async ({ request }) => {
+const action$i = async ({ request }) => {
   var _a2;
   console.log("CUSTOMERS_REDACT webhook received");
   try {
@@ -3753,15 +4528,15 @@ const action$e = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$p = async () => {
+const loader$s = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
 const route22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$e,
-  loader: loader$p
+  action: action$i,
+  loader: loader$s
 }, Symbol.toStringTag, { value: "Module" }));
-async function action$d({ request }) {
+async function action$h({ request }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3787,14 +4562,66 @@ async function action$d({ request }) {
 }
 const route23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$d
+  action: action$h
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$r({ request }) {
+  var _a2;
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    const url = new URL(request.url);
+    const charge_id = url.searchParams.get("charge_id");
+    if (charge_id) {
+      const subscriptionQuery = await admin.graphql(
+        `#graphql
+        query GetAppSubscription($id: ID!) {
+          node(id: $id) {
+            ... on AppSubscription {
+              id
+              name
+              status
+              currentPeriodEnd
+            }
+          }
+        }`,
+        {
+          variables: {
+            id: `gid://shopify/AppSubscription/${charge_id}`
+          }
+        }
+      );
+      const subscriptionData = await subscriptionQuery.json();
+      const subscription = (_a2 = subscriptionData.data) == null ? void 0 : _a2.node;
+      if (subscription && subscription.status === "ACTIVE") {
+        await createSubscriptionMetafield(admin.graphql, true, shop);
+        return redirect("/app?subscription=success");
+      } else {
+        return redirect("/app?subscription=failed");
+      }
+    }
+    return redirect("/app");
+  } catch (error) {
+    console.error("Billing callback error:", error);
+    return redirect("/app?subscription=error");
+  }
+}
+function BillingCallback() {
+  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Processing Subscription..." }),
+    /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Please wait while we confirm your subscription." })
+  ] }) });
+}
+const route24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: BillingCallback,
+  loader: loader$r
 }, Symbol.toStringTag, { value: "Module" }));
 const corsHeaders$1 = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$o({ request }) {
+async function loader$q({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders$1 });
   }
@@ -3803,7 +4630,7 @@ async function loader$o({ request }) {
     { status: 405, headers: corsHeaders$1 }
   );
 }
-async function action$c({ request }) {
+async function action$g({ request }) {
   if (request.method !== "POST") {
     return json(
       { error: "Method not allowed" },
@@ -3881,12 +4708,12 @@ async function action$c({ request }) {
     );
   }
 }
-const route24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$c,
-  loader: loader$o
+  action: action$g,
+  loader: loader$q
 }, Symbol.toStringTag, { value: "Module" }));
-const action$b = async ({ request }) => {
+const action$f = async ({ request }) => {
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -3959,7 +4786,7 @@ const action$b = async ({ request }) => {
     );
   }
 };
-const loader$n = async ({ request }) => {
+const loader$p = async ({ request }) => {
   try {
     const url = new URL(request.url);
     const campaignId = url.searchParams.get("campaignId");
@@ -3999,28 +4826,28 @@ const loader$n = async ({ request }) => {
     );
   }
 };
-const route25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$b,
-  loader: loader$n
+  action: action$f,
+  loader: loader$p
 }, Symbol.toStringTag, { value: "Module" }));
-const loader$m = () => {
+const loader$o = () => {
   return redirect("/campaigns/create");
 };
 function CreateCampaignRedirect() {
   return null;
 }
-const route26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CreateCampaignRedirect,
-  loader: loader$m
+  loader: loader$o
 }, Symbol.toStringTag, { value: "Module" }));
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
-async function loader$l({ request }) {
+async function loader$n({ request }) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -4029,7 +4856,7 @@ async function loader$l({ request }) {
     { status: 405, headers: corsHeaders }
   );
 }
-async function action$a({ request }) {
+async function action$e({ request }) {
   if (request.method !== "POST") {
     return json(
       { error: "Method not allowed" },
@@ -4144,10 +4971,10 @@ async function action$a({ request }) {
     );
   }
 }
-const route27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$a,
-  loader: loader$l
+  action: action$e,
+  loader: loader$n
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$2(request) {
   try {
@@ -4168,7 +4995,7 @@ async function getEffectiveShopName$2(request) {
     return shopName;
   }
 }
-async function loader$k({ request }) {
+async function loader$m({ request }) {
   try {
     const shopName = await getEffectiveShopName$2(request);
     const { db, dbName } = await connectToDatabase(shopName);
@@ -4184,7 +5011,7 @@ async function loader$k({ request }) {
     return json({ error: error.message }, { status: 500 });
   }
 }
-async function action$9({ request }) {
+async function action$d({ request }) {
   try {
     const campaignData = await request.json();
     const shopName = await getEffectiveShopName$2(request);
@@ -4209,10 +5036,10 @@ async function action$9({ request }) {
     return json({ error: error.message }, { status: 500 });
   }
 }
-const route28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$9,
-  loader: loader$k
+  action: action$d,
+  loader: loader$m
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName$1(request) {
   try {
@@ -4246,7 +5073,7 @@ async function getEffectiveShopName$1(request) {
     return "wheel-of-wonders.myshopify.com";
   }
 }
-async function action$8({ request, params }) {
+async function action$c({ request, params }) {
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -4357,13 +5184,159 @@ async function action$8({ request, params }) {
     return json({ error: "Internal server error" }, { status: 500 });
   }
 }
-async function loader$j({ request, params }) {
+async function loader$l({ request, params }) {
   return json({ message: "Use POST to update campaign status" });
 }
-const route29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$8,
-  loader: loader$j
+  action: action$c,
+  loader: loader$l
+}, Symbol.toStringTag, { value: "Module" }));
+async function action$b({ request }) {
+  var _a2, _b;
+  try {
+    const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
+    const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
+    const { syncActiveCampaignToMetafields: syncActiveCampaignToMetafields2 } = await Promise.resolve().then(() => Subscription_server);
+    const { admin, session } = await authenticate2.admin(request);
+    const shopName = session.shop;
+    const graphql = admin.graphql;
+    console.log("Campaign Toggle - Authenticated for shop:", shopName);
+    const formData = await request.formData();
+    const campaignId = formData.get("campaignId");
+    const action2 = formData.get("action");
+    if (!campaignId) {
+      return json(
+        { success: false, error: "Campaign ID is required" },
+        { status: 400 }
+      );
+    }
+    const { db } = await connectToDatabase2(shopName);
+    const campaign = await db.collection("campaigns").findOne({ id: campaignId });
+    if (!campaign) {
+      return json(
+        { success: false, error: "Campaign not found" },
+        { status: 404 }
+      );
+    }
+    const newStatus = action2 === "activate" ? "active" : "draft";
+    if (newStatus === "active") {
+      await db.collection("campaigns").updateMany(
+        { id: { $ne: campaignId }, status: "active" },
+        { $set: { status: "draft" } }
+      );
+      console.log("Campaign Toggle - Deactivated other active campaigns");
+    }
+    await db.collection("campaigns").updateOne({ id: campaignId }, { $set: { status: newStatus } });
+    console.log(
+      `Campaign Toggle - Updated campaign ${campaignId} to ${newStatus}`
+    );
+    if (newStatus === "active") {
+      try {
+        console.log("Campaign Toggle - Syncing to metafields...");
+        const syncResult = await syncActiveCampaignToMetafields2(
+          graphql,
+          shopName
+        );
+        return json({
+          success: true,
+          message: "Campaign activated and synced to storefront successfully!",
+          status: newStatus,
+          campaignId,
+          synced: true
+        });
+      } catch (syncError) {
+        console.error("Campaign Toggle - Sync error:", syncError);
+        return json({
+          success: true,
+          message: "Campaign activated successfully! Storefront sync will retry automatically.",
+          status: newStatus,
+          campaignId,
+          synced: false,
+          syncError: syncError.message
+        });
+      }
+    } else {
+      try {
+        console.log("Campaign Toggle - Clearing metafields...");
+        const appIdQuery = await graphql(`
+          #graphql
+          query {
+            currentAppInstallation {
+              id
+            }
+          }
+        `);
+        const appIdResult = await appIdQuery.json();
+        if ((_b = (_a2 = appIdResult.data) == null ? void 0 : _a2.currentAppInstallation) == null ? void 0 : _b.id) {
+          const appInstallationID = appIdResult.data.currentAppInstallation.id;
+          const clearMetafields = [
+            {
+              namespace: "wheel-of-wonders",
+              key: "activeCampaignId",
+              type: "single_line_text_field",
+              value: "",
+              ownerId: appInstallationID
+            },
+            {
+              namespace: "wheel-of-wonders",
+              key: "showFloatingButton",
+              type: "boolean",
+              value: "false",
+              ownerId: appInstallationID
+            }
+          ];
+          await graphql(
+            `
+              mutation CreateAppDataMetafield(
+                $metafields: [MetafieldsSetInput!]!
+              ) {
+                metafieldsSet(metafields: $metafields) {
+                  metafields {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                  userErrors {
+                    field
+                    message
+                  }
+                }
+              }
+            `,
+            { variables: { metafields: clearMetafields } }
+          );
+          console.log("Campaign Toggle - Metafields cleared successfully");
+        }
+      } catch (clearError) {
+        console.error(
+          "Campaign Toggle - Error clearing metafields:",
+          clearError
+        );
+      }
+      return json({
+        success: true,
+        message: "Campaign deactivated and removed from storefront successfully!",
+        status: newStatus,
+        campaignId
+      });
+    }
+  } catch (error) {
+    console.error("Campaign Toggle - Authentication error:", error);
+    return json(
+      {
+        success: false,
+        error: "Authentication failed. Please refresh the page.",
+        authError: true
+      },
+      { status: 401 }
+    );
+  }
+}
+const route31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$b
 }, Symbol.toStringTag, { value: "Module" }));
 async function getEffectiveShopName(request) {
   try {
@@ -4384,7 +5357,7 @@ async function getEffectiveShopName(request) {
     return shopName;
   }
 }
-async function loader$i({ params, request }) {
+async function loader$k({ params, request }) {
   try {
     const { id } = params;
     const shopName = await getEffectiveShopName(request);
@@ -4404,7 +5377,7 @@ async function loader$i({ params, request }) {
     return json({ error: error.message }, { status: 500 });
   }
 }
-async function action$7({ request, params }) {
+async function action$a({ request, params }) {
   const method = request.method.toLowerCase();
   const shopName = await getEffectiveShopName(request);
   const { db, dbName } = await connectToDatabase(shopName);
@@ -4451,12 +5424,12 @@ async function action$7({ request, params }) {
   }
   return json({ error: "Method not allowed" }, { status: 405 });
 }
-const route30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$7,
-  loader: loader$i
+  action: action$a,
+  loader: loader$k
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$h({ request }) {
+async function loader$j({ request }) {
   try {
     let shopName = null;
     try {
@@ -4486,11 +5459,11 @@ async function loader$h({ request }) {
     });
   }
 }
-const route31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route33 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$h
+  loader: loader$j
 }, Symbol.toStringTag, { value: "Module" }));
-async function loader$g({ request }) {
+async function loader$i({ request }) {
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
@@ -4527,11 +5500,11 @@ async function loader$g({ request }) {
     return json({ error: "Failed to fetch campaign" }, { status: 500 });
   }
 }
-const route32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route34 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  loader: loader$g
+  loader: loader$i
 }, Symbol.toStringTag, { value: "Module" }));
-const action$6 = async ({ request }) => {
+const action$9 = async ({ request }) => {
   console.log("SHOP_REDACT webhook received");
   try {
     const shopifyHmac = request.headers.get("x-shopify-hmac-sha256");
@@ -4561,13 +5534,13 @@ const action$6 = async ({ request }) => {
     return new Response("Internal server error", { status: 500 });
   }
 };
-const loader$f = async () => {
+const loader$h = async () => {
   return new Response("Method not allowed", { status: 405 });
 };
-const route33 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route35 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$6,
-  loader: loader$f
+  action: action$9,
+  loader: loader$h
 }, Symbol.toStringTag, { value: "Module" }));
 let Key;
 (function(Key2) {
@@ -15548,11 +16521,11 @@ function loginErrorMessage(loginErrors) {
   return {};
 }
 const links = () => [{ rel: "stylesheet", href: polarisStyles }];
-const loader$e = async ({ request }) => {
+const loader$g = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return { errors, polarisTranslations };
 };
-const action$5 = async ({ request }) => {
+const action$8 = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return {
     errors
@@ -15581,51 +16554,57 @@ function Auth() {
     /* @__PURE__ */ jsx(Button, { submit: true, children: "Log in" })
   ] }) }) }) }) });
 }
-const route34 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route36 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$5,
+  action: action$8,
   default: Auth,
   links,
-  loader: loader$e
+  loader: loader$g
 }, Symbol.toStringTag, { value: "Module" }));
 function Navigation2({ createButtonText = "Create Campaign" }) {
   const location = useLocation();
   const currentPath = location.pathname;
-  return /* @__PURE__ */ jsxs("div", { className: "flex justify-between mb-8", children: [
-    /* @__PURE__ */ jsxs("div", { className: "bg-gray-100 rounded-lg shadow-sm p-1 flex items-center flex-1 mr-4", children: [
-      /* @__PURE__ */ jsx(
+  useEffect(() => {
+    console.log(`Current path: ${currentPath}`);
+  }, [currentPath]);
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between mb-8", children: [
+      /* @__PURE__ */ jsxs("div", { className: "bg-gray-100 rounded-lg shadow-sm p-1 flex items-center flex-1 mr-4", children: [
+        /* @__PURE__ */ jsx(
+          Link$1,
+          {
+            to: "/index",
+            className: `${currentPath === "/app" || currentPath === "/app" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
+            children: "Home"
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          Link$1,
+          {
+            to: "/campaigns",
+            className: `${currentPath.startsWith("/campaigns") ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
+            children: "All Campaigns"
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          Link$1,
+          {
+            to: "/tutorial",
+            className: `${currentPath === "/tutorial" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
+            children: "Tutorial"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "flex items-center space-x-4", children: /* @__PURE__ */ jsx(
         Link$1,
         {
-          to: "/index",
-          className: `${currentPath === "/app" || currentPath === "/app" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
-          children: "Home"
+          to: currentPath.includes("/campaigns/create") ? "/campaigns" : "/campaigns/create",
+          className: "bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap",
+          children: createButtonText
         }
-      ),
-      /* @__PURE__ */ jsx(
-        Link$1,
-        {
-          to: "/campaigns",
-          className: `${currentPath.startsWith("/campaigns") ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
-          children: "All Campaigns"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        Link$1,
-        {
-          to: "/tutorial",
-          className: `${currentPath === "/tutorial" ? "bg-indigo-600 text-white" : "text-gray-700"} px-8 py-3 rounded-lg font-medium text-center flex-1`,
-          children: "Tutorial"
-        }
-      )
+      ) })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "flex items-center space-x-4", children: /* @__PURE__ */ jsx(
-      Link$1,
-      {
-        to: currentPath.includes("/campaigns/create") ? "/campaigns" : "/campaigns/create",
-        className: "bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap",
-        children: createButtonText
-      }
-    ) })
+    /* @__PURE__ */ jsx(Outlet, {})
   ] });
 }
 function CampaignActiveIndicator() {
@@ -15651,7 +16630,7 @@ function CampaignActiveIndicator() {
     activeCampaign.name
   ] });
 }
-const loader$d = async ({ request }) => {
+const loader$f = async ({ request }) => {
   const { authenticateWithFallback: authenticateWithFallback2, isClientSideNavigation: isClientSideNavigation2 } = await Promise.resolve().then(() => shopify_server);
   const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
   let campaigns = [];
@@ -15799,7 +16778,7 @@ function CampaignList() {
   } = useCampaign();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const campaigns = ((_a2 = data == null ? void 0 : data.campaigns) == null ? void 0 : _a2.length) > 0 ? data.campaigns : allCampaigns;
   const shouldShowFallback = (data == null ? void 0 : data.fallbackMode) && campaigns.length === 0;
   if (shouldShowFallback) {
@@ -16184,10 +17163,72 @@ function Campaigns$1() {
     location.pathname === "/campaigns" && /* @__PURE__ */ jsx(CampaignList, {})
   ] }) });
 }
-const route35 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route37 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaigns$1,
-  loader: loader$d
+  loader: loader$f
+}, Symbol.toStringTag, { value: "Module" }));
+async function action$7({ request }) {
+  console.log("=== Local Campaign Toggle Route Called ===");
+  try {
+    const formData = await request.formData();
+    const campaignId = formData.get("campaignId");
+    const action2 = formData.get("action");
+    const shopName = formData.get("shopName") || "wheel-of-wonders.myshopify.com";
+    console.log(
+      "Campaign ID:",
+      campaignId,
+      "Action:",
+      action2,
+      "Shop:",
+      shopName
+    );
+    if (!campaignId) {
+      return json(
+        { success: false, error: "Campaign ID is required" },
+        { status: 400 }
+      );
+    }
+    const { db } = await connectToDatabase$1(shopName);
+    const campaign = await db.collection("campaigns").findOne({ id: campaignId });
+    if (!campaign) {
+      return json(
+        { success: false, error: "Campaign not found" },
+        { status: 404 }
+      );
+    }
+    const newStatus = action2 === "activate" ? "active" : "draft";
+    if (newStatus === "active") {
+      await db.collection("campaigns").updateMany(
+        { id: { $ne: campaignId }, status: "active" },
+        { $set: { status: "draft" } }
+      );
+      console.log("Deactivated other active campaigns");
+    }
+    await db.collection("campaigns").updateOne({ id: campaignId }, { $set: { status: newStatus } });
+    console.log(`Campaign ${campaignId} status updated to ${newStatus}`);
+    const message = newStatus === "active" ? "Campaign activated successfully! (Storefront sync will be available once authentication is fixed)" : "Campaign deactivated successfully!";
+    return json({
+      success: true,
+      message,
+      status: newStatus,
+      campaignId,
+      authWarning: true
+    });
+  } catch (error) {
+    console.error("Local campaign toggle error:", error);
+    return json(
+      {
+        success: false,
+        error: `Failed to toggle campaign: ${error.message}`
+      },
+      { status: 500 }
+    );
+  }
+}
+const route38 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$7
 }, Symbol.toStringTag, { value: "Module" }));
 function CampaignPreview() {
   const { campaignData } = useCampaign();
@@ -20001,7 +21042,7 @@ function StepFour() {
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [activePreviewTab, setActivePreviewTab] = useState("landing");
   const [newPageUrl, setNewPageUrl] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const [appearingRules, setAppearingRules] = useState(
     ((_a2 = campaignData.rules) == null ? void 0 : _a2.appearingRules) || {
       exitIntent: { enabled: false, device: "desktop" },
@@ -21834,7 +22875,7 @@ function StepFour() {
 }
 function CampaignEdit$1() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const { allCampaigns, updateCampaignData, campaignData, saveCampaign } = useCampaign();
   const [isLoading, setIsLoading] = useState(true);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -21988,7 +23029,7 @@ function CampaignEdit$1() {
     ] }) })
   ] }) });
 }
-const route36 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route39 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CampaignEdit$1
 }, Symbol.toStringTag, { value: "Module" }));
@@ -22004,7 +23045,7 @@ function CreateCampaign() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showLaunchModal, setShowLaunchModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   useEffect(() => {
     console.log("CreateCampaign rendered, current step:", campaignData.step);
     toast.success("Campaign creator loaded!");
@@ -22385,9 +23426,158 @@ function CreateCampaign() {
     ] }) })
   ] });
 }
-const route37 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route40 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CreateCampaign
+}, Symbol.toStringTag, { value: "Module" }));
+async function action$6({ request }) {
+  var _a2, _b;
+  console.log("=== Campaign Toggle Route Called ===");
+  try {
+    const { session, admin } = await authenticate.admin(request);
+    const shopName = session.shop;
+    const graphql = admin.graphql;
+    console.log("Authentication successful for shop:", shopName);
+    const formData = await request.formData();
+    const campaignId = formData.get("campaignId");
+    const action2 = formData.get("action");
+    console.log("Campaign ID:", campaignId, "Action:", action2);
+    if (!campaignId) {
+      return json(
+        { success: false, error: "Campaign ID is required" },
+        { status: 400 }
+      );
+    }
+    const { db } = await connectToDatabase$1(shopName);
+    const campaign = await db.collection("campaigns").findOne({ id: campaignId });
+    if (!campaign) {
+      return json(
+        { success: false, error: "Campaign not found" },
+        { status: 404 }
+      );
+    }
+    const newStatus = action2 === "activate" ? "active" : "draft";
+    if (newStatus === "active") {
+      await db.collection("campaigns").updateMany(
+        { id: { $ne: campaignId }, status: "active" },
+        { $set: { status: "draft" } }
+      );
+      console.log("Deactivated other active campaigns");
+    }
+    await db.collection("campaigns").updateOne({ id: campaignId }, { $set: { status: newStatus } });
+    console.log(`Campaign ${campaignId} status updated to ${newStatus}`);
+    if (newStatus === "active") {
+      try {
+        console.log("Syncing active campaign to metafields...");
+        const syncResult = await syncActiveCampaignToMetafields(
+          graphql,
+          shopName
+        );
+        if (syncResult && syncResult.success) {
+          console.log("Sync successful");
+          return json({
+            success: true,
+            message: "Campaign activated and synced to storefront successfully!",
+            status: newStatus,
+            campaignId
+          });
+        } else {
+          console.log("Sync failed:", syncResult);
+          return json({
+            success: true,
+            message: "Campaign activated but sync to storefront may take a moment.",
+            status: newStatus,
+            campaignId,
+            syncWarning: true
+          });
+        }
+      } catch (syncError) {
+        console.error("Sync error:", syncError);
+        return json({
+          success: true,
+          message: "Campaign activated but sync to storefront may take a moment.",
+          status: newStatus,
+          campaignId,
+          syncWarning: true
+        });
+      }
+    } else {
+      try {
+        console.log("Clearing metafields for deactivated campaign...");
+        const appIdQuery = await graphql(`
+          #graphql
+          query {
+            currentAppInstallation {
+              id
+            }
+          }
+        `);
+        const appIdResult = await appIdQuery.json();
+        if ((_b = (_a2 = appIdResult.data) == null ? void 0 : _a2.currentAppInstallation) == null ? void 0 : _b.id) {
+          const appInstallationID = appIdResult.data.currentAppInstallation.id;
+          const clearMetafields = [
+            {
+              namespace: "wheel-of-wonders",
+              key: "activeCampaignId",
+              type: "single_line_text_field",
+              value: "",
+              ownerId: appInstallationID
+            },
+            {
+              namespace: "wheel-of-wonders",
+              key: "showFloatingButton",
+              type: "boolean",
+              value: "false",
+              ownerId: appInstallationID
+            }
+          ];
+          await graphql(
+            `
+              mutation CreateAppDataMetafield(
+                $metafields: [MetafieldsSetInput!]!
+              ) {
+                metafieldsSet(metafields: $metafields) {
+                  metafields {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                  userErrors {
+                    field
+                    message
+                  }
+                }
+              }
+            `,
+            { variables: { metafields: clearMetafields } }
+          );
+          console.log("Metafields cleared successfully");
+        }
+      } catch (clearError) {
+        console.error("Error clearing metafields:", clearError);
+      }
+      return json({
+        success: true,
+        message: "Campaign deactivated successfully!",
+        status: newStatus,
+        campaignId
+      });
+    }
+  } catch (error) {
+    console.error("Campaign toggle error:", error);
+    return json(
+      {
+        success: false,
+        error: `Failed to toggle campaign: ${error.message}`
+      },
+      { status: 500 }
+    );
+  }
+}
+const route41 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$6
 }, Symbol.toStringTag, { value: "Module" }));
 function Campaigns() {
   const { allCampaigns, deleteCampaign, checkCanCreateCampaign } = useCampaign();
@@ -22398,7 +23588,7 @@ function Campaigns() {
   const [showPlanModal, setShowPlanModal] = useState(
     searchParams.get("upgrade") === "true"
   );
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -22626,14 +23816,14 @@ function Campaigns() {
     ] }) })
   ] });
 }
-const route38 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route42 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaigns
 }, Symbol.toStringTag, { value: "Module" }));
 function CampaignView() {
   var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const { id } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const { allCampaigns } = useCampaign();
   const [campaign, setCampaign] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22868,13 +24058,13 @@ function CampaignView() {
     ] })
   ] });
 }
-const route39 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route43 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CampaignView
 }, Symbol.toStringTag, { value: "Module" }));
 function CampaignEdit() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const { allCampaigns, updateCampaignData, campaignData, saveCampaign } = useCampaign();
   const [isLoading, setIsLoading] = useState(true);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -22997,11 +24187,195 @@ function CampaignEdit() {
     ] }) })
   ] }) });
 }
-const route40 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route44 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: CampaignEdit
 }, Symbol.toStringTag, { value: "Module" }));
+async function loader$e({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    return json({
+      success: true,
+      shop,
+      message: "Authentication successful"
+    });
+  } catch (error) {
+    return json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+function TestAuth() {
+  return /* @__PURE__ */ jsx("div", { children: "Check console for auth test results" });
+}
+const route45 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: TestAuth,
+  loader: loader$e
+}, Symbol.toStringTag, { value: "Module" }));
+const loader$d = async ({ request }) => {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const shopName = session.shop;
+    const graphql = admin.graphql;
+    console.log("Test - Authenticated with shop:", shopName);
+    const activeCampaign = await getActiveCampaign(shopName);
+    console.log("Test - Active campaign:", activeCampaign);
+    if (activeCampaign) {
+      const syncResult = await syncActiveCampaignToMetafields(
+        graphql,
+        shopName
+      );
+      console.log("Test - Sync result:", syncResult);
+      return json({
+        success: true,
+        message: "Sync completed",
+        activeCampaign,
+        syncResult
+      });
+    } else {
+      return json({
+        success: false,
+        message: "No active campaign found",
+        shopName
+      });
+    }
+  } catch (error) {
+    console.error("Test - Error:", error);
+    return json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+function TestSync() {
+  return /* @__PURE__ */ jsxs("div", { children: [
+    /* @__PURE__ */ jsx("h1", { children: "Test Sync Route" }),
+    /* @__PURE__ */ jsx("p", { children: "Check the console for sync results" })
+  ] });
+}
+const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: TestSync,
+  loader: loader$d
+}, Symbol.toStringTag, { value: "Module" }));
+async function action$5({ request }) {
+  console.log("Test route called successfully");
+  return json({ success: true, message: "Test route working" });
+}
 async function loader$c({ request }) {
+  console.log("Test route GET called successfully");
+  return json({ success: true, message: "Test route GET working" });
+}
+const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$5,
+  loader: loader$c
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$b({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    return json({
+      shop,
+      shopFormatted: shop.replace(/\.myshopify\.com$/i, "")
+    });
+  } catch (error) {
+    console.error("Billing loader error:", error);
+    return redirect("/auth");
+  }
+}
+async function action$4({ request }) {
+  var _a2, _b, _c, _d, _e;
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { shop } = session;
+    const subscriptionMutation = await admin.graphql(
+      `#graphql
+      mutation AppSubscriptionCreate($name: String!, $returnUrl: URL!, $test: Boolean, $lineItems: [AppSubscriptionLineItemInput!]!) {
+        appSubscriptionCreate(name: $name, returnUrl: $returnUrl, test: $test, lineItems: $lineItems) {
+          appSubscription {
+            id
+            status
+          }
+          confirmationUrl
+          userErrors {
+            field
+            message
+          }
+        }
+      }`,
+      {
+        variables: {
+          name: "Spinorama Monthly Plan",
+          returnUrl: `${process.env.SHOPIFY_APP_URL}/billing/callback`,
+          test: process.env.NODE_ENV === "development",
+          // Set to false in production
+          lineItems: [
+            {
+              plan: {
+                appRecurringPricingDetails: {
+                  price: { amount: 5, currencyCode: "USD" },
+                  interval: "EVERY_30_DAYS"
+                }
+              }
+            }
+          ]
+        }
+      }
+    );
+    const subscriptionData = await subscriptionMutation.json();
+    if (((_c = (_b = (_a2 = subscriptionData.data) == null ? void 0 : _a2.appSubscriptionCreate) == null ? void 0 : _b.userErrors) == null ? void 0 : _c.length) > 0) {
+      console.error("Subscription creation errors:", subscriptionData.data.appSubscriptionCreate.userErrors);
+      return json({ error: "Failed to create subscription" }, { status: 400 });
+    }
+    const confirmationUrl = (_e = (_d = subscriptionData.data) == null ? void 0 : _d.appSubscriptionCreate) == null ? void 0 : _e.confirmationUrl;
+    if (confirmationUrl) {
+      return redirect(confirmationUrl);
+    } else {
+      return json({ error: "No confirmation URL received" }, { status: 400 });
+    }
+  } catch (error) {
+    console.error("Billing action error:", error);
+    return json({ error: "Failed to process subscription" }, { status: 500 });
+  }
+}
+function Billing$1() {
+  useLoaderData();
+  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-md mx-auto bg-white rounded-lg shadow-sm p-8", children: [
+    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Subscribe to Spinorama" }),
+    /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "Unlock all features with our monthly subscription plan." }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-indigo-50 p-6 rounded-lg mb-6", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Monthly Plan" }),
+      /* @__PURE__ */ jsx("p", { className: "text-3xl font-bold text-indigo-600 mb-2", children: "$5/month" }),
+      /* @__PURE__ */ jsxs("ul", { className: "text-sm text-gray-600 space-y-1", children: [
+        /* @__PURE__ */ jsx("li", { children: "✓ 20 spin-to-win campaigns" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Email collection & analytics" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Customizable wheels and rewards" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Lead collection with discounts" }),
+        /* @__PURE__ */ jsx("li", { children: "✓ Priority support" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx(Form$1, { method: "post", children: /* @__PURE__ */ jsx(
+      "button",
+      {
+        type: "submit",
+        className: "w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold",
+        children: "Subscribe Now"
+      }
+    ) }),
+    /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-4 text-center", children: "You will be redirected to Shopify to confirm your subscription. Cancel anytime from your Shopify admin." })
+  ] }) });
+}
+const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  action: action$4,
+  default: Billing$1,
+  loader: loader$b
+}, Symbol.toStringTag, { value: "Module" }));
+async function loader$a({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const { shop } = session;
   const activeCampaign = await getActiveCampaign(shop);
@@ -23034,7 +24408,7 @@ async function loader$c({ request }) {
     metafields
   });
 }
-async function action$4({ request }) {
+async function action$3({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const { shop } = session;
   const formData = await request.formData();
@@ -23180,14 +24554,14 @@ function Settings() {
     ] })
   ] });
 }
-const route41 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$4,
+  action: action$3,
   default: Settings,
-  loader: loader$c
+  loader: loader$a
 }, Symbol.toStringTag, { value: "Module" }));
 function Tutorial() {
-  const navigate = useNavigate$1();
+  const navigate = useNavigate();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const handlePlayPause = () => {
@@ -23252,11 +24626,11 @@ function Tutorial() {
     ] })
   ] }) });
 }
-const route42 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Tutorial
 }, Symbol.toStringTag, { value: "Module" }));
-const action$3 = async ({ request }) => {
+const action$2 = async ({ request }) => {
   console.log("General webhook route called:", request.method, request.url);
   try {
     const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
@@ -23293,11 +24667,11 @@ const action$3 = async ({ request }) => {
     return new Response(null, { status: 200 });
   }
 };
-const route43 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$3
+  action: action$2
 }, Symbol.toStringTag, { value: "Module" }));
-const action$2 = async ({ request }) => {
+const action$1 = async ({ request }) => {
   const { topic, shop, session } = await authenticate.webhook(request);
   console.log(`Received ${topic} webhook for ${shop}`);
   if (topic === "APP_UNINSTALLED") {
@@ -23315,176 +24689,23 @@ const action$2 = async ({ request }) => {
   }
   return new Response(null, { status: 200 });
 };
-const route44 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  action: action$2
+  action: action$1
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$4() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route45 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$4
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$3() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route46 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$3
-}, Symbol.toStringTag, { value: "Module" }));
-async function loader$b({ request }) {
-  try {
-    const { admin, session } = await authenticate.admin(request);
-    const { shop } = session;
-    return json({
-      shop,
-      shopFormatted: shop.replace(/\.myshopify\.com$/i, "")
-    });
-  } catch (error) {
-    console.error("Billing loader error:", error);
-    return redirect("/auth");
-  }
-}
-async function action$1({ request }) {
-  var _a2, _b, _c, _d, _e;
-  try {
-    const { admin, session } = await authenticate.admin(request);
-    const { shop } = session;
-    const subscriptionMutation = await admin.graphql(
-      `#graphql
-      mutation AppSubscriptionCreate($name: String!, $returnUrl: URL!, $test: Boolean, $lineItems: [AppSubscriptionLineItemInput!]!) {
-        appSubscriptionCreate(name: $name, returnUrl: $returnUrl, test: $test, lineItems: $lineItems) {
-          appSubscription {
-            id
-            status
-          }
-          confirmationUrl
-          userErrors {
-            field
-            message
-          }
-        }
-      }`,
-      {
-        variables: {
-          name: "Spinorama Monthly Plan",
-          returnUrl: `${process.env.SHOPIFY_APP_URL}/billing/callback`,
-          test: process.env.NODE_ENV === "development",
-          // Set to false in production
-          lineItems: [
-            {
-              plan: {
-                appRecurringPricingDetails: {
-                  price: { amount: 5, currencyCode: "USD" },
-                  interval: "EVERY_30_DAYS"
-                }
-              }
-            }
-          ]
-        }
-      }
-    );
-    const subscriptionData = await subscriptionMutation.json();
-    if (((_c = (_b = (_a2 = subscriptionData.data) == null ? void 0 : _a2.appSubscriptionCreate) == null ? void 0 : _b.userErrors) == null ? void 0 : _c.length) > 0) {
-      console.error("Subscription creation errors:", subscriptionData.data.appSubscriptionCreate.userErrors);
-      return json({ error: "Failed to create subscription" }, { status: 400 });
-    }
-    const confirmationUrl = (_e = (_d = subscriptionData.data) == null ? void 0 : _d.appSubscriptionCreate) == null ? void 0 : _e.confirmationUrl;
-    if (confirmationUrl) {
-      return redirect(confirmationUrl);
-    } else {
-      return json({ error: "No confirmation URL received" }, { status: 400 });
-    }
-  } catch (error) {
-    console.error("Billing action error:", error);
-    return json({ error: "Failed to process subscription" }, { status: 500 });
-  }
-}
-function Billing() {
-  useLoaderData();
-  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-md mx-auto bg-white rounded-lg shadow-sm p-8", children: [
-    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Subscribe to Spinorama" }),
-    /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "Unlock all features with our monthly subscription plan." }),
-    /* @__PURE__ */ jsxs("div", { className: "bg-indigo-50 p-6 rounded-lg mb-6", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Monthly Plan" }),
-      /* @__PURE__ */ jsx("p", { className: "text-3xl font-bold text-indigo-600 mb-2", children: "$5/month" }),
-      /* @__PURE__ */ jsxs("ul", { className: "text-sm text-gray-600 space-y-1", children: [
-        /* @__PURE__ */ jsx("li", { children: "✓ 20 spin-to-win campaigns" }),
-        /* @__PURE__ */ jsx("li", { children: "✓ Email collection & analytics" }),
-        /* @__PURE__ */ jsx("li", { children: "✓ Customizable wheels and rewards" }),
-        /* @__PURE__ */ jsx("li", { children: "✓ Lead collection with discounts" }),
-        /* @__PURE__ */ jsx("li", { children: "✓ Priority support" })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsx(Form$1, { method: "post", children: /* @__PURE__ */ jsx(
-      "button",
-      {
-        type: "submit",
-        className: "w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold",
-        children: "Subscribe Now"
-      }
-    ) }),
-    /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-4 text-center", children: "You will be redirected to Shopify to confirm your subscription. Cancel anytime from your Shopify admin." })
-  ] }) });
-}
-const route47 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  action: action$1,
-  default: Billing,
-  loader: loader$b
-}, Symbol.toStringTag, { value: "Module" }));
-async function loader$a({ request }) {
-  var _a2;
-  try {
-    const { admin, session } = await authenticate.admin(request);
-    const { shop } = session;
-    const url = new URL(request.url);
-    const charge_id = url.searchParams.get("charge_id");
-    if (charge_id) {
-      const subscriptionQuery = await admin.graphql(
-        `#graphql
-        query GetAppSubscription($id: ID!) {
-          node(id: $id) {
-            ... on AppSubscription {
-              id
-              name
-              status
-              currentPeriodEnd
-            }
-          }
-        }`,
-        {
-          variables: {
-            id: `gid://shopify/AppSubscription/${charge_id}`
-          }
-        }
-      );
-      const subscriptionData = await subscriptionQuery.json();
-      const subscription = (_a2 = subscriptionData.data) == null ? void 0 : _a2.node;
-      if (subscription && subscription.status === "ACTIVE") {
-        await createSubscriptionMetafield(admin.graphql, true, shop);
-        return redirect("/app?subscription=success");
-      } else {
-        return redirect("/app?subscription=failed");
-      }
-    }
-    return redirect("/app");
-  } catch (error) {
-    console.error("Billing callback error:", error);
-    return redirect("/app?subscription=error");
-  }
-}
-function BillingCallback() {
-  return /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 py-6", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
-    /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold mb-4", children: "Processing Subscription..." }),
-    /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Please wait while we confirm your subscription." })
-  ] }) });
-}
-const route48 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  default: BillingCallback,
-  loader: loader$a
 }, Symbol.toStringTag, { value: "Module" }));
 const formatPrice = (price) => {
   return `$${price.toFixed(2)}`;
@@ -23742,7 +24963,7 @@ async function action({ request }) {
 }
 function Pricing() {
   var _a2;
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const loaderData = useLoaderData();
   const { billingCycle, changeBillingCycle, changePlan, currentPlan } = usePlan();
   const fetcher = useFetcher();
@@ -24184,7 +25405,7 @@ function Pricing() {
     ] }) })
   ] });
 }
-const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   action,
   default: Pricing,
@@ -24195,6 +25416,9 @@ const loader$8 = async ({ request }) => {
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
+  console.log(
+    "Index loader - checking authentication... app/routes/_index/route.jsx"
+  );
   return { showForm: Boolean(login) };
 };
 function App$1() {
@@ -24318,7 +25542,7 @@ function App$1() {
     /* @__PURE__ */ jsx("div", { className: "mt-12 pt-8 border-t border-gray-200", children: /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: "Trusted by thousands of Shopify merchants worldwide" }) })
   ] }) });
 }
-const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App$1,
   loader: loader$8
@@ -24327,7 +25551,7 @@ const loader$7 = async ({ request }) => {
   await authenticate.admin(request);
   return null;
 };
-const route51 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route57 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   loader: loader$7
 }, Symbol.toStringTag, { value: "Module" }));
@@ -24370,12 +25594,13 @@ async function loader$6({ request }) {
   }
 }
 const GET$1 = loader$6;
-const route52 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   GET: GET$1,
   loader: loader$6
 }, Symbol.toStringTag, { value: "Module" }));
 async function loader$5({ request }) {
+  console.log("Index loader - checking authentication... app/routes/index.jsx");
   try {
     const { admin, session } = await authenticate.admin(request);
     if (session && session.shop) {
@@ -24395,12 +25620,12 @@ async function loader$5({ request }) {
     return redirect("/auth/login");
   }
 }
-function Index$1() {
+function Index() {
   return null;
 }
-const route53 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route59 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: Index$1,
+  default: Index,
   loader: loader$5
 }, Symbol.toStringTag, { value: "Module" }));
 async function loader$4() {
@@ -24414,7 +25639,7 @@ async function loader$4() {
   });
 }
 const GET = loader$4;
-const route54 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   GET,
   loader: loader$4
@@ -24426,7 +25651,7 @@ async function loader$3({ request }) {
     const { shop } = session;
     console.log("App - Authenticated with shop:", shop);
     const discountCodes = [];
-    const isDevelopment = process.env.NODE_ENV === "development";
+    const isDevelopment = process.env.NODE_ENV === "production";
     const subscriptionStatus = await hasActiveSubscription(
       admin.graphql,
       shop,
@@ -24634,8 +25859,8 @@ function App() {
             /* @__PURE__ */ jsx(
               "a",
               {
-                href: `https://apps.shopify.com/spinorama`,
-                target: "_blank",
+                href: `https://admin.shopify.com/store/wheel-of-wonders/charges/spinorama/pricing_plans`,
+                target: "_top",
                 className: "bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block",
                 children: "Subscribe Now"
               }
@@ -24698,722 +25923,11 @@ function App() {
     ] }) })
   ] });
 }
-const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route61 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: App,
   loader: loader$3
 }, Symbol.toStringTag, { value: "Module" }));
-var ee = { exports: {} }, L = {};
-/**
- * @license React
- * react-jsx-runtime.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var Oe;
-function dr() {
-  if (Oe)
-    return L;
-  Oe = 1;
-  var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.fragment"), c = Object.prototype.hasOwnProperty, C = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, x = { key: true, ref: true, __self: true, __source: true };
-  function h(a, d, b) {
-    var m, T = {}, w = null, E = null;
-    b !== void 0 && (w = "" + b), d.key !== void 0 && (w = "" + d.key), d.ref !== void 0 && (E = d.ref);
-    for (m in d)
-      c.call(d, m) && !x.hasOwnProperty(m) && (T[m] = d[m]);
-    if (a && a.defaultProps)
-      for (m in d = a.defaultProps, d)
-        T[m] === void 0 && (T[m] = d[m]);
-    return { $$typeof: v, type: a, key: w, ref: E, props: T, _owner: C.current };
-  }
-  return L.Fragment = y, L.jsx = h, L.jsxs = h, L;
-}
-var $ = {};
-/**
- * @license React
- * react-jsx-runtime.development.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var Pe;
-function vr() {
-  return Pe || (Pe = 1, process.env.NODE_ENV !== "production" && function() {
-    var R = React, v = Symbol.for("react.element"), y = Symbol.for("react.portal"), c = Symbol.for("react.fragment"), C = Symbol.for("react.strict_mode"), x = Symbol.for("react.profiler"), h = Symbol.for("react.provider"), a = Symbol.for("react.context"), d = Symbol.for("react.forward_ref"), b = Symbol.for("react.suspense"), m = Symbol.for("react.suspense_list"), T = Symbol.for("react.memo"), w = Symbol.for("react.lazy"), E = Symbol.for("react.offscreen"), k = Symbol.iterator, W = "@@iterator";
-    function Y(e) {
-      if (e === null || typeof e != "object")
-        return null;
-      var r = k && e[k] || e[W];
-      return typeof r == "function" ? r : null;
-    }
-    var O = R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-    function p(e) {
-      {
-        for (var r = arguments.length, t = new Array(r > 1 ? r - 1 : 0), n = 1; n < r; n++)
-          t[n - 1] = arguments[n];
-        ke("error", e, t);
-      }
-    }
-    function ke(e, r, t) {
-      {
-        var n = O.ReactDebugCurrentFrame, u = n.getStackAddendum();
-        u !== "" && (r += "%s", t = t.concat([u]));
-        var s = t.map(function(o) {
-          return String(o);
-        });
-        s.unshift("Warning: " + r), Function.prototype.apply.call(console[e], console, s);
-      }
-    }
-    var De = false, Ae = false, Fe = false, Ie = false, Ne = false, te;
-    te = Symbol.for("react.module.reference");
-    function Le(e) {
-      return !!(typeof e == "string" || typeof e == "function" || e === c || e === x || Ne || e === C || e === b || e === m || Ie || e === E || De || Ae || Fe || typeof e == "object" && e !== null && (e.$$typeof === w || e.$$typeof === T || e.$$typeof === h || e.$$typeof === a || e.$$typeof === d || // This needs to include all possible module reference object
-      // types supported by any Flight configuration anywhere since
-      // we don't know which Flight build this will end up being used
-      // with.
-      e.$$typeof === te || e.getModuleId !== void 0));
-    }
-    function $e(e, r, t) {
-      var n = e.displayName;
-      if (n)
-        return n;
-      var u = r.displayName || r.name || "";
-      return u !== "" ? t + "(" + u + ")" : t;
-    }
-    function ne(e) {
-      return e.displayName || "Context";
-    }
-    function P(e) {
-      if (e == null)
-        return null;
-      if (typeof e.tag == "number" && p("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof e == "function")
-        return e.displayName || e.name || null;
-      if (typeof e == "string")
-        return e;
-      switch (e) {
-        case c:
-          return "Fragment";
-        case y:
-          return "Portal";
-        case x:
-          return "Profiler";
-        case C:
-          return "StrictMode";
-        case b:
-          return "Suspense";
-        case m:
-          return "SuspenseList";
-      }
-      if (typeof e == "object")
-        switch (e.$$typeof) {
-          case a:
-            var r = e;
-            return ne(r) + ".Consumer";
-          case h:
-            var t = e;
-            return ne(t._context) + ".Provider";
-          case d:
-            return $e(e, e.render, "ForwardRef");
-          case T:
-            var n = e.displayName || null;
-            return n !== null ? n : P(e.type) || "Memo";
-          case w: {
-            var u = e, s = u._payload, o = u._init;
-            try {
-              return P(o(s));
-            } catch {
-              return null;
-            }
-          }
-        }
-      return null;
-    }
-    var D = Object.assign, I = 0, ae, ie, oe, ue, se, le, fe;
-    function ce() {
-    }
-    ce.__reactDisabledLog = true;
-    function We() {
-      {
-        if (I === 0) {
-          ae = console.log, ie = console.info, oe = console.warn, ue = console.error, se = console.group, le = console.groupCollapsed, fe = console.groupEnd;
-          var e = {
-            configurable: true,
-            enumerable: true,
-            value: ce,
-            writable: true
-          };
-          Object.defineProperties(console, {
-            info: e,
-            log: e,
-            warn: e,
-            error: e,
-            group: e,
-            groupCollapsed: e,
-            groupEnd: e
-          });
-        }
-        I++;
-      }
-    }
-    function Ye() {
-      {
-        if (I--, I === 0) {
-          var e = {
-            configurable: true,
-            enumerable: true,
-            writable: true
-          };
-          Object.defineProperties(console, {
-            log: D({}, e, {
-              value: ae
-            }),
-            info: D({}, e, {
-              value: ie
-            }),
-            warn: D({}, e, {
-              value: oe
-            }),
-            error: D({}, e, {
-              value: ue
-            }),
-            group: D({}, e, {
-              value: se
-            }),
-            groupCollapsed: D({}, e, {
-              value: le
-            }),
-            groupEnd: D({}, e, {
-              value: fe
-            })
-          });
-        }
-        I < 0 && p("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
-      }
-    }
-    var J = O.ReactCurrentDispatcher, G;
-    function M(e, r, t) {
-      {
-        if (G === void 0)
-          try {
-            throw Error();
-          } catch (u) {
-            var n = u.stack.trim().match(/\n( *(at )?)/);
-            G = n && n[1] || "";
-          }
-        return `
-` + G + e;
-      }
-    }
-    var z = false, B;
-    {
-      var Me = typeof WeakMap == "function" ? WeakMap : Map;
-      B = new Me();
-    }
-    function de(e, r) {
-      if (!e || z)
-        return "";
-      {
-        var t = B.get(e);
-        if (t !== void 0)
-          return t;
-      }
-      var n;
-      z = true;
-      var u = Error.prepareStackTrace;
-      Error.prepareStackTrace = void 0;
-      var s;
-      s = J.current, J.current = null, We();
-      try {
-        if (r) {
-          var o = function() {
-            throw Error();
-          };
-          if (Object.defineProperty(o.prototype, "props", {
-            set: function() {
-              throw Error();
-            }
-          }), typeof Reflect == "object" && Reflect.construct) {
-            try {
-              Reflect.construct(o, []);
-            } catch (S) {
-              n = S;
-            }
-            Reflect.construct(e, [], o);
-          } else {
-            try {
-              o.call();
-            } catch (S) {
-              n = S;
-            }
-            e.call(o.prototype);
-          }
-        } else {
-          try {
-            throw Error();
-          } catch (S) {
-            n = S;
-          }
-          e();
-        }
-      } catch (S) {
-        if (S && n && typeof S.stack == "string") {
-          for (var i = S.stack.split(`
-`), g = n.stack.split(`
-`), l = i.length - 1, f = g.length - 1; l >= 1 && f >= 0 && i[l] !== g[f]; )
-            f--;
-          for (; l >= 1 && f >= 0; l--, f--)
-            if (i[l] !== g[f]) {
-              if (l !== 1 || f !== 1)
-                do
-                  if (l--, f--, f < 0 || i[l] !== g[f]) {
-                    var _ = `
-` + i[l].replace(" at new ", " at ");
-                    return e.displayName && _.includes("<anonymous>") && (_ = _.replace("<anonymous>", e.displayName)), typeof e == "function" && B.set(e, _), _;
-                  }
-                while (l >= 1 && f >= 0);
-              break;
-            }
-        }
-      } finally {
-        z = false, J.current = s, Ye(), Error.prepareStackTrace = u;
-      }
-      var F = e ? e.displayName || e.name : "", we = F ? M(F) : "";
-      return typeof e == "function" && B.set(e, we), we;
-    }
-    function Be(e, r, t) {
-      return de(e, false);
-    }
-    function Ve(e) {
-      var r = e.prototype;
-      return !!(r && r.isReactComponent);
-    }
-    function V(e, r, t) {
-      if (e == null)
-        return "";
-      if (typeof e == "function")
-        return de(e, Ve(e));
-      if (typeof e == "string")
-        return M(e);
-      switch (e) {
-        case b:
-          return M("Suspense");
-        case m:
-          return M("SuspenseList");
-      }
-      if (typeof e == "object")
-        switch (e.$$typeof) {
-          case d:
-            return Be(e.render);
-          case T:
-            return V(e.type, r, t);
-          case w: {
-            var n = e, u = n._payload, s = n._init;
-            try {
-              return V(s(u), r, t);
-            } catch {
-            }
-          }
-        }
-      return "";
-    }
-    var U = Object.prototype.hasOwnProperty, ve = {}, pe = O.ReactDebugCurrentFrame;
-    function q(e) {
-      if (e) {
-        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
-        pe.setExtraStackFrame(t);
-      } else
-        pe.setExtraStackFrame(null);
-    }
-    function Ue(e, r, t, n, u) {
-      {
-        var s = Function.call.bind(U);
-        for (var o in e)
-          if (s(e, o)) {
-            var i = void 0;
-            try {
-              if (typeof e[o] != "function") {
-                var g = Error((n || "React class") + ": " + t + " type `" + o + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof e[o] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
-                throw g.name = "Invariant Violation", g;
-              }
-              i = e[o](r, o, n, t, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
-            } catch (l) {
-              i = l;
-            }
-            i && !(i instanceof Error) && (q(u), p("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", n || "React class", t, o, typeof i), q(null)), i instanceof Error && !(i.message in ve) && (ve[i.message] = true, q(u), p("Failed %s type: %s", t, i.message), q(null));
-          }
-      }
-    }
-    var qe = Array.isArray;
-    function K(e) {
-      return qe(e);
-    }
-    function Je(e) {
-      {
-        var r = typeof Symbol == "function" && Symbol.toStringTag, t = r && e[Symbol.toStringTag] || e.constructor.name || "Object";
-        return t;
-      }
-    }
-    function Ge(e) {
-      try {
-        return ye(e), false;
-      } catch {
-        return true;
-      }
-    }
-    function ye(e) {
-      return "" + e;
-    }
-    function he(e) {
-      if (Ge(e))
-        return p("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", Je(e)), ye(e);
-    }
-    var N = O.ReactCurrentOwner, ze = {
-      key: true,
-      ref: true,
-      __self: true,
-      __source: true
-    }, me, ge;
-    function Ke(e) {
-      if (U.call(e, "ref")) {
-        var r = Object.getOwnPropertyDescriptor(e, "ref").get;
-        if (r && r.isReactWarning)
-          return false;
-      }
-      return e.ref !== void 0;
-    }
-    function Xe(e) {
-      if (U.call(e, "key")) {
-        var r = Object.getOwnPropertyDescriptor(e, "key").get;
-        if (r && r.isReactWarning)
-          return false;
-      }
-      return e.key !== void 0;
-    }
-    function Ze(e, r) {
-      if (typeof e.ref == "string" && N.current && r) ;
-    }
-    function Qe(e, r) {
-      {
-        var t = function() {
-          me || (me = true, p("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
-        };
-        t.isReactWarning = true, Object.defineProperty(e, "key", {
-          get: t,
-          configurable: true
-        });
-      }
-    }
-    function He(e, r) {
-      {
-        var t = function() {
-          ge || (ge = true, p("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", r));
-        };
-        t.isReactWarning = true, Object.defineProperty(e, "ref", {
-          get: t,
-          configurable: true
-        });
-      }
-    }
-    var er = function(e, r, t, n, u, s, o) {
-      var i = {
-        // This tag allows us to uniquely identify this as a React Element
-        $$typeof: v,
-        // Built-in properties that belong on the element
-        type: e,
-        key: r,
-        ref: t,
-        props: o,
-        // Record the component responsible for creating this element.
-        _owner: s
-      };
-      return i._store = {}, Object.defineProperty(i._store, "validated", {
-        configurable: false,
-        enumerable: false,
-        writable: true,
-        value: false
-      }), Object.defineProperty(i, "_self", {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: n
-      }), Object.defineProperty(i, "_source", {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: u
-      }), Object.freeze && (Object.freeze(i.props), Object.freeze(i)), i;
-    };
-    function rr(e, r, t, n, u) {
-      {
-        var s, o = {}, i = null, g = null;
-        t !== void 0 && (he(t), i = "" + t), Xe(r) && (he(r.key), i = "" + r.key), Ke(r) && (g = r.ref, Ze(r, u));
-        for (s in r)
-          U.call(r, s) && !ze.hasOwnProperty(s) && (o[s] = r[s]);
-        if (e && e.defaultProps) {
-          var l = e.defaultProps;
-          for (s in l)
-            o[s] === void 0 && (o[s] = l[s]);
-        }
-        if (i || g) {
-          var f = typeof e == "function" ? e.displayName || e.name || "Unknown" : e;
-          i && Qe(o, f), g && He(o, f);
-        }
-        return er(e, i, g, u, n, N.current, o);
-      }
-    }
-    var Z = O.ReactCurrentOwner, Ee = O.ReactDebugCurrentFrame;
-    function A(e) {
-      if (e) {
-        var r = e._owner, t = V(e.type, e._source, r ? r.type : null);
-        Ee.setExtraStackFrame(t);
-      } else
-        Ee.setExtraStackFrame(null);
-    }
-    var Q;
-    Q = false;
-    function H(e) {
-      return typeof e == "object" && e !== null && e.$$typeof === v;
-    }
-    function be() {
-      {
-        if (Z.current) {
-          var e = P(Z.current.type);
-          if (e)
-            return `
-
-Check the render method of \`` + e + "`.";
-        }
-        return "";
-      }
-    }
-    function tr(e) {
-      {
-        return "";
-      }
-    }
-    var _e = {};
-    function nr(e) {
-      {
-        var r = be();
-        if (!r) {
-          var t = typeof e == "string" ? e : e.displayName || e.name;
-          t && (r = `
-
-Check the top-level render call using <` + t + ">.");
-        }
-        return r;
-      }
-    }
-    function Re(e, r) {
-      {
-        if (!e._store || e._store.validated || e.key != null)
-          return;
-        e._store.validated = true;
-        var t = nr(r);
-        if (_e[t])
-          return;
-        _e[t] = true;
-        var n = "";
-        e && e._owner && e._owner !== Z.current && (n = " It was passed a child from " + P(e._owner.type) + "."), A(e), p('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', t, n), A(null);
-      }
-    }
-    function Te(e, r) {
-      {
-        if (typeof e != "object")
-          return;
-        if (K(e))
-          for (var t = 0; t < e.length; t++) {
-            var n = e[t];
-            H(n) && Re(n, r);
-          }
-        else if (H(e))
-          e._store && (e._store.validated = true);
-        else if (e) {
-          var u = Y(e);
-          if (typeof u == "function" && u !== e.entries)
-            for (var s = u.call(e), o; !(o = s.next()).done; )
-              H(o.value) && Re(o.value, r);
-        }
-      }
-    }
-    function ar(e) {
-      {
-        var r = e.type;
-        if (r == null || typeof r == "string")
-          return;
-        var t;
-        if (typeof r == "function")
-          t = r.propTypes;
-        else if (typeof r == "object" && (r.$$typeof === d || // Note: Memo only checks outer props here.
-        // Inner props are checked in the reconciler.
-        r.$$typeof === T))
-          t = r.propTypes;
-        else
-          return;
-        if (t) {
-          var n = P(r);
-          Ue(t, e.props, "prop", n, e);
-        } else if (r.PropTypes !== void 0 && !Q) {
-          Q = true;
-          var u = P(r);
-          p("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", u || "Unknown");
-        }
-        typeof r.getDefaultProps == "function" && !r.getDefaultProps.isReactClassApproved && p("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
-      }
-    }
-    function ir(e) {
-      {
-        for (var r = Object.keys(e.props), t = 0; t < r.length; t++) {
-          var n = r[t];
-          if (n !== "children" && n !== "key") {
-            A(e), p("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", n), A(null);
-            break;
-          }
-        }
-        e.ref !== null && (A(e), p("Invalid attribute `ref` supplied to `React.Fragment`."), A(null));
-      }
-    }
-    function Ce(e, r, t, n, u, s) {
-      {
-        var o = Le(e);
-        if (!o) {
-          var i = "";
-          (e === void 0 || typeof e == "object" && e !== null && Object.keys(e).length === 0) && (i += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
-          var g = tr();
-          g ? i += g : i += be();
-          var l;
-          e === null ? l = "null" : K(e) ? l = "array" : e !== void 0 && e.$$typeof === v ? (l = "<" + (P(e.type) || "Unknown") + " />", i = " Did you accidentally export a JSX literal instead of a component?") : l = typeof e, p("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", l, i);
-        }
-        var f = rr(e, r, t, u, s);
-        if (f == null)
-          return f;
-        if (o) {
-          var _ = r.children;
-          if (_ !== void 0)
-            if (n)
-              if (K(_)) {
-                for (var F = 0; F < _.length; F++)
-                  Te(_[F], e);
-                Object.freeze && Object.freeze(_);
-              } else
-                p("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
-            else
-              Te(_, e);
-        }
-        return e === c ? ir(f) : ar(f), f;
-      }
-    }
-    function or(e, r, t) {
-      return Ce(e, r, t, true);
-    }
-    function ur(e, r, t) {
-      return Ce(e, r, t, false);
-    }
-    var sr = ur, lr = or;
-    $.Fragment = c, $.jsx = sr, $.jsxs = lr;
-  }()), $;
-}
-process.env.NODE_ENV === "production" ? ee.exports = dr() : ee.exports = vr();
-var re = ee.exports;
-const pr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
-  const [a, d] = useState(), { titleBar: b, saveBar: m, modalContent: T } = Children.toArray(C).reduce(
-    (E, k) => {
-      const W = yr(k), Y = W === "ui-title-bar", O = W === "ui-save-bar";
-      return !Y && !O && E.modalContent.push(k), {
-        ...E,
-        titleBar: Y ? k : E.titleBar,
-        saveBar: O ? k : E.saveBar
-      };
-    },
-    { modalContent: [] }
-  ), w = a && a.content ? cr.createPortal(T, a.content) : null;
-  return useEffect(() => {
-    a && (v ? a.show() : a.hide());
-  }, [a, v]), useEffect(() => {
-    if (!(!a || !y))
-      return a.addEventListener("show", y), () => {
-        a.removeEventListener("show", y);
-      };
-  }, [a, y]), useEffect(() => {
-    if (!(!a || !c))
-      return a.addEventListener("hide", c), () => {
-        a.removeEventListener("hide", c);
-      };
-  }, [a, c]), useEffect(() => {
-    if (a)
-      return () => {
-        a.hide();
-      };
-  }, [a]), /* @__PURE__ */ re.jsxs(
-    "ui-modal",
-    {
-      ...x,
-      ref: (E) => {
-        d(E), h && (typeof h == "function" ? h(E) : h.current = E);
-      },
-      children: [
-        b,
-        m,
-        /* @__PURE__ */ re.jsx("div", { children: w })
-      ]
-    }
-  );
-});
-pr.displayName = "ui-modal";
-function yr(R) {
-  if (!R)
-    return;
-  const v = typeof R == "object" && "type" in R ? R.type : void 0, y = typeof v == "string" ? v : void 0, c = typeof v == "object" ? v.displayName : void 0;
-  return y || (typeof c == "string" ? c : void 0);
-}
-const _r = "ui-title-bar", hr = forwardRef(function({ open: v, onShow: y, onHide: c, children: C, ...x }, h) {
-  const [a, d] = useState();
-  return useEffect(() => {
-    a && (v ? a.show() : a.hide());
-  }, [a, v]), useEffect(() => {
-    if (!(!a || !y))
-      return a.addEventListener("show", y), () => {
-        a.removeEventListener("show", y);
-      };
-  }, [a, y]), useEffect(() => {
-    if (!(!a || !c))
-      return a.addEventListener("hide", c), () => {
-        a.removeEventListener("hide", c);
-      };
-  }, [a, c]), useEffect(() => {
-    if (a)
-      return () => {
-        a.hide();
-      };
-  }, [a]), /* @__PURE__ */ re.jsx(
-    "ui-save-bar",
-    {
-      ...x,
-      ref: (b) => {
-        d(b), h && (typeof h == "function" ? h(b) : h.current = b);
-      },
-      children: C
-    }
-  );
-});
-hr.displayName = "ui-save-bar";
-new Proxy(
-  {},
-  {
-    get(R, v) {
-      throw Error(
-        `shopify.${String(
-          v
-        )} can't be used in a server environment. You likely need to move this code into an Effect.`
-      );
-    }
-  }
-);
 function AdminLayout({ children }) {
   const location = useLocation();
   const [searchActive, setSearchActive] = useState(false);
@@ -25528,7 +26042,7 @@ const loader$2 = async ({ request }) => {
 };
 function NewCampaign() {
   const [selectedType, setSelectedType] = useState("spin");
-  const navigate = useNavigate();
+  const navigate = useNavigate$1();
   const { smDown, mdDown } = useBreakpoints();
   const handleTypeSelect = useCallback((type) => {
     setSelectedType(type);
@@ -25938,7 +26452,7 @@ function NewCampaign() {
     }
   ) });
 }
-const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route62 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: NewCampaign,
   loader: loader$2
@@ -25946,7 +26460,7 @@ const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 function Page$2() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route57 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route63 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -26414,7 +26928,7 @@ function StatCard$1({ title, value, icon, color }) {
     /* @__PURE__ */ jsx(Text, { variant: "headingLg", children: value })
   ] }) });
 }
-const route58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route64 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Subscribers,
   loader: loader$1
@@ -26479,23 +26993,37 @@ function Code({ children }) {
     }
   );
 }
-const route59 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route65 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: AdditionalPage
 }, Symbol.toStringTag, { value: "Module" }));
 function Page$1() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route66 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page$1
 }, Symbol.toStringTag, { value: "Module" }));
 function Page() {
   return /* @__PURE__ */ jsx("div", { children: "Page" });
 }
-const route61 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route67 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page
+}, Symbol.toStringTag, { value: "Module" }));
+function Billing() {
+  return /* @__PURE__ */ jsx(Page$5, { title: "Billing", children: /* @__PURE__ */ jsx(Layout, { children: /* @__PURE__ */ jsx(Layout.Section, { children: /* @__PURE__ */ jsx(
+    Button,
+    {
+      target: "_top",
+      url: "https://admin.shopify.com/store/wheel-of-wonders/charges/spinorama/pricing_plans",
+      children: "View Plan"
+    }
+  ) }) }) });
+}
+const route68 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Billing
 }, Symbol.toStringTag, { value: "Module" }));
 const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -26732,379 +27260,20 @@ function StatCard({ title, value, trend, trendDirection, icon, color }) {
     ] })
   ] }) });
 }
-const route62 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route69 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Revenue,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-function Index() {
-  return /* @__PURE__ */ jsx("div", { className: "bg-gray-100 min-h-screen p-6", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
-    /* @__PURE__ */ jsx(Navigation2, {}),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
-      /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-3xl font-bold mb-4", children: "Ongoing Campaigns" }),
-        /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg p-6 mb-4 shadow-sm", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between mb-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-              /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded overflow-hidden mr-4", children: /* @__PURE__ */ jsx(
-                "img",
-                {
-                  src: "/images/campaign-icon.png",
-                  alt: "Campaign icon",
-                  className: "w-full h-full object-cover"
-                }
-              ) }),
-              /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg", children: "Campaign Name" }),
-                /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-sm", children: "Lorem ipsum dolor sit amet, consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et..." })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsx("button", { className: "text-[#4F46E5] bg-[#EEF1FF] p-2 rounded-lg h-10 w-10 flex items-center justify-center", children: /* @__PURE__ */ jsxs(
-              "svg",
-              {
-                width: "20",
-                height: "20",
-                viewBox: "0 0 20 20",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M13.75 2.5H6.25C5.56 2.5 5 3.06 5 3.75V16.25C5 16.94 5.56 17.5 6.25 17.5H13.75C14.44 17.5 15 16.94 15 16.25V3.75C15 3.06 14.44 2.5 13.75 2.5Z",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M8.75 6.25H11.25",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  )
-                ]
-              }
-            ) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex mb-1", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-gray-600 mr-2", children: "Impression Count :" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm font-semibold", children: "300" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-gray-600 mr-2", children: "Reward Distribution:" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm font-semibold", children: "80/100" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ jsx("button", { className: "bg-[#4F46E5] text-white py-2 px-4 rounded-lg text-center", children: "View Analytics" }),
-            /* @__PURE__ */ jsx("button", { className: "border border-red-500 text-red-500 py-2 px-4 rounded-lg text-center", children: "Deactivate" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg p-6 shadow-sm", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between mb-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-              /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded overflow-hidden mr-4", children: /* @__PURE__ */ jsx(
-                "img",
-                {
-                  src: "/images/campaign-icon.png",
-                  alt: "Campaign icon",
-                  className: "w-full h-full object-cover"
-                }
-              ) }),
-              /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg", children: "Campaign Name" }),
-                /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-sm", children: "Lorem ipsum dolor sit amet, consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et..." })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsx("button", { className: "text-[#4F46E5] bg-[#EEF1FF] p-2 rounded-lg h-10 w-10 flex items-center justify-center", children: /* @__PURE__ */ jsxs(
-              "svg",
-              {
-                width: "20",
-                height: "20",
-                viewBox: "0 0 20 20",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M13.75 2.5H6.25C5.56 2.5 5 3.06 5 3.75V16.25C5 16.94 5.56 17.5 6.25 17.5H13.75C14.44 17.5 15 16.94 15 16.25V3.75C15 3.06 14.44 2.5 13.75 2.5Z",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M8.75 6.25H11.25",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  )
-                ]
-              }
-            ) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex mb-1", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-gray-600 mr-2", children: "Impression Count :" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm font-semibold", children: "300" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-gray-600 mr-2", children: "Reward Distribution:" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm font-semibold", children: "80/100" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ jsx("button", { className: "bg-[#4F46E5] text-white py-2 px-4 rounded-lg text-center", children: "View Analytics" }),
-            /* @__PURE__ */ jsx("button", { className: "border border-red-500 text-red-500 py-2 px-4 rounded-lg text-center", children: "Deactivate" })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center mb-4", children: /* @__PURE__ */ jsx("h2", { className: "text-3xl font-bold", children: "Draft Campaigns" }) }),
-        /* @__PURE__ */ jsx("div", { className: "bg-white rounded-lg p-6 mb-4 shadow-sm", children: /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-            /* @__PURE__ */ jsx("div", { className: "w-12 h-12 bg-gray-100 rounded flex items-center justify-center mr-4", children: /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gray-200 rounded-sm" }) }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg", children: "Campaign Name" }),
-              /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-sm", children: "Description" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-            /* @__PURE__ */ jsx("button", { className: "text-gray-500 mr-2 bg-gray-100 p-2 rounded-lg h-10 w-10 flex items-center justify-center", children: /* @__PURE__ */ jsxs(
-              "svg",
-              {
-                width: "20",
-                height: "20",
-                viewBox: "0 0 20 20",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M16.875 4.375L3.125 4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M8.125 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M11.875 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M15.625 4.375V16.25C15.625 16.4158 15.5592 16.5747 15.4419 16.6919C15.3247 16.8092 15.1658 16.875 15 16.875H5C4.83424 16.875 4.67527 16.8092 4.55806 16.6919C4.44085 16.5747 4.375 16.4158 4.375 16.25V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M13.125 4.375V3.125C13.125 2.79348 12.9933 2.47554 12.7589 2.24112C12.5245 2.0067 12.2065 1.875 11.875 1.875H8.125C7.79348 1.875 7.47554 2.0067 7.24112 2.24112C7.0067 2.47554 6.875 2.79348 6.875 3.125V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  )
-                ]
-              }
-            ) }),
-            /* @__PURE__ */ jsx("button", { className: "border border-[#4F46E5] text-[#4F46E5] py-2 px-4 rounded-lg", children: "Finish Editing" })
-          ] })
-        ] }) }),
-        /* @__PURE__ */ jsx("div", { className: "bg-white rounded-lg p-6 mb-4 shadow-sm", children: /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-            /* @__PURE__ */ jsx("div", { className: "w-12 h-12 bg-gray-100 rounded flex items-center justify-center mr-4", children: /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gray-200 rounded-sm" }) }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg", children: "Campaign Name" }),
-              /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-sm", children: "Description" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-            /* @__PURE__ */ jsx("button", { className: "text-gray-500 mr-2 bg-gray-100 p-2 rounded-lg h-10 w-10 flex items-center justify-center", children: /* @__PURE__ */ jsxs(
-              "svg",
-              {
-                width: "20",
-                height: "20",
-                viewBox: "0 0 20 20",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M16.875 4.375L3.125 4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M8.125 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M11.875 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M15.625 4.375V16.25C15.625 16.4158 15.5592 16.5747 15.4419 16.6919C15.3247 16.8092 15.1658 16.875 15 16.875H5C4.83424 16.875 4.67527 16.8092 4.55806 16.6919C4.44085 16.5747 4.375 16.4158 4.375 16.25V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M13.125 4.375V3.125C13.125 2.79348 12.9933 2.47554 12.7589 2.24112C12.5245 2.0067 12.2065 1.875 11.875 11.875H8.125C7.79348 1.875 7.47554 2.0067 7.24112 2.24112C7.0067 2.47554 6.875 2.79348 6.875 3.125V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  )
-                ]
-              }
-            ) }),
-            /* @__PURE__ */ jsx("button", { className: "border border-[#4F46E5] text-[#4F46E5] py-2 px-4 rounded-lg", children: "Finish Editing" })
-          ] })
-        ] }) }),
-        /* @__PURE__ */ jsx("div", { className: "bg-white rounded-lg p-6 shadow-sm", children: /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex", children: [
-            /* @__PURE__ */ jsx("div", { className: "w-12 h-12 bg-gray-100 rounded flex items-center justify-center mr-4", children: /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gray-200 rounded-sm" }) }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg", children: "Campaign Name" }),
-              /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-sm", children: "Description" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-            /* @__PURE__ */ jsx("button", { className: "text-gray-500 mr-2 bg-gray-100 p-2 rounded-lg h-10 w-10 flex items-center justify-center", children: /* @__PURE__ */ jsxs(
-              "svg",
-              {
-                width: "20",
-                height: "20",
-                viewBox: "0 0 20 20",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                children: [
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M16.875 4.375L3.125 4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M8.125 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M11.875 8.125V13.125",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M15.625 4.375V16.25C15.625 16.4158 15.5592 16.5747 15.4419 16.6919C15.3247 16.8092 15.1658 16.875 15 16.875H5C4.83424 16.875 4.67527 16.8092 4.55806 16.6919C4.44085 16.5747 4.375 16.4158 4.375 16.25V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  ),
-                  /* @__PURE__ */ jsx(
-                    "path",
-                    {
-                      d: "M13.125 4.375V3.125C13.125 2.79348 12.9933 2.47554 12.7589 2.24112C12.5245 2.0067 12.2065 1.875 11.875 1.875H8.125C7.79348 1.875 7.47554 2.0067 7.24112 2.24112C7.0067 2.47554 6.875 2.79348 6.875 3.125V4.375",
-                      stroke: "currentColor",
-                      strokeWidth: "1.5",
-                      strokeLinecap: "round",
-                      strokeLinejoin: "round"
-                    }
-                  )
-                ]
-              }
-            ) }),
-            /* @__PURE__ */ jsx("button", { className: "border border-[#4F46E5] text-[#4F46E5] py-2 px-4 rounded-lg", children: "Finish Editing" })
-          ] })
-        ] }) })
-      ] })
-    ] })
-  ] }) });
+function AppIndex() {
+  console.log("AppIndex component rendered");
+  return /* @__PURE__ */ jsx(Fragment, {});
 }
-const route63 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const route70 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: Index
+  default: AppIndex
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-CDb8fW0-.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-EBFZXVOs.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-CxnFPReF.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/Page-DKdyrWfp.js", "/assets/context-BgRRd8lc.js", "/assets/Card-ZfXEG-2S.js", "/assets/FormLayout-CaB1gIpA.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-Xl6CS9yA.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-BV2rxmOf.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-B-2g2n3r.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-O-3Hd-rU.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/PlanContext-CABF9B4g.js", "/assets/Navigation-tG41YSv9.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-D7kep_WQ.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DL0tHwE6.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/PlanContext-CABF9B4g.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-I6tFRT8l.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-DDS0XVRo.js", "/assets/Navigation-tG41YSv9.js", "/assets/StepFour-D3JfMhFE.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-DFqYEk6w.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-DCTM_ajF.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DL0tHwE6.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/billing": { "id": "routes/billing", "parentId": "root", "path": "billing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing-C1dFZL0T.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-DPlD0s3O.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/billing.callback": { "id": "routes/billing.callback", "parentId": "routes/billing", "path": "callback", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing.callback-DHjlUkH5.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-BIvIPbfx.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-tG41YSv9.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DRO-3EAr.js", "/assets/components-DPlD0s3O.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-CZm9M8_H.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-DPlD0s3O.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-DWLWDiXh.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/components-DPlD0s3O.js", "/assets/index-DRO-3EAr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-DZVzGKml.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/index-DRO-3EAr.js", "/assets/Page-DKdyrWfp.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-Q2_0a1d0.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/FormLayout-CaB1gIpA.js", "/assets/Select-DQshlD66.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-H8BxCfMH.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-B8fuY-6V.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/index-DL0tHwE6.js", "/assets/index-a8qEWjHG.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-B-YrrHoU.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B8fuY-6V.js", "/assets/AdminLayout-BJtsq9B_.js", "/assets/Page-DKdyrWfp.js", "/assets/Card-ZfXEG-2S.js", "/assets/Select-DQshlD66.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-a8qEWjHG.js", "/assets/index-DRO-3EAr.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-BZ-961z9.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-tG41YSv9.js", "/assets/index-DRO-3EAr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/components-DPlD0s3O.js", "/assets/index-a8qEWjHG.js"], "css": [] } }, "url": "/assets/manifest-d6e06d3b.js", "version": "d6e06d3b" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-DV9lkatG.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-Z_3LSdxk.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/PlanContext-CABF9B4g.js", "/assets/AppProvider-BvF-gLKD.js", "/assets/index-B97CZkMx.js", "/assets/context-D1SRB1Pz.js", "/assets/context-BgRRd8lc.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-DekRaVJV.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-DtMTUZsP.js", "imports": ["/assets/index-DVhyXCg0.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billing.callback": { "id": "routes/billing.callback", "parentId": "root", "path": "billing/callback", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing.callback-DHjlUkH5.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.toggle": { "id": "routes/api.campaigns.toggle", "parentId": "routes/api.campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Xc2B-yh1.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-Bn9uIxZr.js", "/assets/AppProvider-BvF-gLKD.js", "/assets/Page-T8ih0gZ8.js", "/assets/Card-B3HwhBQU.js", "/assets/FormLayout-Ct46J0Uk.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js", "/assets/context-D1SRB1Pz.js", "/assets/context-BgRRd8lc.js", "/assets/within-content-context-DGHwBpfl.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-DxA7ve7e.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.toggle-local": { "id": "routes/campaigns.toggle-local", "parentId": "routes/campaigns", "path": "toggle-local", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-local-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-iGwNzJ36.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/StepFour-PDkzPLU1.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js", "/assets/components-Bn9uIxZr.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-D3ajRKsM.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/PlanContext-CABF9B4g.js", "/assets/StepFour-PDkzPLU1.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/campaigns.toggle": { "id": "routes/campaigns.toggle", "parentId": "routes/campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-BrIepxMr.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/PlanContext-CABF9B4g.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/components-Bn9uIxZr.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-CKirlZ6L.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/index-DL0tHwE6.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-BEu66COs.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/CampaignContext-Biz6Q-yU.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/StepFour-PDkzPLU1.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-B97CZkMx.js", "/assets/index-CMHApn4-.js", "/assets/components-Bn9uIxZr.js"], "css": [] }, "routes/test-auth": { "id": "routes/test-auth", "parentId": "root", "path": "test-auth", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-auth-DztJnzzW.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/test-sync": { "id": "routes/test-sync", "parentId": "root", "path": "test-sync", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-sync-k8nmNR2E.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.test": { "id": "routes/api.test", "parentId": "root", "path": "api/test", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billings": { "id": "routes/billings", "parentId": "root", "path": "billings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billings-_xBaJrWJ.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-Bn9uIxZr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-3apPewsY.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/components-Bn9uIxZr.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-DEBosv5N.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/index-DL0tHwE6.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/index-CMHApn4-.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DjG6Ju84.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-Ci9_qlUt.js", "/assets/components-Bn9uIxZr.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-Cn28EqK0.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-Bn9uIxZr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app-Z_7Fxw0M.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-C5ZA-Io0.js", "/assets/PlanContext-CABF9B4g.js", "/assets/index-DL0tHwE6.js", "/assets/components-Bn9uIxZr.js", "/assets/index-Ci9_qlUt.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-Ck3qDs4d.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B97CZkMx.js", "/assets/AdminLayout-10M1ky8H.js", "/assets/index-Ci9_qlUt.js", "/assets/context-D1SRB1Pz.js", "/assets/Page-T8ih0gZ8.js", "/assets/Layout-Rcl_WBVw.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/within-content-context-DGHwBpfl.js", "/assets/context-BgRRd8lc.js", "/assets/Link-B84q7aNm.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-DuK0nuxF.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B97CZkMx.js", "/assets/AdminLayout-10M1ky8H.js", "/assets/Page-T8ih0gZ8.js", "/assets/Layout-Rcl_WBVw.js", "/assets/Card-B3HwhBQU.js", "/assets/context-D1SRB1Pz.js", "/assets/FormLayout-Ct46J0Uk.js", "/assets/Select-BvadKJP9.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js", "/assets/within-content-context-DGHwBpfl.js", "/assets/context-BgRRd8lc.js", "/assets/Link-B84q7aNm.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-NezUyQj-.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-B97CZkMx.js", "/assets/Page-T8ih0gZ8.js", "/assets/Layout-Rcl_WBVw.js", "/assets/Card-B3HwhBQU.js", "/assets/Link-B84q7aNm.js", "/assets/index-DL0tHwE6.js", "/assets/index-CMHApn4-.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/context-D1SRB1Pz.js", "/assets/within-content-context-DGHwBpfl.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-A9U-vhm7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] }, "routes/app.billing": { "id": "routes/app.billing", "parentId": "routes/app", "path": "billing", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.billing-CJ1KNGCv.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/Page-T8ih0gZ8.js", "/assets/Layout-Rcl_WBVw.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/context-D1SRB1Pz.js", "/assets/index-CMHApn4-.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-DqsUASb7.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/index-B97CZkMx.js", "/assets/AdminLayout-10M1ky8H.js", "/assets/Page-T8ih0gZ8.js", "/assets/Card-B3HwhBQU.js", "/assets/Select-BvadKJP9.js", "/assets/Layout-Rcl_WBVw.js", "/assets/_commonjsHelpers-D6-XlEtG.js", "/assets/index-CMHApn4-.js", "/assets/index-Ci9_qlUt.js", "/assets/within-content-context-DGHwBpfl.js", "/assets/context-D1SRB1Pz.js", "/assets/context-BgRRd8lc.js", "/assets/Link-B84q7aNm.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-DPZZAJkD.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-DL0tHwE6.js", "/assets/_commonjsHelpers-D6-XlEtG.js"], "css": [] } }, "url": "/assets/manifest-a2d613bf.js", "version": "a2d613bf" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -27305,13 +27474,21 @@ const routes = {
     caseSensitive: void 0,
     module: route23
   },
+  "routes/billing.callback": {
+    id: "routes/billing.callback",
+    parentId: "root",
+    path: "billing/callback",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route24
+  },
   "routes/api.save-result": {
     id: "routes/api.save-result",
     parentId: "root",
     path: "api/save-result",
     index: void 0,
     caseSensitive: void 0,
-    module: route24
+    module: route25
   },
   "routes/api.spin-result": {
     id: "routes/api.spin-result",
@@ -27319,7 +27496,7 @@ const routes = {
     path: "api/spin-result",
     index: void 0,
     caseSensitive: void 0,
-    module: route25
+    module: route26
   },
   "routes/create-campaign": {
     id: "routes/create-campaign",
@@ -27327,7 +27504,7 @@ const routes = {
     path: "create-campaign",
     index: void 0,
     caseSensitive: void 0,
-    module: route26
+    module: route27
   },
   "routes/api.save-email": {
     id: "routes/api.save-email",
@@ -27335,7 +27512,7 @@ const routes = {
     path: "api/save-email",
     index: void 0,
     caseSensitive: void 0,
-    module: route27
+    module: route28
   },
   "routes/api.campaigns": {
     id: "routes/api.campaigns",
@@ -27343,7 +27520,7 @@ const routes = {
     path: "api/campaigns",
     index: void 0,
     caseSensitive: void 0,
-    module: route28
+    module: route29
   },
   "routes/api.campaigns.status.$id": {
     id: "routes/api.campaigns.status.$id",
@@ -27351,7 +27528,15 @@ const routes = {
     path: "status/:id",
     index: void 0,
     caseSensitive: void 0,
-    module: route29
+    module: route30
+  },
+  "routes/api.campaigns.toggle": {
+    id: "routes/api.campaigns.toggle",
+    parentId: "routes/api.campaigns",
+    path: "toggle",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route31
   },
   "routes/api.campaigns.$id": {
     id: "routes/api.campaigns.$id",
@@ -27359,7 +27544,7 @@ const routes = {
     path: ":id",
     index: void 0,
     caseSensitive: void 0,
-    module: route30
+    module: route32
   },
   "routes/api.db-status": {
     id: "routes/api.db-status",
@@ -27367,7 +27552,7 @@ const routes = {
     path: "api/db-status",
     index: void 0,
     caseSensitive: void 0,
-    module: route31
+    module: route33
   },
   "routes/api.campaign": {
     id: "routes/api.campaign",
@@ -27375,7 +27560,7 @@ const routes = {
     path: "api/campaign",
     index: void 0,
     caseSensitive: void 0,
-    module: route32
+    module: route34
   },
   "routes/SHOP_REDACT": {
     id: "routes/SHOP_REDACT",
@@ -27383,7 +27568,7 @@ const routes = {
     path: "SHOP_REDACT",
     index: void 0,
     caseSensitive: void 0,
-    module: route33
+    module: route35
   },
   "routes/auth.login": {
     id: "routes/auth.login",
@@ -27391,7 +27576,7 @@ const routes = {
     path: "auth/login",
     index: void 0,
     caseSensitive: void 0,
-    module: route34
+    module: route36
   },
   "routes/campaigns": {
     id: "routes/campaigns",
@@ -27399,7 +27584,15 @@ const routes = {
     path: "campaigns",
     index: void 0,
     caseSensitive: void 0,
-    module: route35
+    module: route37
+  },
+  "routes/campaigns.toggle-local": {
+    id: "routes/campaigns.toggle-local",
+    parentId: "routes/campaigns",
+    path: "toggle-local",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route38
   },
   "routes/campaigns.edit.$id": {
     id: "routes/campaigns.edit.$id",
@@ -27407,7 +27600,7 @@ const routes = {
     path: "edit/:id",
     index: void 0,
     caseSensitive: void 0,
-    module: route36
+    module: route39
   },
   "routes/campaigns.create": {
     id: "routes/campaigns.create",
@@ -27415,7 +27608,15 @@ const routes = {
     path: "create",
     index: void 0,
     caseSensitive: void 0,
-    module: route37
+    module: route40
+  },
+  "routes/campaigns.toggle": {
+    id: "routes/campaigns.toggle",
+    parentId: "routes/campaigns",
+    path: "toggle",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route41
   },
   "routes/campaigns.index": {
     id: "routes/campaigns.index",
@@ -27423,7 +27624,7 @@ const routes = {
     path: "index",
     index: void 0,
     caseSensitive: void 0,
-    module: route38
+    module: route42
   },
   "routes/campaigns.$id": {
     id: "routes/campaigns.$id",
@@ -27431,7 +27632,7 @@ const routes = {
     path: ":id",
     index: void 0,
     caseSensitive: void 0,
-    module: route39
+    module: route43
   },
   "routes/campaigns.$id.edit": {
     id: "routes/campaigns.$id.edit",
@@ -27439,7 +27640,39 @@ const routes = {
     path: "edit",
     index: void 0,
     caseSensitive: void 0,
-    module: route40
+    module: route44
+  },
+  "routes/test-auth": {
+    id: "routes/test-auth",
+    parentId: "root",
+    path: "test-auth",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route45
+  },
+  "routes/test-sync": {
+    id: "routes/test-sync",
+    parentId: "root",
+    path: "test-sync",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route46
+  },
+  "routes/api.test": {
+    id: "routes/api.test",
+    parentId: "root",
+    path: "api/test",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route47
+  },
+  "routes/billings": {
+    id: "routes/billings",
+    parentId: "root",
+    path: "billings",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route48
   },
   "routes/settings": {
     id: "routes/settings",
@@ -27447,7 +27680,7 @@ const routes = {
     path: "settings",
     index: void 0,
     caseSensitive: void 0,
-    module: route41
+    module: route49
   },
   "routes/tutorial": {
     id: "routes/tutorial",
@@ -27455,7 +27688,7 @@ const routes = {
     path: "tutorial",
     index: void 0,
     caseSensitive: void 0,
-    module: route42
+    module: route50
   },
   "routes/webhooks": {
     id: "routes/webhooks",
@@ -27463,7 +27696,7 @@ const routes = {
     path: "webhooks",
     index: void 0,
     caseSensitive: void 0,
-    module: route43
+    module: route51
   },
   "routes/webhooks.app.uninstalled": {
     id: "routes/webhooks.app.uninstalled",
@@ -27471,7 +27704,7 @@ const routes = {
     path: "app/uninstalled",
     index: void 0,
     caseSensitive: void 0,
-    module: route44
+    module: route52
   },
   "routes/webhooks.save-result": {
     id: "routes/webhooks.save-result",
@@ -27479,7 +27712,7 @@ const routes = {
     path: "save-result",
     index: void 0,
     caseSensitive: void 0,
-    module: route45
+    module: route53
   },
   "routes/webhooks.save-email": {
     id: "routes/webhooks.save-email",
@@ -27487,23 +27720,7 @@ const routes = {
     path: "save-email",
     index: void 0,
     caseSensitive: void 0,
-    module: route46
-  },
-  "routes/billing": {
-    id: "routes/billing",
-    parentId: "root",
-    path: "billing",
-    index: void 0,
-    caseSensitive: void 0,
-    module: route47
-  },
-  "routes/billing.callback": {
-    id: "routes/billing.callback",
-    parentId: "routes/billing",
-    path: "callback",
-    index: void 0,
-    caseSensitive: void 0,
-    module: route48
+    module: route54
   },
   "routes/pricing": {
     id: "routes/pricing",
@@ -27511,7 +27728,7 @@ const routes = {
     path: "pricing",
     index: void 0,
     caseSensitive: void 0,
-    module: route49
+    module: route55
   },
   "routes/_index": {
     id: "routes/_index",
@@ -27519,7 +27736,7 @@ const routes = {
     path: void 0,
     index: true,
     caseSensitive: void 0,
-    module: route50
+    module: route56
   },
   "routes/auth.$": {
     id: "routes/auth.$",
@@ -27527,7 +27744,7 @@ const routes = {
     path: "auth/*",
     index: void 0,
     caseSensitive: void 0,
-    module: route51
+    module: route57
   },
   "routes/health": {
     id: "routes/health",
@@ -27535,7 +27752,7 @@ const routes = {
     path: "health",
     index: void 0,
     caseSensitive: void 0,
-    module: route52
+    module: route58
   },
   "routes/index": {
     id: "routes/index",
@@ -27543,7 +27760,7 @@ const routes = {
     path: "index",
     index: void 0,
     caseSensitive: void 0,
-    module: route53
+    module: route59
   },
   "routes/ping": {
     id: "routes/ping",
@@ -27551,7 +27768,7 @@ const routes = {
     path: "ping",
     index: void 0,
     caseSensitive: void 0,
-    module: route54
+    module: route60
   },
   "routes/app": {
     id: "routes/app",
@@ -27559,7 +27776,7 @@ const routes = {
     path: "app",
     index: void 0,
     caseSensitive: void 0,
-    module: route55
+    module: route61
   },
   "routes/app.campaigns.new": {
     id: "routes/app.campaigns.new",
@@ -27567,7 +27784,7 @@ const routes = {
     path: "campaigns/new",
     index: void 0,
     caseSensitive: void 0,
-    module: route56
+    module: route62
   },
   "routes/app.integrations": {
     id: "routes/app.integrations",
@@ -27575,7 +27792,7 @@ const routes = {
     path: "integrations",
     index: void 0,
     caseSensitive: void 0,
-    module: route57
+    module: route63
   },
   "routes/app.subscribers": {
     id: "routes/app.subscribers",
@@ -27583,7 +27800,7 @@ const routes = {
     path: "subscribers",
     index: void 0,
     caseSensitive: void 0,
-    module: route58
+    module: route64
   },
   "routes/app.additional": {
     id: "routes/app.additional",
@@ -27591,7 +27808,7 @@ const routes = {
     path: "additional",
     index: void 0,
     caseSensitive: void 0,
-    module: route59
+    module: route65
   },
   "routes/app.game.$id": {
     id: "routes/app.game.$id",
@@ -27599,7 +27816,7 @@ const routes = {
     path: "game/:id",
     index: void 0,
     caseSensitive: void 0,
-    module: route60
+    module: route66
   },
   "routes/app.game.add": {
     id: "routes/app.game.add",
@@ -27607,7 +27824,15 @@ const routes = {
     path: "game/add",
     index: void 0,
     caseSensitive: void 0,
-    module: route61
+    module: route67
+  },
+  "routes/app.billing": {
+    id: "routes/app.billing",
+    parentId: "routes/app",
+    path: "billing",
+    index: void 0,
+    caseSensitive: void 0,
+    module: route68
   },
   "routes/app.revenue": {
     id: "routes/app.revenue",
@@ -27615,7 +27840,7 @@ const routes = {
     path: "revenue",
     index: void 0,
     caseSensitive: void 0,
-    module: route62
+    module: route69
   },
   "routes/app._index": {
     id: "routes/app._index",
@@ -27623,7 +27848,7 @@ const routes = {
     path: void 0,
     index: true,
     caseSensitive: void 0,
-    module: route63
+    module: route70
   }
 };
 export {

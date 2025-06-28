@@ -1,7 +1,7 @@
 "use client";
 
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import Navigation from "../components/Navigation";
 import { usePlan } from "../context/PlanContext";
 import { useEffect } from "react";
@@ -21,7 +21,7 @@ export async function loader({ request }) {
     console.log("App - Authenticated with shop:", shop);
 
     const discountCodes = [];
-    const isDevelopment = process.env.NODE_ENV === "development";
+    const isDevelopment = process.env.NODE_ENV === "production";
 
     // Check subscription status using our enhanced function
     const subscriptionStatus = await hasActiveSubscription(

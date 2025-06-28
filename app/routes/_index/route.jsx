@@ -9,6 +9,9 @@ export const loader = async ({ request }) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
+  console.log(
+    "Index loader - checking authentication... app/routes/_index/route.jsx",
+  );
   return { showForm: Boolean(login) };
 };
 

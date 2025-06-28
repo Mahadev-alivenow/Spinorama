@@ -8,6 +8,11 @@ import { authenticate } from "../shopify.server";
 
 
 export async function action({ request }) {
+  console.log("=== Sync Campaign Metafields Route maha Called ===");
+  const { session, admin } = await authenticate.admin(request);
+  const shopName = session.shop;
+  console.log("session");
+  console.log("session check:", shopName);
   try {
     // Authenticate and get shop info
     const { session, admin } = await authenticate.admin(request);
@@ -26,14 +31,19 @@ export async function action({ request }) {
       const appIdQuery = await graphql(`
         #graphql
         query {
-          currentAppInstallation {
+          shop {
             id
           }
         }
       `);
-      const appInstallationID = (await appIdQuery.json()).data
-        .currentAppInstallation.id;
+      // const appInstallationID = (await appIdQuery.json()).data
+      //   .shop.id;
 
+      const appIdQueryData = await appIdQuery.json();
+      // const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+      const appInstallationID = appIdQueryData.data.shop.id;
+
+      console.log("Shop Installation ID:", appInstallationID);
       // Clear key metafields
       const clearMetafields = [
         {
@@ -93,8 +103,57 @@ export async function action({ request }) {
         { variables: { metafields: clearMetafields } },
       );
 
-      const data = await metafieldsMutation.json();
+      // const testMetafield = [
+      //   {
+      //     namespace: "wheel-of-wonders",
+      //     key: "testFlag",
+      //     type: "boolean",
+      //     value: "true",
+      //     ownerId: appInstallationID, // rename variable properly
+      //   },
+      // ];
 
+      // const testMutation = await graphql(
+      //   `
+      //     mutation ($metafields: [MetafieldsSetInput!]!) {
+      //       metafieldsSet(metafields: $metafields) {
+      //         metafields {
+      //           id
+      //           key
+      //           value
+      //         }
+      //         userErrors {
+      //           field
+      //           message
+      //         }
+      //       }
+      //     }
+      //   `,
+      //   { variables: { metafields: testMetafield } },
+      // );
+
+      // console.log(await testMutation.json());
+      console.log("Test metafield mutation executed");
+
+      // const data = await metafieldsMutation.json();
+
+      // if (data.data?.metafieldsSet?.userErrors?.length) {
+      //   console.error(
+      //     "Metafield userErrors:",
+      //     data.data.metafieldsSet.userErrors,
+      //   );
+      //   return json({
+      //     success: false,
+      //     errors: data.data.metafieldsSet.userErrors,
+      //   });
+      // }
+
+      const data = await metafieldsMutation.json();
+      console.log("Raw GraphQL response:", data); // <--- ADD THIS LINE
+
+      if (data.errors) {
+        console.error("GraphQL top-level errors:", data.errors);
+      }
       if (data.data?.metafieldsSet?.userErrors?.length) {
         console.error(
           "Metafield userErrors:",
@@ -152,6 +211,7 @@ export async function action({ request }) {
     }
   } catch (error) {
     console.error("Error syncing campaign to metafields:", error);
+    console.log("catch");
     return json(
       {
         success: false,
@@ -164,6 +224,11 @@ export async function action({ request }) {
 
 // Handle GET requests to sync the current active campaign
 export async function loader({ request }) {
+  console.log("=== Sync Campaign Metafields Route loader Called ===");
+  const { session, admin } = await authenticate.admin(request);
+  const shopName = session.shop;
+  console.log("session");
+  console.log("session check:", shopName);
   try {
     // Authenticate and get shop info
     const { session, admin } = await authenticate.admin(request);

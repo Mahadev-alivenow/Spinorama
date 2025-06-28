@@ -33,7 +33,10 @@ const hmrConfig =
 
 export default defineConfig({
   server: {
-    allowedHosts: [host],
+    allowedHosts: [
+      host,
+      "sick-statutory-normally-assumption.trycloudflare.com",
+    ],
     cors: {
       preflightContinue: true,
     },

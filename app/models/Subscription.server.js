@@ -167,7 +167,7 @@ export async function hasActiveSubscription(
 ) {
   try {
     // In development mode, always return true for testing (you can modify this)
-    if (isDevelopment || process.env.NODE_ENV === "development") {
+    if (isDevelopment || process.env.NODE_ENV === "production") {
       console.log("🔧 Development mode: Simulating active subscription");
       return {
         hasSubscription: true, // Change to false to test no subscription
@@ -288,12 +288,17 @@ export async function createSubscriptionMetafield(
         currentAppInstallation {
           id
         }
+        shop {
+          id
+        }
       }
     `);
 
     const appIdQueryData = await appIdQuery.json();
     const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+    // const shopInstallationID = appIdQueryData.data.shop.id;
     console.log("App Installation ID:", appInstallationID);
+    // console.log("Shop Installation ID:", shopInstallationID);
 
     const appMetafield = await graphql(
       `
@@ -485,12 +490,20 @@ export async function syncActiveCampaignToMetafields(
         currentAppInstallation {
           id
         }
+        shop {
+          id
+        }
       }
     `);
-    const appInstallationID = (await appIdQuery.json()).data
-      .currentAppInstallation.id;
+    // const appInstallationID = (await appIdQuery.json()).data
+    //   .shop.id;
 
-    console.log("App Installation ID:", appInstallationID);
+    const appIdQueryData = await appIdQuery.json();
+    // const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+    const appInstallationID = appIdQueryData.data.shop.id;
+
+    console.log("Shop Installation ID:", appInstallationID);
+    // console.log("Shop Installation ID:", shopInstallationID);
 
     // Build all metafields including subscription status
     const metafieldsInput = [
@@ -711,7 +724,8 @@ export async function syncActiveCampaignToMetafields(
       return { success: false, errors: data.data.metafieldsSet.userErrors };
     }
 
-    console.log("✅ Successfully synced campaign to metafields");
+    console.log("from subscription.server.js");
+    console.log("✅ Successfully synced campaign to metafields :",data.data.metafieldsSet.metafields);
     return {
       success: true,
       metafields: data.data.metafieldsSet.metafields,
