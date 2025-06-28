@@ -5,6 +5,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useLocation,
 } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { Toaster } from "react-hot-toast";
@@ -13,7 +14,6 @@ import { PlanProvider } from "./context/PlanContext";
 import { useEffect } from "react";
 import styles from "./styles/global.css?url";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
-
 
 // Export CSS styles
 export const links = () => [{ rel: "stylesheet", href: styles }];
@@ -115,58 +115,61 @@ export const loader = async ({ request }) => {
     },
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
-    host:process.env.HOST || "",
+    host: process.env.HOST || "",
   });
 };
 
 export default function App() {
-   const data = useLoaderData();
-   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || ""; 
-   const host =
-     typeof window !== "undefined"
-       ? new URLSearchParams(window.location.search).get("host")
-       : undefined || data.host || process.env.HOST || "";
+  const location = useLocation();
 
+  const data = useLoaderData();
+  const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
+  const query = new URLSearchParams(location.search);
+  const shop = query.get("shop");
+  const host =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("host")
+      : undefined || data.host || process.env.HOST || "";
 
-      useEffect(() => {
-        if (typeof window !== "undefined") {
-          if (data.discountCodes && data.discountCodes.length > 0) {
-            window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
-            console.log(
-              "Root - Setting global discount codes:",
-              data.discountCodes,
-            );
-    
-            try {
-              localStorage.setItem(
-                "GLOBAL_DISCOUNT_CODES",
-                JSON.stringify(data.discountCodes),
-              );
-            } catch (e) {
-              console.error("Failed to store discount codes in localStorage:", e);
-            }
-          } else {
-            try {
-              const storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
-              if (storedCodes) {
-                const parsedCodes = JSON.parse(storedCodes);
-                if (parsedCodes && parsedCodes.length > 0) {
-                  window.GLOBAL_DISCOUNT_CODES = parsedCodes;
-                  console.log(
-                    "Root - Using stored discount codes from localStorage:",
-                    parsedCodes.length,
-                  );
-                }
-              }
-            } catch (e) {
-              console.error(
-                "Failed to retrieve discount codes from localStorage:",
-                e,
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (data.discountCodes && data.discountCodes.length > 0) {
+        window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
+        console.log(
+          "Root - Setting global discount codes:",
+          data.discountCodes,
+        );
+
+        try {
+          localStorage.setItem(
+            "GLOBAL_DISCOUNT_CODES",
+            JSON.stringify(data.discountCodes),
+          );
+        } catch (e) {
+          console.error("Failed to store discount codes in localStorage:", e);
+        }
+      } else {
+        try {
+          const storedCodes = localStorage.getItem("GLOBAL_DISCOUNT_CODES");
+          if (storedCodes) {
+            const parsedCodes = JSON.parse(storedCodes);
+            if (parsedCodes && parsedCodes.length > 0) {
+              window.GLOBAL_DISCOUNT_CODES = parsedCodes;
+              console.log(
+                "Root - Using stored discount codes from localStorage:",
+                parsedCodes.length,
               );
             }
           }
+        } catch (e) {
+          console.error(
+            "Failed to retrieve discount codes from localStorage:",
+            e,
+          );
         }
-      }, [data.discountCodes]);
+      }
+    }
+  }, [data.discountCodes]);
   return (
     <html>
       <head>
@@ -186,7 +189,7 @@ export default function App() {
         <script src="https://unpkg.com/@shopify/app-bridge@3"></script> */}
       </head>
       <body>
-        <AppProvider apiKey={apiKey} host={host} isEmbeddedApp>
+        <AppProvider apiKey={apiKey} host={host} shop={shop} isEmbeddedApp>
           <PlanProvider initialDiscountCodes={data.discountCodes || []}>
             <CampaignProvider>
               <Outlet />
