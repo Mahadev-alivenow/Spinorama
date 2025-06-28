@@ -115,7 +115,7 @@ export const loader = async ({ request }) => {
     },
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
-    host,
+    host:process.env.HOST || "",
   });
 };
 
