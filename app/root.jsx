@@ -115,15 +115,19 @@ export const loader = async ({ request }) => {
       );
     }
   }
-
+  // ✅ Redirect to auth if essential params are missing
+  if (!shop || !host) {
+    console.log("Missing Shopify parameters. Redirecting to /auth");
+    return redirect("/auth");
+  }
   return json({
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
     },
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
-    host: process.env.HOST || "",
-    shop: shop || "", // ✅ Add this
+    host,
+    shop,
   });
 };
 
@@ -179,9 +183,10 @@ export default function App() {
     }
   }, [data.discountCodes]);
 
+  // ✅ Redirect to auth if essential params are missing
   if (!shop || !host) {
-    console.error("Missing shop or host for AppBridge", { shop, host });
-    return <div>Missing Shopify parameters.</div>; // Optional fallback
+    console.log("Missing Shopify parameters. Redirecting to /auth");
+    return redirect("/auth");
   }
   return (
     <html>

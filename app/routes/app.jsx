@@ -135,6 +135,23 @@ export default function App() {
     }
   }, [data, setDiscountCodes]);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shop = urlParams.get("shop");
+    const host = urlParams.get("host");
+
+    // If missing, and we're inside iframe → redirect to top-level
+    if (!shop || !host) {
+      if (window.top === window.self) {
+        // Not inside iframe — dev direct load
+        return;
+      }
+
+      const appOrigin = new URL(window.location.origin);
+      const redirectUrl = `/auth/toplevel?shop=${window.__SHOP_DOMAIN__}`; // Replace with a real fallback if you have one
+      window.top.location.assign(redirectUrl);
+    }
+  }, []);
   // Show development info
   if (data.isDevelopment) {
     return (
