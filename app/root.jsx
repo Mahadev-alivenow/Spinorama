@@ -115,15 +115,17 @@ export const loader = async ({ request }) => {
     },
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
+    host,
   });
 };
 
 export default function App() {
    const data = useLoaderData();
    const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || ""; 
-   const host = typeof window !== "undefined"
-  ? new URLSearchParams(window.location.search).get("host")
-  : undefined;
+   const host =
+     typeof window !== "undefined"
+       ? new URLSearchParams(window.location.search).get("host")
+       : undefined || data.host;
 
 
       useEffect(() => {
@@ -175,6 +177,8 @@ export default function App() {
           rel="stylesheet"
           href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
         />
+        <title>Spinorama App</title>
+        <link rel="icon" href="/favicon.ico" />
         <Meta />
         <Links />
         {/* ✅ Load Shopify App Bridge scripts in head with blocking behavior */}
