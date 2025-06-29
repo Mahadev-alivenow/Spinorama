@@ -157,18 +157,18 @@ export async function authenticateWithFallback(request) {
   }
 }
 
-export async function login(request) {
-  const url = new URL(request.url);
-  const shop = url.searchParams.get("shop");
+// export async function login(request) {
+//   const url = new URL(request.url);
+//   const shop = url.searchParams.get("shop");
 
-  if (!shop) {
-    // 🚨 this redirect must be avoided inside /auth route or you'll loop!
-    return redirect("/auth/login");
-  }
+//   if (!shop) {
+//     // 🚨 this redirect must be avoided inside /auth route or you'll loop!
+//     return redirect("/auth/login");
+//   }
 
-  // Otherwise, initiate Shopify OAuth
-  return redirect(`https://${shop}/admin/oauth/authorize?...`);
-}
+//   // Otherwise, initiate Shopify OAuth
+//   return redirect(`https://${shop}/admin/oauth/authorize?...`);
+// }
 
 
 export default shopify;
@@ -176,6 +176,6 @@ export const apiVersion = ApiVersion.January25;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
 export const unauthenticated = shopify.unauthenticated;
-// export const login = shopify.login;
+export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
