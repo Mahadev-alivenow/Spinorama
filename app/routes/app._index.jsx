@@ -1,4 +1,3 @@
-"use client";
 
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
