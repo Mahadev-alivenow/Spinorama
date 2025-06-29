@@ -27,40 +27,40 @@ export const loader = async ({ request }) => {
   let campaigns = [];
   let shopName = null;
   let authError = null;
-  const isClientNavigation = isClientSideNavigation(request);
+  // const isClientNavigation = isClientSideNavigation(request);
 
   try {
     // Use enhanced authentication
-    const authResult = await authenticateWithFallback(request);
+    // const authResult = await authenticateWithFallback(request);
 
-    if (!authResult.success) {
-      // Handle fallback case for client navigation
-      if (authResult.fallback && isClientNavigation) {
-        console.log("Campaigns - Using fallback data for client navigation");
+    // if (!authResult.success) {
+    //   // Handle fallback case for client navigation
+    //   if (authResult.fallback && isClientNavigation) {
+    //     console.log("Campaigns - Using fallback data for client navigation");
 
-        return json({
-          campaigns: [],
-          shopName: authResult.shop || "unknown-shop",
-          authError: "Authentication temporarily unavailable",
-          fallbackMode: true,
-          isAuthenticated: false,
-        });
-      }
+    //     return json({
+    //       campaigns: [],
+    //       shopName: authResult.shop || "unknown-shop",
+    //       authError: "Authentication temporarily unavailable",
+    //       fallbackMode: true,
+    //       isAuthenticated: false,
+    //     });
+    //   }
 
-      // For direct navigation, redirect to auth
-      const url = new URL(request.url);
-      const shop = url.searchParams.get("shop");
+    //   // For direct navigation, redirect to auth
+    //   const url = new URL(request.url);
+    //   const shop = url.searchParams.get("shop");
 
-      if (shop) {
-        return Response.redirect(`/auth?shop=${shop}`, 302);
-      }
+    //   if (shop) {
+    //     return Response.redirect(`/auth?shop=${shop}`, 302);
+    //   }
 
-      return Response.redirect(`/auth/login`, 302);
-    }
+    //   return Response.redirect(`/auth/login`, 302);
+    // }
 
-    const { session } = authResult;
-    shopName = session.shop;
-    console.log("Campaigns - Authenticated successfully, shop:", shopName);
+    // const { session } = authResult;
+    // shopName = session.shop;
+    // console.log("Campaigns - Authenticated successfully, shop:", shopName);
 
     // Try to get campaigns from database
     try {
@@ -84,15 +84,15 @@ export const loader = async ({ request }) => {
       console.error("Campaigns - Database error:", dbError);
 
       // For client navigation, continue with empty campaigns but don't show fallback mode
-      if (isClientNavigation) {
-        campaigns = [];
-      } else {
-        return json({
-          campaigns: [],
-          error: "Failed to fetch campaigns from database",
-          dbError: dbError.message,
-        });
-      }
+      // if (isClientNavigation) {
+      //   campaigns = [];
+      // } else {
+      //   return json({
+      //     campaigns: [],
+      //     error: "Failed to fetch campaigns from database",
+      //     dbError: dbError.message,
+      //   });
+      // }
     }
 
     return json({
@@ -107,104 +107,104 @@ export const loader = async ({ request }) => {
     authError = error;
 
     // Enhanced fallback logic for client navigation
-    if (isClientNavigation) {
-      const url = new URL(request.url);
-      shopName =
-        url.searchParams.get("shop") ||
-        request.headers.get("x-shopify-shop-domain") ||
-        "unknown-shop";
+    // if (isClientNavigation) {
+    //   const url = new URL(request.url);
+    //   shopName =
+    //     url.searchParams.get("shop") ||
+    //     request.headers.get("x-shopify-shop-domain") ||
+    //     "unknown-shop";
 
-      console.log(
-        "Campaigns - Client navigation fallback, using shop:",
-        shopName,
-      );
+    //   console.log(
+    //     "Campaigns - Client navigation fallback, using shop:",
+    //     shopName,
+    //   );
 
-      return json({
-        campaigns: [],
-        shopName,
-        authError: "Authentication temporarily unavailable",
-        fallbackMode: true,
-        isAuthenticated: false,
-      });
-    }
+    //   return json({
+    //     campaigns: [],
+    //     shopName,
+    //     authError: "Authentication temporarily unavailable",
+    //     fallbackMode: true,
+    //     isAuthenticated: false,
+    //   });
+    // }
 
     // Try to extract shop from request as fallback for direct navigation
-    const url = new URL(request.url);
-    shopName =
-      url.searchParams.get("shop") ||
-      request.headers.get("x-shopify-shop-domain");
+    // const url = new URL(request.url);
+    // shopName =
+    //   url.searchParams.get("shop") ||
+    //   request.headers.get("x-shopify-shop-domain");
 
-    if (!shopName) {
-      // Try to extract from referrer
-      const referrer = request.headers.get("referer");
-      if (referrer) {
-        try {
-          const referrerUrl = new URL(referrer);
-          shopName = referrerUrl.searchParams.get("shop");
-        } catch (e) {
-          console.log("Could not parse referrer URL");
-        }
-      }
-    }
+    // if (!shopName) {
+    //   // Try to extract from referrer
+    //   const referrer = request.headers.get("referer");
+    //   if (referrer) {
+    //     try {
+    //       const referrerUrl = new URL(referrer);
+    //       shopName = referrerUrl.searchParams.get("shop");
+    //     } catch (e) {
+    //       console.log("Could not parse referrer URL");
+    //     }
+    //   }
+    // }
 
-    if (shopName) {
+    // if (shopName) {
+    //   console.log(
+    //     "Campaigns - Authentication failed, using shop from request:",
+    //     shopName,
+    //   );
+
+    // Try to get campaigns even with auth failure
+    try {
+      const { db } = await connectToDatabase(shopName);
       console.log(
-        "Campaigns - Authentication failed, using shop from request:",
+        "Campaigns - Fetching campaigns from database (fallback):",
         shopName,
       );
 
-      // Try to get campaigns even with auth failure
-      try {
-        const { db } = await connectToDatabase(shopName);
-        console.log(
-          "Campaigns - Fetching campaigns from database (fallback):",
-          shopName,
-        );
+      const campaignsCollection = db.collection("campaigns");
+      const campaignsCursor = await campaignsCollection
+        .find({})
+        .sort({ createdAt: -1 });
+      campaigns = await campaignsCursor.toArray();
 
-        const campaignsCollection = db.collection("campaigns");
-        const campaignsCursor = await campaignsCollection
-          .find({})
-          .sort({ createdAt: -1 });
-        campaigns = await campaignsCursor.toArray();
+      // Convert ObjectId to string for JSON serialization
+      campaigns = campaigns.map((campaign) => ({
+        ...campaign,
+        _id: campaign._id.toString(),
+      }));
 
-        // Convert ObjectId to string for JSON serialization
-        campaigns = campaigns.map((campaign) => ({
-          ...campaign,
-          _id: campaign._id.toString(),
-        }));
-
-        console.log(
-          "Campaigns - Loaded campaigns (fallback):",
-          campaigns?.length || 0,
-        );
-      } catch (dbError) {
-        console.error("Campaigns - Database error (fallback):", dbError);
-      }
-
-      return json({
-        campaigns,
-        shopName,
-        authError: "Authentication failed, but campaigns loaded from fallback",
-        fallbackMode: false, // Don't show fallback mode if we have data
-        isAuthenticated: false,
-      });
-    } else {
-      // If we can't determine the shop and there's an auth error,
-      // check if it's a redirect response
-      if (error && typeof error.status === "number" && error.status === 302) {
-        // This is a redirect to login, throw it to let Remix handle it
-        throw error;
-      }
-
-      return json({
-        campaigns: [],
-        error:
-          "Could not determine shop name. Please ensure you're accessing this from within the Shopify admin.",
-        authError: true,
-        fallbackMode: true,
-        isAuthenticated: false,
-      });
+      console.log(
+        "Campaigns - Loaded campaigns (fallback):",
+        campaigns?.length || 0,
+      );
+    } catch (dbError) {
+      console.error("Campaigns - Database error (fallback):", dbError);
     }
+
+    return json({
+      campaigns,
+      shopName,
+      authError: "Authentication failed, but campaigns loaded from fallback",
+      fallbackMode: false, // Don't show fallback mode if we have data
+      isAuthenticated: false,
+    });
+    // } else {
+    //   // If we can't determine the shop and there's an auth error,
+    //   // check if it's a redirect response
+    //   if (error && typeof error.status === "number" && error.status === 302) {
+    //     // This is a redirect to login, throw it to let Remix handle it
+    //     throw error;
+    //   }
+
+    //   return json({
+    //     campaigns: [],
+    //     error:
+    //       "Could not determine shop name. Please ensure you're accessing this from within the Shopify admin.",
+    //     authError: true,
+    //     fallbackMode: true,
+    //     isAuthenticated: false,
+    //   });
+    // }
   }
 };
 
