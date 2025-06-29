@@ -20,9 +20,9 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
-  // const { authenticate } = await import(
-  //   "../shopify.server"
-  // );
+  const { authenticate } = await import(
+    "../shopify.server"
+  );
   const url = new URL(request.url);
 
   const { connectToDatabase } = await import("../../lib/mongodb.server");
@@ -34,7 +34,10 @@ export const loader = async ({ request }) => {
   const shop = url.searchParams.get("shop");
 
   let campaigns = [];
-  let shopName = shop || null;
+  // let shopName = shop || null;
+  const { session } = await authenticate.admin(request);
+        shopName = session.shop;
+        console.log("Campaigns - Authenticated with shop:", shopName);
   let authError = null;
   // const isClientNavigation = isClientSideNavigation(request);
 

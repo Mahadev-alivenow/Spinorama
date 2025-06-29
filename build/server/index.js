@@ -279,16 +279,16 @@ if (process.env.NODE_ENV === "development") {
     });
   }
 }
-function formatShopName$2(shopName) {
-  let formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+function formatShopName$2(shopName2) {
+  let formattedName = shopName2.replace(/\.myshopify\.com$/i, "");
   formattedName = formattedName.replace(/[/\\. "$*<>:|?]/g, "_");
   if (!/^[a-zA-Z]/.test(formattedName)) {
     formattedName = "shop_" + formattedName;
   }
-  console.log(`Formatted shop name: ${shopName} -> ${formattedName}`);
+  console.log(`Formatted shop name: ${shopName2} -> ${formattedName}`);
   return formattedName;
 }
-async function connectToDatabase$1(shopName = null) {
+async function connectToDatabase$1(shopName2 = null) {
   if (!clientPromise$1) {
     throw new Error(
       "MongoDB connection not initialized. Check your MONGODB_URI."
@@ -296,7 +296,7 @@ async function connectToDatabase$1(shopName = null) {
   }
   try {
     const client2 = await clientPromise$1;
-    const effectiveShopName = shopName || "wheel-of-wonders.myshopify.com";
+    const effectiveShopName = shopName2 || "wheel-of-wonders.myshopify.com";
     const dbName = formatShopName$2(effectiveShopName);
     console.log(
       `Connecting to database: ${dbName} (from shop: ${effectiveShopName})`
@@ -308,9 +308,9 @@ async function connectToDatabase$1(shopName = null) {
     throw error;
   }
 }
-async function getActiveCampaign(shopName = null) {
+async function getActiveCampaign(shopName2 = null) {
   try {
-    const { db } = await connectToDatabase$1(shopName);
+    const { db } = await connectToDatabase$1(shopName2);
     const campaignsCollection = db.collection("campaigns");
     console.log("Looking for active campaign...");
     const activeCampaign = await campaignsCollection.findOne({
@@ -358,7 +358,7 @@ async function getSubscriptionStatus(graphql) {
   const res = await result.json();
   return res;
 }
-async function hasActiveSubscription(graphql, shopName, isDevelopment = false) {
+async function hasActiveSubscription(graphql, shopName2, isDevelopment = false) {
   try {
     if (isDevelopment || process.env.NODE_ENV === "production") {
       console.log("🔧 Development mode: Simulating active subscription");
@@ -384,10 +384,10 @@ async function hasActiveSubscription(graphql, shopName, isDevelopment = false) {
       };
     }
     try {
-      const { db } = await connectToDatabase$1(shopName);
+      const { db } = await connectToDatabase$1(shopName2);
       const subscriptionCollection = db.collection("app_subscriptions");
       const localSubscription = await subscriptionCollection.findOne({
-        shop: shopName,
+        shop: shopName2,
         status: "active",
         expiresAt: { $gt: /* @__PURE__ */ new Date() }
       });
@@ -417,12 +417,12 @@ async function hasActiveSubscription(graphql, shopName, isDevelopment = false) {
     };
   }
 }
-async function setLocalSubscriptionStatus(shopName, status, planName = "Monthly Plan") {
+async function setLocalSubscriptionStatus(shopName2, status, planName = "Monthly Plan") {
   try {
-    const { db } = await connectToDatabase$1(shopName);
+    const { db } = await connectToDatabase$1(shopName2);
     const subscriptionCollection = db.collection("app_subscriptions");
     const subscriptionData = {
-      shop: shopName,
+      shop: shopName2,
       status,
       // 'active' or 'inactive'
       planName,
@@ -434,23 +434,23 @@ async function setLocalSubscriptionStatus(shopName, status, planName = "Monthly 
       // or 'shopify', 'stripe', etc.
     };
     await subscriptionCollection.updateOne(
-      { shop: shopName },
+      { shop: shopName2 },
       { $set: subscriptionData },
       { upsert: true }
     );
-    console.log(`✅ Set local subscription status for ${shopName}: ${status}`);
+    console.log(`✅ Set local subscription status for ${shopName2}: ${status}`);
     return true;
   } catch (error) {
     console.error("Error setting local subscription status:", error);
     return false;
   }
 }
-async function createSubscriptionMetafield(graphql, hasSubscription, shopName = null) {
+async function createSubscriptionMetafield(graphql, hasSubscription, shopName2 = null) {
   var _a2, _b, _c;
   try {
     const value = hasSubscription ? "true" : "false";
     console.log(
-      `🔄 Setting subscription metafield: ${value} for shop: ${shopName}`
+      `🔄 Setting subscription metafield: ${value} for shop: ${shopName2}`
     );
     const appIdQuery = await graphql(`
       #graphql
@@ -527,29 +527,29 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
   var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
   try {
     let activeCampaign = null;
-    let shopName = null;
+    let shopName2 = null;
     if (typeof campaignOrShopName === "string") {
-      shopName = campaignOrShopName;
-      activeCampaign = await getActiveCampaign(shopName);
+      shopName2 = campaignOrShopName;
+      activeCampaign = await getActiveCampaign(shopName2);
     } else if (campaignOrShopName && typeof campaignOrShopName === "object") {
       activeCampaign = campaignOrShopName;
-      shopName = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
+      shopName2 = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
     } else {
       console.log("Invalid parameter for syncActiveCampaignToMetafields");
       return { success: false, message: "Invalid parameter" };
     }
-    const subscriptionStatus = await hasActiveSubscription(graphql, shopName);
+    const subscriptionStatus = await hasActiveSubscription(graphql, shopName2);
     await createSubscriptionMetafield(
       graphql,
       subscriptionStatus.hasSubscription,
-      shopName
+      shopName2
     );
     if (!subscriptionStatus.hasSubscription) {
       console.log("⚠️ No active subscription - not syncing campaign data");
       return { success: false, message: "No active subscription" };
     }
     if (!activeCampaign) {
-      activeCampaign = await getActiveCampaign(shopName);
+      activeCampaign = await getActiveCampaign(shopName2);
     }
     if (!activeCampaign) {
       console.log("No active campaign found to sync to metafields");
@@ -902,10 +902,10 @@ async function getDiscountCodes(graphql) {
   const res = await result.json();
   return res;
 }
-async function createCampaignLayoutMetafields(graphql, shopName) {
+async function createCampaignLayoutMetafields(graphql, shopName2) {
   var _a2, _b, _c;
   try {
-    const activeCampaign = await getActiveCampaign(shopName);
+    const activeCampaign = await getActiveCampaign(shopName2);
     if (!activeCampaign) {
       console.log("No active campaign found to create layout metafields");
       return null;
@@ -1090,10 +1090,10 @@ const Subscription_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
 async function action$s({ request }) {
   const { admin, session } = await authenticate.admin(request);
   try {
-    const shopName = session.shop;
+    const shopName2 = session.shop;
     const result = await createCampaignLayoutMetafields(
       admin.graphql,
-      shopName
+      shopName2
     );
     if (!result) {
       return json(
@@ -1122,12 +1122,12 @@ async function action$r({ request }) {
   var _a2, _b, _c;
   console.log("=== Sync Campaign Metafields Route maha Called ===");
   const { session, admin } = await authenticate.admin(request);
-  const shopName = session.shop;
+  const shopName2 = session.shop;
   console.log("session");
-  console.log("session check:", shopName);
+  console.log("session check:", shopName2);
   try {
     const { session: session2, admin: admin2 } = await authenticate.admin(request);
-    const shopName2 = session2.shop;
+    const shopName3 = session2.shop;
     const graphql = admin2.graphql;
     const requestBody = await request.json();
     const { campaignId, clear } = requestBody;
@@ -1225,7 +1225,7 @@ async function action$r({ request }) {
     if (!campaignId) {
       return json({ error: "Campaign ID is required" }, { status: 400 });
     }
-    const { db } = await connectToDatabase$1(shopName2);
+    const { db } = await connectToDatabase$1(shopName3);
     const campaign = await db.collection("campaigns").findOne({
       id: campaignId,
       status: "active"
@@ -1234,7 +1234,7 @@ async function action$r({ request }) {
       return json({ error: "Active campaign not found" }, { status: 404 });
     }
     console.log("Syncing campaign to metafields:", campaign.name);
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName2);
+    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName3);
     if (syncResult.success) {
       return json({
         success: true,
@@ -1268,14 +1268,14 @@ async function action$r({ request }) {
 async function loader$J({ request }) {
   console.log("=== Sync Campaign Metafields Route loader Called ===");
   const { session, admin } = await authenticate.admin(request);
-  const shopName = session.shop;
+  const shopName2 = session.shop;
   console.log("session");
-  console.log("session check:", shopName);
+  console.log("session check:", shopName2);
   try {
     const { session: session2, admin: admin2 } = await authenticate.admin(request);
-    const shopName2 = session2.shop;
+    const shopName3 = session2.shop;
     const graphql = admin2.graphql;
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName2);
+    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName3);
     if (syncResult.success) {
       return json({
         success: true,
@@ -1331,9 +1331,9 @@ const route3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 }, Symbol.toStringTag, { value: "Module" }));
 const uri$1 = process.env.MONGODB_URI;
 const client$1 = new MongoClient(uri$1);
-function formatShopName$1(shopName) {
-  if (!shopName) return "wheel-of-wonders";
-  let formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+function formatShopName$1(shopName2) {
+  if (!shopName2) return "wheel-of-wonders";
+  let formattedName = shopName2.replace(/\.myshopify\.com$/i, "");
   formattedName = formattedName.replace(/[/\\. "$*<>:|?]/g, "_");
   if (!/^[a-zA-Z]/.test(formattedName)) {
     formattedName = "shop_" + formattedName;
@@ -1548,9 +1548,9 @@ const route7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 async function loader$F({ request }) {
   const { session } = await authenticate.admin(request);
   try {
-    const shopName = session.shop;
-    console.log("Testing DB connection for shop:", shopName);
-    const activeCampaign = await getActiveCampaign(shopName);
+    const shopName2 = session.shop;
+    console.log("Testing DB connection for shop:", shopName2);
+    const activeCampaign = await getActiveCampaign(shopName2);
     if (!activeCampaign) {
       return json({
         success: false,
@@ -2284,27 +2284,27 @@ if (process.env.NODE_ENV === "development") {
     });
   }
 }
-function formatShopName(shopName) {
-  if (!shopName) return "shopify-campaigns";
-  let formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+function formatShopName(shopName2) {
+  if (!shopName2) return "shopify-campaigns";
+  let formattedName = shopName2.replace(/\.myshopify\.com$/i, "");
   formattedName = formattedName.replace(/[/\\. "$*<>:|?]/g, "_");
   if (!/^[a-zA-Z]/.test(formattedName)) {
     formattedName = "shop_" + formattedName;
   }
-  console.log(`Formatted shop name: ${shopName} -> ${formattedName}`);
+  console.log(`Formatted shop name: ${shopName2} -> ${formattedName}`);
   return formattedName;
 }
-function setShopName(shopName) {
-  cachedShopName = shopName;
+function setShopName(shopName2) {
+  cachedShopName = shopName2;
 }
 function getShopName() {
   return cachedShopName;
 }
-async function connectToDatabase(shopName = null) {
+async function connectToDatabase(shopName2 = null) {
   try {
     if (!clientPromise) throw new Error("No MONGODB_URI");
     const client2 = await clientPromise;
-    const dbName = formatShopName(shopName || cachedShopName || "default");
+    const dbName = formatShopName(shopName2 || cachedShopName || "default");
     const db = client2.db(dbName);
     let isConnected = false;
     try {
@@ -2328,10 +2328,10 @@ const mongodb_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
 async function loader$v({ request }) {
   var _a2, _b;
   try {
-    let shopName = null;
+    let shopName2 = null;
     try {
       const url2 = new URL(request.url);
-      shopName = url2.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || getShopName() || "wheel-of-wonders.myshopify.com";
+      shopName2 = url2.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || getShopName() || "wheel-of-wonders.myshopify.com";
     } catch (error) {
       console.error("Error getting shop name:", error);
       return json({ error: "Invalid shop name" }, { status: 400 });
@@ -2345,20 +2345,20 @@ async function loader$v({ request }) {
       10
     );
     const deviceType = url.searchParams.get("deviceType") || "desktop";
-    const { db } = await connectToDatabase(shopName);
+    const { db } = await connectToDatabase(shopName2);
     const campaigns = await db.collection("campaigns").find({
-      shop: shopName,
+      shop: shopName2,
       status: "active"
     }).toArray();
     if (!campaigns || campaigns.length === 0) {
       return json({
         success: false,
         message: "No active campaigns found",
-        shop: shopName
+        shop: shopName2
       });
     }
     console.log(
-      `Found ${campaigns.length} active campaigns for shop: ${shopName}`
+      `Found ${campaigns.length} active campaigns for shop: ${shopName2}`
     );
     const eligibleCampaigns = campaigns.filter((campaign) => {
       var _a3, _b2, _c, _d;
@@ -2380,7 +2380,7 @@ async function loader$v({ request }) {
       return json({
         success: false,
         message: "No eligible campaigns found based on rules",
-        shop: shopName
+        shop: shopName2
       });
     }
     const campaignToServe = eligibleCampaigns[0];
@@ -2398,14 +2398,14 @@ async function loader$v({ request }) {
           return json({
             success: false,
             message: "Campaign already shown to this visitor today",
-            shop: shopName
+            shop: shopName2
           });
         }
       } else if (frequency === "once_a_session") {
         return json({
           success: false,
           message: "Campaign already shown to this visitor this session",
-          shop: shopName
+          shop: shopName2
         });
       }
     }
@@ -2414,12 +2414,12 @@ async function loader$v({ request }) {
       visitorId,
       timestamp: (/* @__PURE__ */ new Date()).toISOString(),
       url: currentUrl,
-      shop: shopName
+      shop: shopName2
     });
     return json({
       success: true,
       campaign: campaignToServe,
-      shop: shopName
+      shop: shopName2
     });
   } catch (error) {
     console.error("Error serving campaign:", error);
@@ -2469,15 +2469,15 @@ async function action$j({ request }) {
   var _a2;
   const { admin, session } = await authenticate.admin(request);
   try {
-    const shopName = session.shop;
-    const activeCampaign = await getActiveCampaign(shopName);
+    const shopName2 = session.shop;
+    const activeCampaign = await getActiveCampaign(shopName2);
     if (!activeCampaign) {
       return json(
         { success: false, message: "No active campaign found" },
         { status: 404 }
       );
     }
-    await createCampaignLayoutMetafields(admin.graphql, shopName);
+    await createCampaignLayoutMetafields(admin.graphql, shopName2);
     await createSubscriptionMetafield(
       admin.graphql,
       "true",
@@ -2988,31 +2988,31 @@ const route28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 async function getEffectiveShopName$2(request) {
   try {
     const { session } = await authenticate.admin(request);
-    const shopName = session.shop;
-    console.log("Using shop name from session:", shopName);
-    setShopName(shopName);
-    return shopName;
+    const shopName2 = session.shop;
+    console.log("Using shop name from session:", shopName2);
+    setShopName(shopName2);
+    return shopName2;
   } catch (authError) {
     console.log("Authentication failed:", authError.message);
     const url = new URL(request.url);
     const shopFromRequest = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain");
-    const shopName = shopFromRequest || getShopName() || "wheel-of-wonders.myshopify.com";
-    console.log("Using shop name from fallback:", shopName);
+    const shopName2 = shopFromRequest || getShopName() || "wheel-of-wonders.myshopify.com";
+    console.log("Using shop name from fallback:", shopName2);
     if (shopFromRequest) {
       setShopName(shopFromRequest);
     }
-    return shopName;
+    return shopName2;
   }
 }
 async function loader$n({ request }) {
   try {
-    const shopName = await getEffectiveShopName$2(request);
-    const { db, dbName } = await connectToDatabase(shopName);
+    const shopName2 = await getEffectiveShopName$2(request);
+    const { db, dbName } = await connectToDatabase(shopName2);
     console.log(`Fetching campaigns from database: ${dbName}`);
     const campaigns = await db.collection("campaigns").find({}).toArray();
     return json({
       campaigns,
-      shop: shopName,
+      shop: shopName2,
       dbName
     });
   } catch (error) {
@@ -3023,19 +3023,19 @@ async function loader$n({ request }) {
 async function action$d({ request }) {
   try {
     const campaignData = await request.json();
-    const shopName = await getEffectiveShopName$2(request);
+    const shopName2 = await getEffectiveShopName$2(request);
     const { _id, ...campaignToCreate } = campaignData;
     if (!campaignToCreate.shop) {
-      campaignToCreate.shop = shopName;
+      campaignToCreate.shop = shopName2;
     }
-    const { db, dbName } = await connectToDatabase(shopName);
+    const { db, dbName } = await connectToDatabase(shopName2);
     console.log(`Creating campaign in database: ${dbName}`);
     const result = await db.collection("campaigns").insertOne(campaignToCreate);
     return json(
       {
         ...campaignToCreate,
         _id: result.insertedId,
-        shop: shopName,
+        shop: shopName2,
         dbName
       },
       { status: 201 }
@@ -3054,29 +3054,29 @@ async function getEffectiveShopName$1(request) {
   try {
     const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
     const { session } = await authenticate2.admin(request);
-    const shopName = session.shop;
-    console.log("Using shop name from session:", shopName);
-    return shopName;
+    const shopName2 = session.shop;
+    console.log("Using shop name from session:", shopName2);
+    return shopName2;
   } catch (authError) {
     console.log("Authentication failed:", authError.message);
-    let shopName = null;
+    let shopName2 = null;
     if (request.method === "POST") {
       try {
         const formData = await request.formData();
-        shopName = formData.get("shop");
-        if (shopName) {
-          console.log("Using shop name from form data:", shopName);
-          return shopName;
+        shopName2 = formData.get("shop");
+        if (shopName2) {
+          console.log("Using shop name from form data:", shopName2);
+          return shopName2;
         }
       } catch (e) {
         console.log("Not form data, trying other sources");
       }
     }
     const url = new URL(request.url);
-    shopName = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain");
-    if (shopName) {
-      console.log("Using shop name from URL/headers:", shopName);
-      return shopName;
+    shopName2 = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain");
+    if (shopName2) {
+      console.log("Using shop name from URL/headers:", shopName2);
+      return shopName2;
     }
     console.log("Using default shop name");
     return "wheel-of-wonders.myshopify.com";
@@ -3101,9 +3101,9 @@ async function action$c({ request, params }) {
     if (!newStatus) {
       return json({ error: "Status is required" }, { status: 400 });
     }
-    const shopName = await getEffectiveShopName$1(request);
-    console.log("Updating campaign", campaignId, "in database:", shopName);
-    const { db } = await connectToDatabase(shopName);
+    const shopName2 = await getEffectiveShopName$1(request);
+    console.log("Updating campaign", campaignId, "in database:", shopName2);
+    const { db } = await connectToDatabase(shopName2);
     if (!db) {
       return json({ error: "Database connection failed" }, { status: 500 });
     }
@@ -3208,9 +3208,9 @@ async function action$b({ request }) {
     const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
     const { syncActiveCampaignToMetafields: syncActiveCampaignToMetafields2 } = await Promise.resolve().then(() => Subscription_server);
     const { admin, session } = await authenticate2.admin(request);
-    const shopName = session.shop;
+    const shopName2 = session.shop;
     const graphql = admin.graphql;
-    console.log("Campaign Toggle - Authenticated for shop:", shopName);
+    console.log("Campaign Toggle - Authenticated for shop:", shopName2);
     const formData = await request.formData();
     const campaignId = formData.get("campaignId");
     const action2 = formData.get("action");
@@ -3220,7 +3220,7 @@ async function action$b({ request }) {
         { status: 400 }
       );
     }
-    const { db } = await connectToDatabase2(shopName);
+    const { db } = await connectToDatabase2(shopName2);
     const campaign = await db.collection("campaigns").findOne({ id: campaignId });
     if (!campaign) {
       return json(
@@ -3245,7 +3245,7 @@ async function action$b({ request }) {
         console.log("Campaign Toggle - Syncing to metafields...");
         const syncResult = await syncActiveCampaignToMetafields2(
           graphql,
-          shopName
+          shopName2
         );
         return json({
           success: true,
@@ -3350,27 +3350,27 @@ const route31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 async function getEffectiveShopName(request) {
   try {
     const { session } = await authenticate.admin(request);
-    const shopName = session.shop;
-    console.log("Using shop name from session:", shopName);
-    setShopName(shopName);
-    return shopName;
+    const shopName2 = session.shop;
+    console.log("Using shop name from session:", shopName2);
+    setShopName(shopName2);
+    return shopName2;
   } catch (authError) {
     console.log("Authentication failed:", authError.message);
     const url = new URL(request.url);
     const shopFromRequest = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain");
-    const shopName = shopFromRequest || getShopName() || "wheel-of-wonders.myshopify.com";
-    console.log("Using shop name from fallback:", shopName);
+    const shopName2 = shopFromRequest || getShopName() || "wheel-of-wonders.myshopify.com";
+    console.log("Using shop name from fallback:", shopName2);
     if (shopFromRequest) {
       setShopName(shopFromRequest);
     }
-    return shopName;
+    return shopName2;
   }
 }
 async function loader$l({ params, request }) {
   try {
     const { id } = params;
-    const shopName = await getEffectiveShopName(request);
-    const { db, dbName } = await connectToDatabase(shopName);
+    const shopName2 = await getEffectiveShopName(request);
+    const { db, dbName } = await connectToDatabase(shopName2);
     console.log(`Fetching campaign ${id} from database: ${dbName}`);
     const campaign = await db.collection("campaigns").findOne({ id });
     if (!campaign) {
@@ -3378,7 +3378,7 @@ async function loader$l({ params, request }) {
     }
     return json({
       ...campaign,
-      shop: shopName,
+      shop: shopName2,
       dbName
     });
   } catch (error) {
@@ -3388,15 +3388,15 @@ async function loader$l({ params, request }) {
 }
 async function action$a({ request, params }) {
   const method = request.method.toLowerCase();
-  const shopName = await getEffectiveShopName(request);
-  const { db, dbName } = await connectToDatabase(shopName);
+  const shopName2 = await getEffectiveShopName(request);
+  const { db, dbName } = await connectToDatabase(shopName2);
   if (method === "put") {
     try {
       const { id } = params;
       const campaignData = await request.json();
       const { _id, ...campaignToUpdate } = campaignData;
       if (!campaignToUpdate.shop) {
-        campaignToUpdate.shop = shopName;
+        campaignToUpdate.shop = shopName2;
       }
       console.log(`Updating campaign ${id} in database: ${dbName}`);
       const result = await db.collection("campaigns").updateOne({ id }, { $set: campaignToUpdate });
@@ -3406,7 +3406,7 @@ async function action$a({ request, params }) {
       return json({
         ...campaignToUpdate,
         id,
-        shop: shopName,
+        shop: shopName2,
         dbName
       });
     } catch (error) {
@@ -3423,7 +3423,7 @@ async function action$a({ request, params }) {
       }
       return json({
         success: true,
-        shop: shopName,
+        shop: shopName2,
         dbName
       });
     } catch (error) {
@@ -3440,24 +3440,24 @@ const route32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 }, Symbol.toStringTag, { value: "Module" }));
 async function loader$k({ request }) {
   try {
-    let shopName = null;
+    let shopName2 = null;
     try {
       const { session } = await authenticate.admin(request);
-      shopName = session.shop;
-      console.log("Using shop name for database:", shopName);
+      shopName2 = session.shop;
+      console.log("Using shop name for database:", shopName2);
     } catch (authError) {
       const url = new URL(request.url);
       const shop = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || "wheel-of-wonders.myshopify.com";
-      shopName = shop;
-      console.log("Authentication failed, using shop from request:", shopName);
+      shopName2 = shop;
+      console.log("Authentication failed, using shop from request:", shopName2);
     }
-    const { client: client2, db } = await connectToDatabase(shopName);
+    const { client: client2, db } = await connectToDatabase(shopName2);
     await db.command({ ping: 1 });
     return json({
       connected: true,
       message: "Successfully connected to MongoDB",
       dbName: db.databaseName,
-      shop: shopName
+      shop: shopName2
     });
   } catch (error) {
     console.error("Database connection error:", error);
@@ -15687,19 +15687,19 @@ function CampaignProvider({ children }) {
           if (response.ok) {
             const data = await safeJsonParse(response);
             if (data && data.shop) {
-              const shopName = data.shop;
-              const formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+              const shopName2 = data.shop;
+              const formattedName = shopName2.replace(/\.myshopify\.com$/i, "");
               setShopInfo({
-                name: shopName,
+                name: shopName2,
                 formatted: formattedName
               });
               try {
-                localStorage.setItem("shopify_shop_domain", shopName);
+                localStorage.setItem("shopify_shop_domain", shopName2);
               } catch (e) {
               }
               setCampaignData((prev) => ({
                 ...prev,
-                shop: shopName
+                shop: shopName2
               }));
               setIsOfflineMode(false);
               return;
@@ -15720,19 +15720,19 @@ function CampaignProvider({ children }) {
           if (statusResponse.ok) {
             const statusData = await safeJsonParse(statusResponse);
             if (statusData && statusData.shop) {
-              const shopName = statusData.shop;
-              const formattedName = shopName.replace(/\.myshopify\.com$/i, "");
+              const shopName2 = statusData.shop;
+              const formattedName = shopName2.replace(/\.myshopify\.com$/i, "");
               setShopInfo({
-                name: shopName,
+                name: shopName2,
                 formatted: formattedName
               });
               try {
-                localStorage.setItem("shopify_shop_domain", shopName);
+                localStorage.setItem("shopify_shop_domain", shopName2);
               } catch (e) {
               }
               setCampaignData((prev) => ({
                 ...prev,
-                shop: shopName
+                shop: shopName2
               }));
               setIsOfflineMode(false);
               return;
@@ -16467,11 +16467,14 @@ function CampaignActiveIndicator() {
 const styles = "/assets/global-BaVPN7Pj.css";
 const links$4 = () => [{ rel: "stylesheet", href: styles }];
 const loader$g = async ({ request }) => {
+  const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
   const url = new URL(request.url);
   const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
-  const shop = url.searchParams.get("shop");
+  url.searchParams.get("shop");
   let campaigns = [];
-  let shopName = shop || null;
+  const { session } = await authenticate2.admin(request);
+  shopName = session.shop;
+  console.log("Campaigns - Authenticated with shop:", shopName);
   try {
     try {
       const { db } = await connectToDatabase2(shopName);
@@ -16935,14 +16938,14 @@ async function action$7({ request }) {
     const formData = await request.formData();
     const campaignId = formData.get("campaignId");
     const action2 = formData.get("action");
-    const shopName = formData.get("shopName") || "wheel-of-wonders.myshopify.com";
+    const shopName2 = formData.get("shopName") || "wheel-of-wonders.myshopify.com";
     console.log(
       "Campaign ID:",
       campaignId,
       "Action:",
       action2,
       "Shop:",
-      shopName
+      shopName2
     );
     if (!campaignId) {
       return json(
@@ -16950,7 +16953,7 @@ async function action$7({ request }) {
         { status: 400 }
       );
     }
-    const { db } = await connectToDatabase$1(shopName);
+    const { db } = await connectToDatabase$1(shopName2);
     const campaign = await db.collection("campaigns").findOne({ id: campaignId });
     if (!campaign) {
       return json(
@@ -23196,9 +23199,9 @@ async function action$6({ request }) {
   console.log("=== Campaign Toggle Route Called ===");
   try {
     const { session, admin } = await authenticate.admin(request);
-    const shopName = session.shop;
+    const shopName2 = session.shop;
     const graphql = admin.graphql;
-    console.log("Authentication successful for shop:", shopName);
+    console.log("Authentication successful for shop:", shopName2);
     const formData = await request.formData();
     const campaignId = formData.get("campaignId");
     const action2 = formData.get("action");
@@ -23209,7 +23212,7 @@ async function action$6({ request }) {
         { status: 400 }
       );
     }
-    const { db } = await connectToDatabase$1(shopName);
+    const { db } = await connectToDatabase$1(shopName2);
     const campaign = await db.collection("campaigns").findOne({ id: campaignId });
     if (!campaign) {
       return json(
@@ -23232,7 +23235,7 @@ async function action$6({ request }) {
         console.log("Syncing active campaign to metafields...");
         const syncResult = await syncActiveCampaignToMetafields(
           graphql,
-          shopName
+          shopName2
         );
         if (syncResult && syncResult.success) {
           console.log("Sync successful");
@@ -23979,15 +23982,15 @@ const route45 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 const loader$e = async ({ request }) => {
   try {
     const { admin, session } = await authenticate.admin(request);
-    const shopName = session.shop;
+    const shopName2 = session.shop;
     const graphql = admin.graphql;
-    console.log("Test - Authenticated with shop:", shopName);
-    const activeCampaign = await getActiveCampaign(shopName);
+    console.log("Test - Authenticated with shop:", shopName2);
+    const activeCampaign = await getActiveCampaign(shopName2);
     console.log("Test - Active campaign:", activeCampaign);
     if (activeCampaign) {
       const syncResult = await syncActiveCampaignToMetafields(
         graphql,
-        shopName
+        shopName2
       );
       console.log("Test - Sync result:", syncResult);
       return json({
@@ -24000,7 +24003,7 @@ const loader$e = async ({ request }) => {
       return json({
         success: false,
         message: "No active campaign found",
-        shopName
+        shopName: shopName2
       });
     }
   } catch (error) {
