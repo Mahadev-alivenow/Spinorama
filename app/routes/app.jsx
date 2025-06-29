@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
@@ -115,7 +115,7 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const data = useLoaderData();
-
+const location = useLocation();
   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
   const query = new URLSearchParams(location.search);
   const shop = data.shop || query.get("shop") || "";
