@@ -14,6 +14,11 @@ import {
   syncActiveCampaignToMetafields,
 } from "../models/Subscription.server";
 
+import styles from "../styles/global.css?url";
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [{ rel: "stylesheet", href: styles }];
+
 export async function loader({ request }) {
   try {
     const { admin, session } = await authenticate.admin(request);

@@ -20,14 +20,16 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
-  const { authenticate } = await import(
-    "../shopify.server"
-  );
+  // const { authenticate } = await import(
+  //   "../shopify.server"
+  // );
   const { connectToDatabase } = await import("../../lib/mongodb.server");
 
-  const { admin, session } = await authenticate.admin(request);
-      const { shop } = session;
-      console.log("App - Authenticated with shop:", shop);
+  // const { admin, session } = await authenticate.admin(request);
+  //     const { shop } = session;
+  //     console.log("App - Authenticated with shop:", shop);
+
+  const shop = url.searchParams.get("shop");
 
   let campaigns = [];
   let shopName = shop || null;
