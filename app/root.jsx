@@ -135,13 +135,11 @@ export default function App() {
   const location = useLocation();
 
   const data = useLoaderData();
+
   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
   const query = new URLSearchParams(location.search);
   const shop = data.shop || query.get("shop") || "";
-  const host =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("host")
-      : undefined || data.host || process.env.HOST || "";
+  const host = data.host || process.env.HOST || "";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -189,7 +187,7 @@ export default function App() {
   //   return redirect("/auth");
   // }
   return (
-    <html>
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -202,8 +200,18 @@ export default function App() {
         <link rel="icon" href="/favicon.ico" />
         <Meta />
         <Links />
+        {/* ✅ Inject App Bridge global if embedded */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.__SHOPIFY_DEV_HOST = "${host}";
+            `,
+          }}
+        />
+        <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
+
         {/* ✅ Load Shopify App Bridge scripts in head with blocking behavior */}
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+        {/* <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script> */}
         {/* <script src="https://unpkg.com/@shopify/app-bridge@3"></script> */}
       </head>
       <body>

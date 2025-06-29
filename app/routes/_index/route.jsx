@@ -1,20 +1,25 @@
 import { redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import { login } from "../../shopify.server";
+import { authenticate, login } from "../../shopify.server";
+import { redirectToShopifyOrAppRoot } from "@shopify/shopify-app-remix/server";
+
+// export const loader = async ({ request }) => {
+//   const url = new URL(request.url);
+
+//   if (url.searchParams.get("shop")) {
+//     throw redirect(`/app?${url.searchParams.toString()}`);
+//   }
+
+//   console.log(
+//     "Index loader - checking authentication... app/routes/_index/route.jsx",
+//   );
+//   return { showForm: Boolean(login) };
+// };
 
 export const loader = async ({ request }) => {
-  const url = new URL(request.url);
-
-  if (url.searchParams.get("shop")) {
-    throw redirect(`/app?${url.searchParams.toString()}`);
-  }
-
-  console.log(
-    "Index loader - checking authentication... app/routes/_index/route.jsx",
-  );
-  return { showForm: Boolean(login) };
+  await authenticate.admin(request);
+  return redirectToShopifyOrAppRoot(request);
 };
-
 export default function App() {
   const { showForm } = useLoaderData();
 
