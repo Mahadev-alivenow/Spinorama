@@ -36,7 +36,7 @@ export const loader = async ({ request }) => {
   let campaigns = [];
   // let shopName = shop || null;
   const { session } = await authenticate.admin(request);
-        shopName = session.shop;
+        let shopName = session.shop;
         console.log("Campaigns - Authenticated with shop:", shopName);
   let authError = null;
   // const isClientNavigation = isClientSideNavigation(request);
