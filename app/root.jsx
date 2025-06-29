@@ -116,10 +116,10 @@ export const loader = async ({ request }) => {
     }
   }
   // ✅ Redirect to auth if essential params are missing
-  if (!shop || !host) {
-    console.log("Missing Shopify parameters. Redirecting to /auth");
-    return redirect("/auth");
-  }
+  // if (!shop || !host) {
+  //   console.log("Missing Shopify parameters. Redirecting to /auth");
+  //   return redirect("/auth");
+  // }
   return json({
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
