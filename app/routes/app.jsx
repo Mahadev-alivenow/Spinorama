@@ -8,28 +8,38 @@ import { authenticate } from "../shopify.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
+
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  const url = new URL(request.url);
+  const host = url.searchParams.get("host");
+
+  if (!host) {
+    throw new Error("Missing host query param in URL");
+  }
+
+  return json({
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    host,
+  });
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, host } = useLoaderData();
 
   return (
-    <AppProvider isEmbeddedApp apiKey={apiKey}>
+    <AppProvider isEmbeddedApp apiKey={apiKey} host={host}>
       <NavMenu>
         <Link to="/app" rel="home">
           Home
         </Link>
-        {/* <Link to="/app/additional">Additional page</Link>
-        <Link to="/app/proxy-2">Proxy EndPoint</Link> */}
       </NavMenu>
       <Outlet />
     </AppProvider>
   );
 }
+
 
 // Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
 export function ErrorBoundary() {

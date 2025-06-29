@@ -33,7 +33,7 @@ const hmrConfig =
 
 export default defineConfig({
   server: {
-    allowedHosts: [host, "per-ma-works-being.trycloudflare.com"],
+    allowedHosts: [host, "thou-sparc-players-entire.trycloudflare.com"],
     cors: {
       preflightContinue: true,
     },
@@ -65,7 +65,7 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   define: {
-    global: 'globalThis'
+    global: "globalThis",
   },
   build: {
     assetsInlineLimit: 0,
