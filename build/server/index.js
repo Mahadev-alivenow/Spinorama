@@ -229,26 +229,6 @@ function isClientSideNavigation(request) {
   const fetchMode = request.headers.get("sec-fetch-mode");
   return purpose === "prefetch" || fetchDest === "empty" || fetchMode === "navigate" || request.headers.get("x-remix-transition") === "true";
 }
-async function authenticateWithFallback(request) {
-  try {
-    const result = await shopify.authenticate.admin(request);
-    return { success: true, ...result };
-  } catch (error) {
-    console.log("Authentication failed:", (error == null ? void 0 : error.message) || "Unknown error");
-    if (isClientSideNavigation(request)) {
-      console.log("Client-side navigation detected, providing fallback");
-      const url = new URL(request.url);
-      const shop = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || "unknown-shop";
-      return {
-        success: false,
-        fallback: true,
-        shop,
-        error
-      };
-    }
-    throw error;
-  }
-}
 ApiVersion.January25;
 shopify.addDocumentResponseHeaders;
 const authenticate = shopify.authenticate;
@@ -261,7 +241,6 @@ const shopify_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   ANNUAL_PLAN,
   MONTLY_PLAN,
   authenticate,
-  authenticateWithFallback,
   isClientSideNavigation,
   login
 }, Symbol.toStringTag, { value: "Module" }));
@@ -581,7 +560,7 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
       activeCampaign.name
     );
     const layout = activeCampaign.layout || {};
-    const content2 = activeCampaign.content || {};
+    const content = activeCampaign.content || {};
     const rules = activeCampaign.rules || {};
     const floatingButtonHasText = layout.floatingButtonHasText === true ? "true" : "false";
     const floatingButtonPosition = layout.floatingButtonPosition || "bottomRight";
@@ -596,7 +575,7 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
     const displayStyle = layout.displayStyle || "popup";
     const colorTone = activeCampaign.color || "dualTone";
     const logoImage = layout.logo || "";
-    const landing = content2.landing || {};
+    const landing = content.landing || {};
     const headlineText = landing.title || "TRY YOUR LUCK";
     const headlineChildText = landing.subtitle || "This is a demo of our Spin to Win";
     const showLandingSubtitle = landing.showSubtitle === true ? "true" : "false";
@@ -605,13 +584,13 @@ async function syncActiveCampaignToMetafields(graphql, campaignOrShopName) {
     const showPrivacyPolicy = landing.showPrivacyPolicy === true ? "true" : "false";
     const termCondText = landing.privacyPolicyText || "I accept the terms and conditions";
     const landingButtonText = landing.buttonText || "SPIN";
-    const result = content2.result || {};
+    const result = content.result || {};
     const headlineResultText = result.title || "CONGRATULATIONS";
     const showResultSubtitle = result.showSubtitle === true ? "true" : "false";
     const resultSubtitle = result.subtitle || "";
     const showResultButton = result.showButton === true ? "true" : "false";
     const resultButtonText = result.buttonText || "REDEEM NOW";
-    const wheel = content2.wheel || {};
+    const wheel = content.wheel || {};
     const wheelSectorsData = wheel.sectors || [];
     const copySameCode = wheel.copySameCode === true ? "true" : "false";
     const wheelSectorsJson = JSON.stringify(wheelSectorsData);
@@ -3769,7 +3748,7 @@ function getResponsiveValue(componentName, componentProp, responsiveProp) {
   }
   return Object.fromEntries(Object.entries(responsiveProp).map(([breakpointAlias, responsiveValue]) => [`--pc-${componentName}-${componentProp}-${breakpointAlias}`, responsiveValue]));
 }
-var styles$14 = {
+var styles$13 = {
   "themeContainer": "Polaris-ThemeProvider--themeContainer"
 };
 const themeNamesLocal = ["light", "dark-experimental"];
@@ -3787,7 +3766,7 @@ function ThemeProvider(props) {
     value: getTheme(themeName)
   }, /* @__PURE__ */ React.createElement(ThemeContainer, {
     "data-portal-id": props["data-portal-id"],
-    className: classNames(createThemeClassName(themeName), styles$14.themeContainer, className)
+    className: classNames(createThemeClassName(themeName), styles$13.themeContainer, className)
   }, children)));
 }
 const WithinContentContext = /* @__PURE__ */ createContext(false);
@@ -4331,12 +4310,12 @@ class I18n {
     this.translation = Array.isArray(translation) ? merge(...translation.slice().reverse()) : translation;
   }
   translate(id, replacements) {
-    const text2 = get(this.translation, id, "");
-    if (!text2) {
+    const text = get(this.translation, id, "");
+    if (!text) {
       return "";
     }
     if (replacements) {
-      return text2.replace(REPLACE_REGEX$1, (match) => {
+      return text.replace(REPLACE_REGEX$1, (match) => {
         const replacement = match.substring(1, match.length - 1);
         if (replacements[replacement] === void 0) {
           const replacementData = JSON.stringify(replacements);
@@ -4345,7 +4324,7 @@ class I18n {
         return replacements[replacement];
       });
     }
-    return text2;
+    return text;
   }
   translationKeyExists(path) {
     return Boolean(get(this.translation, path));
@@ -4469,17 +4448,17 @@ function FocusManager({
 }) {
   const [trapFocusList, setTrapFocusList] = useState([]);
   const add = useCallback((id) => {
-    setTrapFocusList((list2) => [...list2, id]);
+    setTrapFocusList((list) => [...list, id]);
   }, []);
   const remove = useCallback((id) => {
     let removed = true;
-    setTrapFocusList((list2) => {
-      const clone = [...list2];
-      const index2 = clone.indexOf(id);
-      if (index2 === -1) {
+    setTrapFocusList((list) => {
+      const clone = [...list];
+      const index = clone.indexOf(id);
+      if (index === -1) {
         removed = false;
       } else {
-        clone.splice(index2, 1);
+        clone.splice(index, 1);
       }
       return clone;
     });
@@ -4748,7 +4727,7 @@ function matches(node, selector) {
   let i = matches2.length;
   while (--i >= 0 && matches2.item(i) !== node) return i > -1;
 }
-var styles$13 = {
+var styles$12 = {
   "Button": "Polaris-Button",
   "disabled": "Polaris-Button--disabled",
   "pressed": "Polaris-Button--pressed",
@@ -4779,7 +4758,7 @@ var styles$13 = {
   "Icon": "Polaris-Button__Icon",
   "Spinner": "Polaris-Button__Spinner"
 };
-var styles$12 = {
+var styles$11 = {
   "Icon": "Polaris-Icon",
   "toneInherit": "Polaris-Icon--toneInherit",
   "toneBase": "Polaris-Icon--toneBase",
@@ -4804,7 +4783,7 @@ var styles$12 = {
   "Img": "Polaris-Icon__Img",
   "Placeholder": "Polaris-Icon__Placeholder"
 };
-var styles$11 = {
+var styles$10 = {
   "root": "Polaris-Text--root",
   "block": "Polaris-Text--block",
   "truncate": "Polaris-Text--truncate",
@@ -4864,7 +4843,7 @@ const Text = ({
     console.warn(`Deprecation: <Text variant="${variant}" />. The value "${variant}" will be removed in a future major version of Polaris. Use "${deprecatedVariants[variant]}" instead.`);
   }
   const Component2 = as || (visuallyHidden ? "span" : "p");
-  const className = classNames(styles$11.root, variant && styles$11[variant], fontWeight && styles$11[fontWeight], (alignment || truncate) && styles$11.block, alignment && styles$11[alignment], breakWord && styles$11.break, tone && styles$11[tone], numeric && styles$11.numeric, truncate && styles$11.truncate, visuallyHidden && styles$11.visuallyHidden, textDecorationLine && styles$11[textDecorationLine]);
+  const className = classNames(styles$10.root, variant && styles$10[variant], fontWeight && styles$10[fontWeight], (alignment || truncate) && styles$10.block, alignment && styles$10[alignment], breakWord && styles$10.break, tone && styles$10[tone], numeric && styles$10.numeric, truncate && styles$10.truncate, visuallyHidden && styles$10.visuallyHidden, textDecorationLine && styles$10[textDecorationLine]);
   return /* @__PURE__ */ React.createElement(Component2, Object.assign({
     className
   }, id && {
@@ -4887,14 +4866,14 @@ function Icon({
   if (tone && sourceType === "external" && process.env.NODE_ENV === "development") {
     console.warn("Recoloring external SVGs is not supported. Set the intended color on your SVG instead.");
   }
-  const className = classNames(styles$12.Icon, tone && styles$12[variationName("tone", tone)]);
+  const className = classNames(styles$11.Icon, tone && styles$11[variationName("tone", tone)]);
   const {
     mdDown
   } = useBreakpoints();
   const SourceComponent = source;
   const contentMarkup = {
     function: /* @__PURE__ */ React.createElement(SourceComponent, Object.assign({
-      className: styles$12.Svg,
+      className: styles$11.Svg,
       focusable: "false",
       "aria-hidden": "true"
       // On Mobile we're scaling the viewBox to 18x18 to make the icons bigger
@@ -4904,10 +4883,10 @@ function Icon({
       viewBox: "1 1 18 18"
     } : {})),
     placeholder: /* @__PURE__ */ React.createElement("div", {
-      className: styles$12.Placeholder
+      className: styles$11.Placeholder
     }),
     external: /* @__PURE__ */ React.createElement("img", {
-      className: styles$12.Img,
+      className: styles$11.Img,
       src: `data:image/svg+xml;utf8,${source}`,
       alt: "",
       "aria-hidden": "true"
@@ -4920,7 +4899,7 @@ function Icon({
     visuallyHidden: true
   }, accessibilityLabel), contentMarkup[sourceType]);
 }
-var styles$10 = {
+var styles$$ = {
   "Spinner": "Polaris-Spinner",
   "sizeSmall": "Polaris-Spinner--sizeSmall",
   "sizeLarge": "Polaris-Spinner--sizeLarge"
@@ -4931,7 +4910,7 @@ function Spinner$1({
   hasFocusableParent
 }) {
   const isAfterInitialMount = useIsAfterInitialMount();
-  const className = classNames(styles$10.Spinner, size && styles$10[variationName("size", size)]);
+  const className = classNames(styles$$.Spinner, size && styles$$[variationName("size", size)]);
   const spinnerSVGMarkup = size === "large" ? /* @__PURE__ */ React.createElement("svg", {
     viewBox: "0 0 44 44",
     xmlns: "http://www.w3.org/2000/svg"
@@ -5129,9 +5108,9 @@ function Button({
   const {
     mdUp
   } = useBreakpoints();
-  const className = classNames(styles$13.Button, styles$13.pressable, styles$13[variationName("variant", variant)], styles$13[variationName("size", size)], styles$13[variationName("textAlign", textAlign)], fullWidth && styles$13.fullWidth, disclosure && styles$13.disclosure, icon && children && styles$13.iconWithText, icon && children == null && styles$13.iconOnly, isDisabled && styles$13.disabled, loading && styles$13.loading, pressed && !disabled && !url && styles$13.pressed, removeUnderline && styles$13.removeUnderline, tone && styles$13[variationName("tone", tone)]);
+  const className = classNames(styles$12.Button, styles$12.pressable, styles$12[variationName("variant", variant)], styles$12[variationName("size", size)], styles$12[variationName("textAlign", textAlign)], fullWidth && styles$12.fullWidth, disclosure && styles$12.disclosure, icon && children && styles$12.iconWithText, icon && children == null && styles$12.iconOnly, isDisabled && styles$12.disabled, loading && styles$12.loading, pressed && !disabled && !url && styles$12.pressed, removeUnderline && styles$12.removeUnderline, tone && styles$12[variationName("tone", tone)]);
   const disclosureMarkup = disclosure ? /* @__PURE__ */ React.createElement("span", {
-    className: loading ? styles$13.hidden : styles$13.Icon
+    className: loading ? styles$12.hidden : styles$12.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: loading ? "placeholder" : getDisclosureIconSource(disclosure, ChevronUpIcon, ChevronDownIcon)
   })) : null;
@@ -5139,7 +5118,7 @@ function Button({
     source: loading ? "placeholder" : icon
   }) : icon;
   const iconMarkup = iconSource ? /* @__PURE__ */ React.createElement("span", {
-    className: loading ? styles$13.hidden : styles$13.Icon
+    className: loading ? styles$12.hidden : styles$12.Icon
   }, iconSource) : null;
   const hasPlainText = ["plain", "monochromePlain"].includes(variant);
   let textFontWeight = "medium";
@@ -5159,7 +5138,7 @@ function Button({
     key: disabled ? "text-disabled" : "text"
   }, children) : null;
   const spinnerSVGMarkup = loading ? /* @__PURE__ */ React.createElement("span", {
-    className: styles$13.Spinner
+    className: styles$12.Spinner
   }, /* @__PURE__ */ React.createElement(Spinner$1, {
     size: "small",
     accessibilityLabel: i18n.translate("Polaris.Button.spinnerAccessibilityLabel")
@@ -5211,14 +5190,14 @@ function getDisclosureIconSource(disclosure, upIcon, downIcon) {
 }
 function buttonsFrom(actions, overrides = {}) {
   if (Array.isArray(actions)) {
-    return actions.map((action2, index2) => buttonFrom(action2, overrides, index2));
+    return actions.map((action2, index) => buttonFrom(action2, overrides, index));
   } else {
     const action2 = actions;
     return buttonFrom(action2, overrides);
   }
 }
 function buttonFrom({
-  content: content2,
+  content,
   onAction,
   plain,
   destructive,
@@ -5232,9 +5211,9 @@ function buttonFrom({
     onClick: onAction,
     tone,
     variant: plainVariant || destructiveVariant
-  }, action2, overrides), content2);
+  }, action2, overrides), content);
 }
-var styles$$ = {
+var styles$_ = {
   "ShadowBevel": "Polaris-ShadowBevel"
 };
 function ShadowBevel(props) {
@@ -5248,7 +5227,7 @@ function ShadowBevel(props) {
   } = props;
   const Component2 = as;
   return /* @__PURE__ */ React.createElement(Component2, {
-    className: styles$$.ShadowBevel,
+    className: styles$_.ShadowBevel,
     style: {
       "--pc-shadow-bevel-z-index": zIndex,
       ...getResponsiveValue("shadow-bevel", "content", mapResponsiveProp(bevel, (bevel2) => bevel2 ? '""' : "none")),
@@ -5263,7 +5242,7 @@ function mapResponsiveProp(responsiveProp, callback) {
   }
   return Object.fromEntries(Object.entries(responsiveProp).map(([breakpointsAlias, value]) => [breakpointsAlias, callback(value)]));
 }
-var styles$_ = {
+var styles$Z = {
   "listReset": "Polaris-Box--listReset",
   "Box": "Polaris-Box",
   "visuallyHidden": "Polaris-Box--visuallyHidden",
@@ -5357,7 +5336,7 @@ const Box = /* @__PURE__ */ forwardRef(({
     zIndex,
     opacity
   };
-  const className = classNames(styles$_.Box, visuallyHidden && styles$_.visuallyHidden, printHidden && styles$_.printHidden, as === "ul" && styles$_.listReset);
+  const className = classNames(styles$Z.Box, visuallyHidden && styles$Z.visuallyHidden, printHidden && styles$Z.printHidden, as === "ul" && styles$Z.listReset);
   return /* @__PURE__ */ React.createElement(as, {
     className,
     id,
@@ -5394,7 +5373,7 @@ const Card = ({
     minHeight: "100%"
   }, children)));
 };
-var styles$Z = {
+var styles$Y = {
   "InlineStack": "Polaris-InlineStack"
 };
 const InlineStack = function InlineStack2({
@@ -5414,11 +5393,11 @@ const InlineStack = function InlineStack2({
     ...getResponsiveValue("inline-stack", "flex-direction", direction)
   };
   return /* @__PURE__ */ React.createElement(Element2, {
-    className: styles$Z.InlineStack,
+    className: styles$Y.InlineStack,
     style
   }, children);
 };
-var styles$Y = {
+var styles$X = {
   "BlockStack": "Polaris-BlockStack",
   "listReset": "Polaris-BlockStack--listReset",
   "fieldsetReset": "Polaris-BlockStack--fieldsetReset"
@@ -5433,7 +5412,7 @@ const BlockStack = ({
   reverseOrder = false,
   ...restProps
 }) => {
-  const className = classNames(styles$Y.BlockStack, (as === "ul" || as === "ol") && styles$Y.listReset, as === "fieldset" && styles$Y.fieldsetReset);
+  const className = classNames(styles$X.BlockStack, (as === "ul" || as === "ol") && styles$X.listReset, as === "fieldset" && styles$X.fieldsetReset);
   const style = {
     "--pc-block-stack-align": align ? `${align}` : null,
     "--pc-block-stack-inline-align": inlineAlign ? `${inlineAlign}` : null,
@@ -5447,7 +5426,7 @@ const BlockStack = ({
     ...restProps
   }, children);
 };
-var styles$X = {
+var styles$W = {
   "Avatar": "Polaris-Avatar",
   "imageHasLoaded": "Polaris-Avatar--imageHasLoaded",
   "Text": "Polaris-Avatar__Text",
@@ -5545,20 +5524,20 @@ function Avatar({
   }, []);
   const hasImage = source && status !== Status.Errored;
   const nameString = name || initials;
-  let label2;
+  let label;
   if (accessibilityLabel) {
-    label2 = accessibilityLabel;
+    label = accessibilityLabel;
   } else if (name) {
-    label2 = name;
+    label = name;
   } else if (initials) {
     const splitInitials = initials.split("").join(" ");
-    label2 = i18n.translate("Polaris.Avatar.labelWithInitials", {
+    label = i18n.translate("Polaris.Avatar.labelWithInitials", {
       initials: splitInitials
     });
   }
-  const className = classNames(styles$X.Avatar, size && styles$X[variationName("size", size)], hasImage && status === Status.Loaded && styles$X.imageHasLoaded, !customer && !hasImage && styles$X[variationName("style", styleClass(nameString))]);
-  const textClassName = classNames(styles$X.Text, ((initials == null ? void 0 : initials.length) || 0) > 2 && styles$X.long);
-  const imageClassName = classNames(styles$X.Image, status !== Status.Loaded && styles$X.hidden);
+  const className = classNames(styles$W.Avatar, size && styles$W[variationName("size", size)], hasImage && status === Status.Loaded && styles$W.imageHasLoaded, !customer && !hasImage && styles$W[variationName("style", styleClass(nameString))]);
+  const textClassName = classNames(styles$W.Text, ((initials == null ? void 0 : initials.length) || 0) > 2 && styles$W.long);
+  const imageClassName = classNames(styles$W.Image, status !== Status.Loaded && styles$W.hidden);
   const imageMarkUp = source && isAfterInitialMount && status !== Status.Errored ? /* @__PURE__ */ React.createElement(Image, {
     className: imageClassName,
     source,
@@ -5590,14 +5569,14 @@ function Avatar({
     textAnchor: "middle"
   }, initials);
   const svgMarkup = hasImage ? null : /* @__PURE__ */ React.createElement("span", {
-    className: styles$X.Initials
+    className: styles$W.Initials
   }, /* @__PURE__ */ React.createElement("svg", {
-    className: styles$X.Svg,
+    className: styles$W.Svg,
     viewBox: "0 0 40 40"
   }, avatarBody));
   return /* @__PURE__ */ React.createElement("span", {
-    "aria-label": label2,
-    role: label2 ? "img" : "presentation",
+    "aria-label": label,
+    role: label ? "img" : "presentation",
     className
   }, svgMarkup, imageMarkUp);
 }
@@ -5610,7 +5589,7 @@ function FilterActionsProvider({
     value: filterActions
   }, children);
 }
-var styles$W = {
+var styles$V = {
   "Item": "Polaris-ActionList__Item",
   "default": "Polaris-ActionList--default",
   "active": "Polaris-ActionList--active",
@@ -5623,7 +5602,7 @@ var styles$W = {
   "Text": "Polaris-ActionList__Text"
 };
 const WithinFilterContext = /* @__PURE__ */ createContext(false);
-var styles$V = {
+var styles$U = {
   "Badge": "Polaris-Badge",
   "toneSuccess": "Polaris-Badge--toneSuccess",
   "toneSuccess-strong": "Polaris-Badge__toneSuccess--strong",
@@ -5726,7 +5705,7 @@ function getDefaultAccessibilityLabel(i18n, progress, tone) {
     });
   }
 }
-var styles$U = {
+var styles$T = {
   "Pip": "Polaris-Badge-Pip",
   "toneInfo": "Polaris-Badge-Pip--toneInfo",
   "toneSuccess": "Polaris-Badge-Pip--toneSuccess",
@@ -5744,7 +5723,7 @@ function Pip({
   accessibilityLabelOverride
 }) {
   const i18n = useI18n();
-  const className = classNames(styles$U.Pip, tone && styles$U[variationName("tone", tone)], progress && styles$U[variationName("progress", progress)]);
+  const className = classNames(styles$T.Pip, tone && styles$T[variationName("tone", tone)], progress && styles$T[variationName("progress", progress)]);
   const accessibilityLabel = accessibilityLabelOverride ? accessibilityLabelOverride : getDefaultAccessibilityLabel(i18n, progress, tone);
   return /* @__PURE__ */ React.createElement("span", {
     className
@@ -5783,7 +5762,7 @@ function Badge({
 }) {
   const i18n = useI18n();
   const withinFilter = useContext(WithinFilterContext);
-  const className = classNames(styles$V.Badge, tone && styles$V[variationName("tone", tone)], size && size !== DEFAULT_SIZE && styles$V[variationName("size", size)], withinFilter && styles$V.withinFilter);
+  const className = classNames(styles$U.Badge, tone && styles$U[variationName("tone", tone)], size && size !== DEFAULT_SIZE && styles$U[variationName("size", size)], withinFilter && styles$U.withinFilter);
   const accessibilityLabel = toneAndProgressLabelOverride ? toneAndProgressLabelOverride : getDefaultAccessibilityLabel(i18n, progress, tone);
   let accessibilityMarkup = Boolean(accessibilityLabel) && /* @__PURE__ */ React.createElement(Text, {
     as: "span",
@@ -5791,7 +5770,7 @@ function Badge({
   }, accessibilityLabel);
   if (progress && !icon) {
     accessibilityMarkup = /* @__PURE__ */ React.createElement("span", {
-      className: styles$V.Icon
+      className: styles$U.Icon
     }, /* @__PURE__ */ React.createElement(Icon, {
       accessibilityLabel,
       source: progressIconMap[progress]
@@ -5800,7 +5779,7 @@ function Badge({
   return /* @__PURE__ */ React.createElement("span", {
     className
   }, accessibilityMarkup, icon && /* @__PURE__ */ React.createElement("span", {
-    className: styles$V.Icon
+    className: styles$U.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: icon
   })), children && /* @__PURE__ */ React.createElement(Text, {
@@ -5819,7 +5798,7 @@ function useToggle(initialState) {
     setFalse: useCallback(() => setState(false), [])
   };
 }
-var styles$T = {
+var styles$S = {
   "TooltipContainer": "Polaris-Tooltip__TooltipContainer",
   "HasUnderline": "Polaris-Tooltip__HasUnderline"
 };
@@ -5858,7 +5837,7 @@ function Portal({
 }
 function noop$5() {
 }
-var styles$S = {
+var styles$R = {
   "TooltipOverlay": "Polaris-Tooltip-TooltipOverlay",
   "Tail": "Polaris-Tooltip-TooltipOverlay__Tail",
   "positionedAbove": "Polaris-Tooltip-TooltipOverlay--positionedAbove",
@@ -5956,7 +5935,7 @@ function windowRect() {
     width: document.body.clientWidth
   });
 }
-var styles$R = {
+var styles$Q = {
   "PositionedOverlay": "Polaris-PositionedOverlay",
   "fixed": "Polaris-PositionedOverlay--fixed",
   "preventInteraction": "Polaris-PositionedOverlay--preventInteraction"
@@ -5978,7 +5957,7 @@ function useComponentDidMount(callback) {
   }
 }
 const ScrollableContext = /* @__PURE__ */ createContext(void 0);
-var styles$Q = {
+var styles$P = {
   "Scrollable": "Polaris-Scrollable",
   "hasTopShadow": "Polaris-Scrollable--hasTopShadow",
   "hasBottomShadow": "Polaris-Scrollable--hasBottomShadow",
@@ -6081,7 +6060,7 @@ const ScrollableComponent = /* @__PURE__ */ forwardRef(({
       globalThis.removeEventListener("resize", handleResize);
     };
   }, [stickyManager, handleScroll]);
-  const finalClassName = classNames(className, styles$Q.Scrollable, vertical && styles$Q.vertical, horizontal && styles$Q.horizontal, shadow && topShadow && styles$Q.hasTopShadow, shadow && bottomShadow && styles$Q.hasBottomShadow, scrollbarWidth && styles$Q[variationName("scrollbarWidth", scrollbarWidth)], scrollbarGutter && styles$Q[variationName("scrollbarGutter", scrollbarGutter.replace(" ", ""))]);
+  const finalClassName = classNames(className, styles$P.Scrollable, vertical && styles$P.vertical, horizontal && styles$P.horizontal, shadow && topShadow && styles$P.hasTopShadow, shadow && bottomShadow && styles$P.hasBottomShadow, scrollbarWidth && styles$P[variationName("scrollbarWidth", scrollbarWidth)], scrollbarGutter && styles$P[variationName("scrollbarGutter", scrollbarGutter.replace(" ", ""))]);
   return /* @__PURE__ */ React.createElement(ScrollableContext.Provider, {
     value: scrollTo
   }, /* @__PURE__ */ React.createElement(StickyManagerContext.Provider, {
@@ -6329,7 +6308,7 @@ class PositionedOverlay extends PureComponent {
       width: width == null || isNaN(width) ? void 0 : width,
       zIndex: zIndexOverride || zIndex || void 0
     };
-    const className = classNames(styles$R.PositionedOverlay, fixed && styles$R.fixed, preventInteraction && styles$R.preventInteraction, propClassNames);
+    const className = classNames(styles$Q.PositionedOverlay, fixed && styles$Q.fixed, preventInteraction && styles$Q.preventInteraction, propClassNames);
     return /* @__PURE__ */ React.createElement("div", {
       className,
       style,
@@ -6407,8 +6386,8 @@ function TooltipOverlay({
       positioning,
       chevronOffset
     } = overlayDetails;
-    const containerClassName = classNames(styles$S.TooltipOverlay, measuring && styles$S.measuring, !measuring && styles$S.measured, instant && styles$S.instant, positioning === "above" && styles$S.positionedAbove);
-    const contentClassName = classNames(styles$S.Content, width && styles$S[width]);
+    const containerClassName = classNames(styles$R.TooltipOverlay, measuring && styles$R.measuring, !measuring && styles$R.measured, instant && styles$R.instant, positioning === "above" && styles$R.positionedAbove);
+    const contentClassName = classNames(styles$R.Content, width && styles$R[width]);
     const contentStyles = measuring ? void 0 : {
       minHeight: desiredHeight
     };
@@ -6421,7 +6400,7 @@ function TooltipOverlay({
       style,
       className: containerClassName
     }, layer.props), /* @__PURE__ */ React.createElement("svg", {
-      className: styles$S.Tail,
+      className: styles$R.Tail,
       width: "19",
       height: "11",
       fill: "none"
@@ -6442,7 +6421,7 @@ function TooltipOverlay({
 const HOVER_OUT_TIMEOUT = 150;
 function Tooltip({
   children,
-  content: content2,
+  content,
   dismissOnMouseOut,
   active: originalActive,
   hoverDelay,
@@ -6546,8 +6525,8 @@ function Tooltip({
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodyMd"
-  }, content2))) : null;
-  const wrapperClassNames = classNames(activatorWrapper === "div" && styles$T.TooltipContainer, hasUnderline && styles$T.HasUnderline);
+  }, content))) : null;
+  const wrapperClassNames = classNames(activatorWrapper === "div" && styles$S.TooltipContainer, hasUnderline && styles$S.HasUnderline);
   return /* @__PURE__ */ React.createElement(WrapperComponent, {
     onFocus: () => {
       handleOpen();
@@ -6609,7 +6588,7 @@ function noop$4() {
 function Item$7({
   id,
   badge,
-  content: content2,
+  content,
   accessibilityLabel,
   helpText,
   url,
@@ -6628,32 +6607,32 @@ function Item$7({
   role,
   variant = "default"
 }) {
-  const className = classNames(styles$W.Item, disabled && styles$W.disabled, destructive && styles$W.destructive, active && styles$W.active, variant === "default" && styles$W.default, variant === "indented" && styles$W.indented, variant === "menu" && styles$W.menu);
+  const className = classNames(styles$V.Item, disabled && styles$V.disabled, destructive && styles$V.destructive, active && styles$V.active, variant === "default" && styles$V.default, variant === "indented" && styles$V.indented, variant === "menu" && styles$V.menu);
   let prefixMarkup = null;
   if (prefix) {
     prefixMarkup = /* @__PURE__ */ React.createElement("span", {
-      className: styles$W.Prefix
+      className: styles$V.Prefix
     }, prefix);
   } else if (icon) {
     prefixMarkup = /* @__PURE__ */ React.createElement("span", {
-      className: styles$W.Prefix
+      className: styles$V.Prefix
     }, /* @__PURE__ */ React.createElement(Icon, {
       source: icon
     }));
   } else if (image) {
     prefixMarkup = /* @__PURE__ */ React.createElement("span", {
       role: "presentation",
-      className: styles$W.Prefix,
+      className: styles$V.Prefix,
       style: {
         backgroundImage: `url(${image}`
       }
     });
   }
-  let contentText = content2 || "";
-  if (truncate && content2) {
-    contentText = /* @__PURE__ */ React.createElement(TruncateText, null, content2);
+  let contentText = content || "";
+  if (truncate && content) {
+    contentText = /* @__PURE__ */ React.createElement(TruncateText, null, content);
   } else if (ellipsis) {
-    contentText = `${content2}…`;
+    contentText = `${content}…`;
   }
   const contentMarkup = helpText ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Box, null, contentText), /* @__PURE__ */ React.createElement(Text, {
     as: "span",
@@ -6665,15 +6644,15 @@ function Item$7({
     fontWeight: active ? "semibold" : "regular"
   }, contentText);
   const badgeMarkup = badge && /* @__PURE__ */ React.createElement("span", {
-    className: styles$W.Suffix
+    className: styles$V.Suffix
   }, /* @__PURE__ */ React.createElement(Badge, {
     tone: badge.tone
   }, badge.content));
   const suffixMarkup = suffix && /* @__PURE__ */ React.createElement(Box, null, /* @__PURE__ */ React.createElement("span", {
-    className: styles$W.Suffix
+    className: styles$V.Suffix
   }, suffix));
   const textMarkup = /* @__PURE__ */ React.createElement("span", {
-    className: styles$W.Text
+    className: styles$V.Text
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodyMd",
@@ -6720,7 +6699,7 @@ const TruncateText = ({
       setIsOverflowing(textRef.current.scrollWidth > textRef.current.offsetWidth);
     }
   }, [children]);
-  const text2 = /* @__PURE__ */ React.createElement(Text, {
+  const text = /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     truncate: true
   }, /* @__PURE__ */ React.createElement(Box, {
@@ -6736,7 +6715,7 @@ const TruncateText = ({
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     truncate: true
-  }, children)) : text2;
+  }, children)) : text;
 };
 function Section$4({
   section,
@@ -6756,20 +6735,20 @@ function Section$4({
     };
   };
   const actionMarkup = section.items.map(({
-    content: content2,
+    content,
     helpText,
     onAction,
     ...item
-  }, index2) => {
+  }, index) => {
     const itemMarkup = /* @__PURE__ */ React.createElement(Item$7, Object.assign({
-      content: content2,
+      content,
       helpText,
       role: actionRole,
       onAction: handleAction(onAction)
     }, item));
     return /* @__PURE__ */ React.createElement(Box, {
       as: "li",
-      key: `${content2}-${index2}`,
+      key: `${content}-${index}`,
       role: actionRole === "menuitem" ? "presentation" : void 0
     }, /* @__PURE__ */ React.createElement(InlineStack, {
       wrap: false
@@ -6859,7 +6838,7 @@ function KeypressListener({
   }, [keyEvent, handleKeyEvent, useCapture, options2]);
   return null;
 }
-var styles$P = {
+var styles$O = {
   "TextField": "Polaris-TextField",
   "ClearButton": "Polaris-TextField__ClearButton",
   "Loading": "Polaris-TextField__Loading",
@@ -6914,37 +6893,37 @@ const Spinner = /* @__PURE__ */ React.forwardRef(function Spinner2({
     };
   }
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.Spinner,
+    className: styles$O.Spinner,
     onClick,
     "aria-hidden": true,
     ref
   }, /* @__PURE__ */ React.createElement("div", {
     role: "button",
-    className: styles$P.Segment,
+    className: styles$O.Segment,
     tabIndex: -1,
     onClick: handleStep(1),
     onMouseDown: handleMouseDown(handleStep(1)),
     onMouseUp,
     onBlur
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.SpinnerIcon
+    className: styles$O.SpinnerIcon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: ChevronUpIcon
   }))), /* @__PURE__ */ React.createElement("div", {
     role: "button",
-    className: styles$P.Segment,
+    className: styles$O.Segment,
     tabIndex: -1,
     onClick: handleStep(-1),
     onMouseDown: handleMouseDown(handleStep(-1)),
     onMouseUp,
     onBlur
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.SpinnerIcon
+    className: styles$O.SpinnerIcon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: ChevronDownIcon
   }))));
 });
-var styles$O = {
+var styles$N = {
   "hidden": "Polaris-Labelled--hidden",
   "LabelWrapper": "Polaris-Labelled__LabelWrapper",
   "disabled": "Polaris-Labelled--disabled",
@@ -6953,7 +6932,7 @@ var styles$O = {
   "Error": "Polaris-Labelled__Error",
   "Action": "Polaris-Labelled__Action"
 };
-var styles$N = {
+var styles$M = {
   "InlineError": "Polaris-InlineError",
   "Icon": "Polaris-InlineError__Icon"
 };
@@ -6966,9 +6945,9 @@ function InlineError({
   }
   return /* @__PURE__ */ React.createElement("div", {
     id: errorTextID(fieldID),
-    className: styles$N.InlineError
+    className: styles$M.InlineError
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$N.Icon
+    className: styles$M.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: AlertCircleIcon
   })), /* @__PURE__ */ React.createElement(Text, {
@@ -6979,7 +6958,7 @@ function InlineError({
 function errorTextID(id) {
   return `${id}Error`;
 }
-var styles$M = {
+var styles$L = {
   "Label": "Polaris-Label",
   "hidden": "Polaris-Label--hidden",
   "Text": "Polaris-Label__Text",
@@ -6994,13 +6973,13 @@ function Label({
   hidden,
   requiredIndicator
 }) {
-  const className = classNames(styles$M.Label, hidden && styles$M.hidden);
+  const className = classNames(styles$L.Label, hidden && styles$L.hidden);
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, /* @__PURE__ */ React.createElement("label", {
     id: labelID(id),
     htmlFor: id,
-    className: classNames(styles$M.Text, requiredIndicator && styles$M.RequiredIndicator)
+    className: classNames(styles$L.Text, requiredIndicator && styles$L.RequiredIndicator)
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodyMd"
@@ -7008,7 +6987,7 @@ function Label({
 }
 function Labelled({
   id,
-  label: label2,
+  label,
   error,
   action: action2,
   helpText,
@@ -7019,14 +6998,14 @@ function Labelled({
   readOnly,
   ...rest
 }) {
-  const className = classNames(labelHidden && styles$O.hidden, disabled && styles$O.disabled, readOnly && styles$O.readOnly);
+  const className = classNames(labelHidden && styles$N.hidden, disabled && styles$N.disabled, readOnly && styles$N.readOnly);
   const actionMarkup = action2 ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$O.Action
+    className: styles$N.Action
   }, buttonFrom(action2, {
     variant: "plain"
   })) : null;
   const helpTextMarkup = helpText ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$O.HelpText,
+    className: styles$N.HelpText,
     id: helpTextID(id),
     "aria-disabled": disabled
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -7036,19 +7015,19 @@ function Labelled({
     breakWord: true
   }, helpText)) : null;
   const errorMarkup = error && typeof error !== "boolean" && /* @__PURE__ */ React.createElement("div", {
-    className: styles$O.Error
+    className: styles$N.Error
   }, /* @__PURE__ */ React.createElement(InlineError, {
     message: error,
     fieldID: id
   }));
-  const labelMarkup = label2 ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$O.LabelWrapper
+  const labelMarkup = label ? /* @__PURE__ */ React.createElement("div", {
+    className: styles$N.LabelWrapper
   }, /* @__PURE__ */ React.createElement(Label, Object.assign({
     id,
     requiredIndicator
   }, rest, {
     hidden: false
-  }), label2), actionMarkup) : null;
+  }), label), actionMarkup) : null;
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, labelMarkup, children, errorMarkup, helpTextMarkup);
@@ -7056,7 +7035,7 @@ function Labelled({
 function helpTextID(id) {
   return `${id}HelpText`;
 }
-var styles$L = {
+var styles$K = {
   "Connected": "Polaris-Connected",
   "Item": "Polaris-Connected__Item",
   "Item-primary": "Polaris-Connected__Item--primary",
@@ -7071,7 +7050,7 @@ function Item$6({
     setTrue: forceTrueFocused,
     setFalse: forceFalseFocused
   } = useToggle(false);
-  const className = classNames(styles$L.Item, focused && styles$L["Item-focused"], position === "primary" ? styles$L["Item-primary"] : styles$L["Item-connection"]);
+  const className = classNames(styles$K.Item, focused && styles$K["Item-focused"], position === "primary" ? styles$K["Item-primary"] : styles$K["Item-connection"]);
   return /* @__PURE__ */ React.createElement("div", {
     onBlur: forceFalseFocused,
     onFocus: forceTrueFocused,
@@ -7090,7 +7069,7 @@ function Connected({
     position: "right"
   }, right) : null;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$L.Connected
+    className: styles$K.Connected
   }, leftConnectionMarkup, /* @__PURE__ */ React.createElement(Item$6, {
     position: "primary"
   }, children), rightConnectionMarkup);
@@ -7117,7 +7096,7 @@ function Resizer({
   }, []);
   const minimumLinesMarkup = minimumLines ? /* @__PURE__ */ React.createElement("div", {
     ref: minimumLinesNode,
-    className: styles$P.DummyInput,
+    className: styles$O.DummyInput,
     dangerouslySetInnerHTML: {
       __html: getContentsForMinimumLines(minimumLines)
     }
@@ -7141,13 +7120,13 @@ function Resizer({
   });
   return /* @__PURE__ */ React.createElement("div", {
     "aria-hidden": true,
-    className: styles$P.Resizer
+    className: styles$O.Resizer
   }, /* @__PURE__ */ React.createElement(EventListener, {
     event: "resize",
     handler: handleHeightCheck
   }), /* @__PURE__ */ React.createElement("div", {
     ref: contentNode,
-    className: styles$P.DummyInput,
+    className: styles$O.DummyInput,
     dangerouslySetInnerHTML: {
       __html: getFinalContents(contents)
     }
@@ -7165,11 +7144,11 @@ function replaceEntity(entity) {
   return ENTITIES_TO_REPLACE[entity];
 }
 function getContentsForMinimumLines(minimumLines) {
-  let content2 = "";
+  let content = "";
   for (let line = 0; line < minimumLines; line++) {
-    content2 += "<br>";
+    content += "<br>";
   }
-  return content2;
+  return content;
 }
 function getFinalContents(contents) {
   return contents ? `${contents.replace(REPLACE_REGEX, replaceEntity)}<br>` : "<br>";
@@ -7181,7 +7160,7 @@ function TextField({
   placeholder,
   value = "",
   helpText,
-  label: label2,
+  label,
   labelAction,
   labelHidden,
   disabled,
@@ -7249,28 +7228,28 @@ function TextField({
     return multiline ? textAreaRef.current : inputRef.current;
   }, [multiline]);
   useEffect(() => {
-    const input3 = getInputRef();
-    if (!input3 || focused === void 0) return;
-    focused ? input3.focus() : input3.blur();
+    const input2 = getInputRef();
+    if (!input2 || focused === void 0) return;
+    focused ? input2.focus() : input2.blur();
   }, [focused, verticalContent, getInputRef]);
   useEffect(() => {
-    const input3 = inputRef.current;
+    const input2 = inputRef.current;
     const isSupportedInputType = type === "text" || type === "tel" || type === "search" || type === "url" || type === "password";
-    if (!input3 || !isSupportedInputType || !suggestion) {
+    if (!input2 || !isSupportedInputType || !suggestion) {
       return;
     }
-    input3.setSelectionRange(value.length, suggestion.length);
+    input2.setSelectionRange(value.length, suggestion.length);
   }, [focus, value, type, suggestion]);
   const normalizedValue = suggestion ? suggestion : value;
   const normalizedStep = step != null ? step : 1;
   const normalizedMax = max != null ? max : Infinity;
   const normalizedMin = min != null ? min : -Infinity;
-  const className = classNames(styles$P.TextField, Boolean(normalizedValue) && styles$P.hasValue, disabled && styles$P.disabled, readOnly && styles$P.readOnly, error && styles$P.error, tone && styles$P[variationName("tone", tone)], multiline && styles$P.multiline, focus && !disabled && styles$P.focus, variant !== "inherit" && styles$P[variant], size === "slim" && styles$P.slim);
+  const className = classNames(styles$O.TextField, Boolean(normalizedValue) && styles$O.hasValue, disabled && styles$O.disabled, readOnly && styles$O.readOnly, error && styles$O.error, tone && styles$O[variationName("tone", tone)], multiline && styles$O.multiline, focus && !disabled && styles$O.focus, variant !== "inherit" && styles$O[variant], size === "slim" && styles$O.slim);
   const inputType = type === "currency" ? "text" : type;
   const isNumericType = type === "number" || type === "integer";
   const iconPrefix = /* @__PURE__ */ React.isValidElement(prefix) && prefix.type === Icon;
   const prefixMarkup = prefix ? /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$P.Prefix, iconPrefix && styles$P.PrefixIcon),
+    className: classNames(styles$O.Prefix, iconPrefix && styles$O.PrefixIcon),
     id: `${id}-Prefix`,
     ref: prefixRef
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -7278,7 +7257,7 @@ function TextField({
     variant: "bodyMd"
   }, prefix)) : null;
   const suffixMarkup = suffix ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.Suffix,
+    className: styles$O.Suffix,
     id: `${id}-Suffix`,
     ref: suffixRef
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -7286,7 +7265,7 @@ function TextField({
     variant: "bodyMd"
   }, suffix)) : null;
   const loadingMarkup = loading ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.Loading,
+    className: styles$O.Loading,
     id: `${id}-Loading`,
     ref: loadingRef
   }, /* @__PURE__ */ React.createElement(Spinner$1, {
@@ -7301,7 +7280,7 @@ function TextField({
     }) : i18n.translate("Polaris.TextField.characterCount", {
       count: characterCount
     });
-    const characterCountClassName = classNames(styles$P.CharacterCount, multiline && styles$P.AlignFieldBottom);
+    const characterCountClassName = classNames(styles$O.CharacterCount, multiline && styles$O.AlignFieldBottom);
     const characterCountText = !maxLength ? characterCount : `${characterCount}/${maxLength}`;
     characterCountMarkup = /* @__PURE__ */ React.createElement("div", {
       id: `${id}-CharacterCounter`,
@@ -7318,7 +7297,7 @@ function TextField({
   const clearButtonVisible = normalizedValue !== "";
   const clearButtonMarkup = clearButton && clearButtonVisible ? /* @__PURE__ */ React.createElement("button", {
     type: "button",
-    className: styles$P.ClearButton,
+    className: styles$O.ClearButton,
     onClick: handleClearButtonPress,
     disabled
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -7404,12 +7383,12 @@ function TextField({
     labelledBy.push(`${id}-VerticalContent`);
   }
   labelledBy.unshift(labelID(id));
-  const inputClassName = classNames(styles$P.Input, align && styles$P[variationName("Input-align", align)], suffix && styles$P["Input-suffixed"], clearButton && styles$P["Input-hasClearButton"], monospaced && styles$P.monospaced, suggestion && styles$P.suggestion, autoSize && styles$P["Input-autoSize"]);
+  const inputClassName = classNames(styles$O.Input, align && styles$O[variationName("Input-align", align)], suffix && styles$O["Input-suffixed"], clearButton && styles$O["Input-hasClearButton"], monospaced && styles$O.monospaced, suggestion && styles$O.suggestion, autoSize && styles$O["Input-autoSize"]);
   const handleOnFocus = (event) => {
     setFocus(true);
     if (selectTextOnFocus && !suggestion) {
-      const input3 = getInputRef();
-      input3 == null ? void 0 : input3.select();
+      const input2 = getInputRef();
+      input2 == null ? void 0 : input2.select();
     }
     if (onFocus) {
       onFocus(event);
@@ -7421,7 +7400,7 @@ function TextField({
       event.stopPropagation();
     }
   }
-  const input2 = /* @__PURE__ */ createElement(multiline ? "textarea" : "input", {
+  const input = /* @__PURE__ */ createElement(multiline ? "textarea" : "input", {
     name,
     id,
     disabled,
@@ -7470,23 +7449,23 @@ function TextField({
     "data-form-type": autoComplete === "off" ? "other" : void 0
   });
   const inputWithVerticalContentMarkup = verticalContent ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.VerticalContent,
+    className: styles$O.VerticalContent,
     id: `${id}-VerticalContent`,
     ref: verticalContentRef,
     onClick: handleClickChild
-  }, verticalContent, input2) : null;
-  const inputMarkup = verticalContent ? inputWithVerticalContentMarkup : input2;
+  }, verticalContent, input) : null;
+  const inputMarkup = verticalContent ? inputWithVerticalContentMarkup : input;
   const backdropMarkup = /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$P.Backdrop, connectedLeft && styles$P["Backdrop-connectedLeft"], connectedRight && styles$P["Backdrop-connectedRight"])
+    className: classNames(styles$O.Backdrop, connectedLeft && styles$O["Backdrop-connectedLeft"], connectedRight && styles$O["Backdrop-connectedRight"])
   });
   const inputAndSuffixMarkup = autoSize ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$P.InputAndSuffixWrapper
+    className: styles$O.InputAndSuffixWrapper
   }, /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$P.AutoSizeWrapper, suffix && styles$P.AutoSizeWrapperWithSuffix),
+    className: classNames(styles$O.AutoSizeWrapper, suffix && styles$O.AutoSizeWrapperWithSuffix),
     "data-auto-size-value": value || placeholder
   }, inputMarkup), suffixMarkup) : /* @__PURE__ */ React.createElement(React.Fragment, null, inputMarkup, suffixMarkup);
   return /* @__PURE__ */ React.createElement(Labelled, {
-    label: label2,
+    label,
     id,
     error,
     action: labelAction,
@@ -7596,8 +7575,8 @@ function TextField({
     }
   }
   function isInput(target) {
-    const input3 = getInputRef();
-    return target instanceof HTMLElement && input3 && (input3.contains(target) || input3.contains(document.activeElement));
+    const input2 = getInputRef();
+    return target instanceof HTMLElement && input2 && (input2.contains(target) || input2.contains(document.activeElement));
   }
   function isPrefixOrSuffix(target) {
     return target instanceof Element && (prefixRef.current && prefixRef.current.contains(target) || suffixRef.current && suffixRef.current.contains(target));
@@ -7649,17 +7628,17 @@ function ActionList({
   const filteredSections = finalSections == null ? void 0 : finalSections.map((section) => ({
     ...section,
     items: section.items.filter(({
-      content: content2
-    }) => typeof content2 === "string" ? content2 == null ? void 0 : content2.toLowerCase().includes(searchText.toLowerCase()) : content2)
+      content
+    }) => typeof content === "string" ? content == null ? void 0 : content.toLowerCase().includes(searchText.toLowerCase()) : content)
   }));
-  const sectionMarkup = filteredSections.map((section, index2) => {
+  const sectionMarkup = filteredSections.map((section, index) => {
     return section.items.length > 0 ? /* @__PURE__ */ React.createElement(Section$4, {
-      key: typeof section.title === "string" ? section.title : index2,
+      key: typeof section.title === "string" ? section.title : index,
       section,
       hasMultipleSections,
       actionRole,
       onActionAnyItem,
-      isFirst: index2 === 0
+      isFirst: index === 0
     }) : null;
   });
   const handleFocusPreviousItem = (evt) => {
@@ -7716,10 +7695,10 @@ function ActionList({
   }, listeners, sectionMarkup));
 }
 ActionList.Item = Item$7;
-var styles$K = {
+var styles$J = {
   "ActionMenu": "Polaris-ActionMenu"
 };
-var styles$J = {
+var styles$I = {
   "RollupActivator": "Polaris-ActionMenu-RollupActions__RollupActivator"
 };
 function setActivatorAttributes(activator, {
@@ -7780,7 +7759,7 @@ function hotReloadComponentCheck(AComponent, AnotherComponent) {
   const anotherComponentName = AnotherComponent.displayName;
   return AComponent === AnotherComponent || Boolean(componentName) && componentName === anotherComponentName;
 }
-var styles$I = {
+var styles$H = {
   "Popover": "Polaris-Popover",
   "PopoverOverlay": "Polaris-Popover__PopoverOverlay",
   "PopoverOverlay-noAnimation": "Polaris-Popover__PopoverOverlay--noAnimation",
@@ -7807,7 +7786,7 @@ function Section$3({
   children
 }) {
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$I.Section
+    className: styles$H.Section
   }, /* @__PURE__ */ React.createElement(Box, {
     paddingInlineStart: "300",
     paddingInlineEnd: "300",
@@ -7824,8 +7803,8 @@ function Pane({
   subdued,
   onScrolledToBottom
 }) {
-  const className = classNames(styles$I.Pane, fixed && styles$I["Pane-fixed"], subdued && styles$I["Pane-subdued"], captureOverscroll && styles$I["Pane-captureOverscroll"]);
-  const content2 = sectioned ? wrapWithComponent(children, Section$3, {}) : children;
+  const className = classNames(styles$H.Pane, fixed && styles$H["Pane-fixed"], subdued && styles$H["Pane-subdued"], captureOverscroll && styles$H["Pane-captureOverscroll"]);
+  const content = sectioned ? wrapWithComponent(children, Section$3, {}) : children;
   const style = height ? {
     height,
     maxHeight: height,
@@ -7834,13 +7813,13 @@ function Pane({
   return fixed ? /* @__PURE__ */ React.createElement("div", {
     style,
     className
-  }, content2) : /* @__PURE__ */ React.createElement(Scrollable, {
+  }, content) : /* @__PURE__ */ React.createElement(Scrollable, {
     shadow: true,
     className,
     style,
     onScrolledToBottom,
     scrollbarWidth: "thin"
-  }, content2);
+  }, content);
 }
 let PopoverCloseSource;
 (function(PopoverCloseSource2) {
@@ -7881,11 +7860,11 @@ class PopoverOverlay extends PureComponent {
         captureOverscroll
       } = this.props;
       const isCovering = positioning === "cover";
-      const className = classNames(styles$I.Popover, measuring && styles$I.measuring, (fullWidth || isCovering) && styles$I.fullWidth, hideOnPrint && styles$I["PopoverOverlay-hideOnPrint"], positioning && styles$I[variationName("positioned", positioning)]);
+      const className = classNames(styles$H.Popover, measuring && styles$H.measuring, (fullWidth || isCovering) && styles$H.fullWidth, hideOnPrint && styles$H["PopoverOverlay-hideOnPrint"], positioning && styles$H[variationName("positioned", positioning)]);
       const contentStyles = measuring ? void 0 : {
         height: desiredHeight
       };
-      const contentClassNames = classNames(styles$I.Content, fullHeight && styles$I["Content-fullHeight"], fluidContent && styles$I["Content-fluidContent"]);
+      const contentClassNames = classNames(styles$H.Content, fullHeight && styles$H["Content-fullHeight"], fluidContent && styles$H["Content-fluidContent"]);
       return /* @__PURE__ */ React.createElement("div", Object.assign({
         className
       }, overlay.props), /* @__PURE__ */ React.createElement(EventListener, {
@@ -7898,11 +7877,11 @@ class PopoverOverlay extends PureComponent {
         keyCode: Key.Escape,
         handler: this.handleEscape
       }), /* @__PURE__ */ React.createElement("div", {
-        className: styles$I.FocusTracker,
+        className: styles$H.FocusTracker,
         tabIndex: 0,
         onFocus: this.handleFocusFirstItem
       }), /* @__PURE__ */ React.createElement("div", {
-        className: styles$I.ContentContainer
+        className: styles$H.ContentContainer
       }, /* @__PURE__ */ React.createElement("div", {
         id,
         tabIndex: autofocusTarget === "none" ? void 0 : -1,
@@ -7913,7 +7892,7 @@ class PopoverOverlay extends PureComponent {
         captureOverscroll,
         sectioned
       }))), /* @__PURE__ */ React.createElement("div", {
-        className: styles$I.FocusTracker,
+        className: styles$H.FocusTracker,
         tabIndex: 0,
         onFocus: this.handleFocusLastItem
       }));
@@ -8015,7 +7994,7 @@ class PopoverOverlay extends PureComponent {
       transitionStatus
     } = this.state;
     if (transitionStatus === TransitionStatus$1.Exited && !active) return null;
-    const className = classNames(styles$I.PopoverOverlay, transitionStatus === TransitionStatus$1.Entering && styles$I["PopoverOverlay-entering"], transitionStatus === TransitionStatus$1.Entered && styles$I["PopoverOverlay-open"], transitionStatus === TransitionStatus$1.Exiting && styles$I["PopoverOverlay-exiting"], preferredPosition === "cover" && styles$I["PopoverOverlay-noAnimation"]);
+    const className = classNames(styles$H.PopoverOverlay, transitionStatus === TransitionStatus$1.Entering && styles$H["PopoverOverlay-entering"], transitionStatus === TransitionStatus$1.Entered && styles$H["PopoverOverlay-open"], transitionStatus === TransitionStatus$1.Exiting && styles$H["PopoverOverlay-exiting"], preferredPosition === "cover" && styles$H["PopoverOverlay-noAnimation"]);
     return /* @__PURE__ */ React.createElement(PositionedOverlay, {
       ref: this.overlayRef,
       fullWidth,
@@ -8204,7 +8183,7 @@ function RollupActions({
     return null;
   }
   const activatorMarkup = /* @__PURE__ */ React.createElement("div", {
-    className: styles$J.RollupActivator
+    className: styles$I.RollupActivator
   }, /* @__PURE__ */ React.createElement(Button, {
     icon: MenuHorizontalIcon,
     accessibilityLabel: accessibilityLabel || i18n.translate("Polaris.ActionMenu.RollupActions.rollupButton"),
@@ -8222,7 +8201,7 @@ function RollupActions({
     onActionAnyItem: toggleRollupOpen
   }));
 }
-var styles$H = {
+var styles$G = {
   "ActionsLayoutOuter": "Polaris-ActionMenu-Actions__ActionsLayoutOuter",
   "ActionsLayout": "Polaris-ActionMenu-Actions__ActionsLayout",
   "ActionsLayout--measuring": "Polaris-ActionMenu-Actions--actionsLayoutMeasuring",
@@ -8230,11 +8209,11 @@ var styles$H = {
 };
 function getVisibleAndHiddenActionsIndices(actions = [], groups = [], disclosureWidth, actionsWidths, containerWidth) {
   const sumTabWidths = actionsWidths.reduce((sum, width) => sum + width, 0);
-  const arrayOfActionsIndices = actions.map((_, index2) => {
-    return index2;
+  const arrayOfActionsIndices = actions.map((_, index) => {
+    return index;
   });
-  const arrayOfGroupsIndices = groups.map((_, index2) => {
-    return index2;
+  const arrayOfGroupsIndices = groups.map((_, index) => {
+    return index;
   });
   const visibleActions = [];
   const hiddenActions = [];
@@ -8271,10 +8250,10 @@ function getVisibleAndHiddenActionsIndices(actions = [], groups = [], disclosure
     hiddenGroups
   };
 }
-var styles$G = {
+var styles$F = {
   "Details": "Polaris-ActionMenu-MenuGroup__Details"
 };
-var styles$F = {
+var styles$E = {
   "SecondaryAction": "Polaris-ActionMenu-SecondaryAction",
   "critical": "Polaris-ActionMenu-SecondaryAction--critical"
 };
@@ -8295,7 +8274,7 @@ function SecondaryAction({
     content: helpText
   }, buttonMarkup) : buttonMarkup;
   return /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$F.SecondaryAction, tone === "critical" && styles$F.critical)
+    className: classNames(styles$E.SecondaryAction, tone === "critical" && styles$E.critical)
   }, actionMarkup);
 }
 function MenuGroup({
@@ -8342,7 +8321,7 @@ function MenuGroup({
     sections,
     onActionAnyItem: handleClose
   }), details && /* @__PURE__ */ React.createElement("div", {
-    className: styles$G.Details
+    className: styles$F.Details
   }, details));
 }
 const ACTION_SPACING = 8;
@@ -8382,14 +8361,14 @@ function ActionsMeasurer({
   }, [handleMeasurement, actions, groups]);
   const actionsMarkup = actions.map((action2) => {
     const {
-      content: content2,
+      content,
       onAction,
       ...rest
     } = action2;
     return /* @__PURE__ */ React.createElement(SecondaryAction, Object.assign({
-      key: content2,
+      key: content,
       onClick: onAction
-    }, rest), content2);
+    }, rest), content);
   });
   const groupsMarkup = groups.map((group) => {
     const {
@@ -8404,7 +8383,7 @@ function ActionsMeasurer({
   });
   useEventListener("resize", handleMeasurement);
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$H.ActionsLayoutMeasurer,
+    className: styles$G.ActionsLayoutMeasurer,
     ref: containerNode
   }, actionsMarkup, groupsMarkup, activator);
 }
@@ -8467,26 +8446,26 @@ function Actions({
   }, [containerWidth, disclosureWidth, actions, groups, actionsWidths, setState]);
   const actionsOrDefault = useMemo(() => actions ?? [], [actions]);
   const groupsOrDefault = useMemo(() => groups ?? [], [groups]);
-  const actionsMarkup = actionsOrDefault.filter((_, index2) => {
-    if (!visibleActions.includes(index2)) {
+  const actionsMarkup = actionsOrDefault.filter((_, index) => {
+    if (!visibleActions.includes(index)) {
       return false;
     }
     return true;
   }).map((action2) => {
     const {
-      content: content2,
+      content,
       onAction,
       ...rest
     } = action2;
     return /* @__PURE__ */ React.createElement(SecondaryAction, Object.assign({
-      key: content2,
+      key: content,
       onClick: onAction
-    }, rest), content2);
+    }, rest), content);
   });
   const groupsToFilter = hiddenGroups.length > 0 || hiddenActions.length > 0 ? [...groupsOrDefault, defaultRollupGroup] : [...groupsOrDefault];
-  const filteredGroups = groupsToFilter.filter((group, index2) => {
+  const filteredGroups = groupsToFilter.filter((group, index) => {
     const hasNoGroupsProp = groupsOrDefault.length === 0;
-    const isVisibleGroup = visibleGroups.includes(index2);
+    const isVisibleGroup = visibleGroups.includes(index);
     const isDefaultGroup = group === defaultRollupGroup;
     if (hasNoGroupsProp) {
       return hiddenActions.length > 0;
@@ -8496,8 +8475,8 @@ function Actions({
     }
     return isVisibleGroup;
   });
-  const hiddenActionObjects = hiddenActions.map((index2) => actionsOrDefault[index2]).filter((action2) => action2 != null);
-  const hiddenGroupObjects = hiddenGroups.map((index2) => groupsOrDefault[index2]).filter((group) => group != null);
+  const hiddenActionObjects = hiddenActions.map((index) => actionsOrDefault[index]).filter((action2) => action2 != null);
+  const hiddenGroupObjects = hiddenGroups.map((index) => groupsOrDefault[index]).filter((group) => group != null);
   const groupsMarkup = filteredGroups.map((group) => {
     const {
       title,
@@ -8578,9 +8557,9 @@ function Actions({
     handleMeasurement
   });
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$H.ActionsLayoutOuter
+    className: styles$G.ActionsLayoutOuter
   }, actionsMeasurer, /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$H.ActionsLayout, !hasMeasured && styles$H["ActionsLayout--measuring"])
+    className: classNames(styles$G.ActionsLayout, !hasMeasured && styles$G["ActionsLayout--measuring"])
   }, actionsMarkup, groupsMarkup));
 }
 function isMenuGroup(actionOrMenuGroup) {
@@ -8596,7 +8575,7 @@ function ActionMenu({
   if (actions.length === 0 && groups.length === 0) {
     return null;
   }
-  const actionMenuClassNames = classNames(styles$K.ActionMenu, rollup && styles$K.rollup);
+  const actionMenuClassNames = classNames(styles$J.ActionMenu, rollup && styles$J.rollup);
   const rollupSections = groups.map((group) => convertGroupToSection(group));
   return /* @__PURE__ */ React.createElement("div", {
     className: actionMenuClassNames
@@ -8626,7 +8605,7 @@ function convertGroupToSection({
     }))
   };
 }
-var styles$E = {
+var styles$D = {
   "Backdrop": "Polaris-Backdrop",
   "transparent": "Polaris-Backdrop--transparent",
   "belowNavigation": "Polaris-Backdrop--belowNavigation"
@@ -8656,7 +8635,7 @@ function Backdrop(props) {
     transparent,
     setClosing
   } = props;
-  const className = classNames(styles$E.Backdrop, belowNavigation && styles$E.belowNavigation, transparent && styles$E.transparent);
+  const className = classNames(styles$D.Backdrop, belowNavigation && styles$D.belowNavigation, transparent && styles$D.transparent);
   const handleMouseDown = () => {
     if (setClosing) {
       setClosing(true);
@@ -8678,7 +8657,7 @@ function Backdrop(props) {
   }));
 }
 const BannerContext = /* @__PURE__ */ createContext(false);
-var styles$D = {
+var styles$C = {
   "ButtonGroup": "Polaris-ButtonGroup",
   "Item": "Polaris-ButtonGroup__Item",
   "Item-plain": "Polaris-ButtonGroup__Item--plain",
@@ -8691,19 +8670,19 @@ var styles$D = {
   "noWrap": "Polaris-ButtonGroup--noWrap"
 };
 function Item$5({
-  button: button2
+  button
 }) {
   const {
     value: focused,
     setTrue: forceTrueFocused,
     setFalse: forceFalseFocused
   } = useToggle(false);
-  const className = classNames(styles$D.Item, focused && styles$D["Item-focused"], button2.props.variant === "plain" && styles$D["Item-plain"]);
+  const className = classNames(styles$C.Item, focused && styles$C["Item-focused"], button.props.variant === "plain" && styles$C["Item-plain"]);
   return /* @__PURE__ */ React.createElement("div", {
     className,
     onFocus: forceTrueFocused,
     onBlur: forceFalseFocused
-  }, button2);
+  }, button);
 }
 function ButtonGroup({
   children,
@@ -8713,10 +8692,10 @@ function ButtonGroup({
   connectedTop,
   noWrap
 }) {
-  const className = classNames(styles$D.ButtonGroup, gap && styles$D[gap], variant && styles$D[variationName("variant", variant)], fullWidth && styles$D.fullWidth, noWrap && styles$D.noWrap);
-  const contents = elementChildren(children).map((child, index2) => /* @__PURE__ */ React.createElement(Item$5, {
+  const className = classNames(styles$C.ButtonGroup, gap && styles$C[gap], variant && styles$C[variationName("variant", variant)], fullWidth && styles$C.fullWidth, noWrap && styles$C.noWrap);
+  const contents = elementChildren(children).map((child, index) => /* @__PURE__ */ React.createElement(Item$5, {
     button: child,
-    key: index2
+    key: index
   }));
   return /* @__PURE__ */ React.createElement("div", {
     className,
@@ -8726,7 +8705,7 @@ function ButtonGroup({
     "data-buttongroup-no-wrap": noWrap
   }, contents);
 }
-var styles$C = {
+var styles$B = {
   "Bleed": "Polaris-Bleed"
 };
 const Bleed = ({
@@ -8768,7 +8747,7 @@ const Bleed = ({
     ...getResponsiveProps("bleed", "margin-inline-end", "space", negativeMarginInlineEnd)
   };
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$C.Bleed,
+    className: styles$B.Bleed,
     style: sanitizeCustomProperties(style)
   }, children);
 };
@@ -8776,30 +8755,30 @@ function Breadcrumbs({
   backAction
 }) {
   const {
-    content: content2
+    content
   } = backAction;
   return /* @__PURE__ */ React.createElement(Button, {
-    key: content2,
+    key: content,
     url: "url" in backAction ? backAction.url : void 0,
     onClick: "onAction" in backAction ? backAction.onAction : void 0,
     onPointerDown: handleMouseUpByBlurring,
     icon: ArrowLeftIcon,
-    accessibilityLabel: backAction.accessibilityLabel ?? content2
+    accessibilityLabel: backAction.accessibilityLabel ?? content
   });
 }
-var styles$B = {
+var styles$A = {
   "Indicator": "Polaris-Indicator",
   "pulseIndicator": "Polaris-Indicator--pulseIndicator"
 };
 function Indicator({
   pulse = true
 }) {
-  const className = classNames(styles$B.Indicator, pulse && styles$B.pulseIndicator);
+  const className = classNames(styles$A.Indicator, pulse && styles$A.pulseIndicator);
   return /* @__PURE__ */ React.createElement("span", {
     className
   });
 }
-var styles$A = {
+var styles$z = {
   "LegacyStack": "Polaris-LegacyStack",
   "Item": "Polaris-LegacyStack__Item",
   "noWrap": "Polaris-LegacyStack--noWrap",
@@ -8827,7 +8806,7 @@ function Item$4({
   children,
   fill
 }) {
-  const className = classNames(styles$A.Item, fill && styles$A["Item-fill"]);
+  const className = classNames(styles$z.Item, fill && styles$z["Item-fill"]);
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, children);
@@ -8840,10 +8819,10 @@ const LegacyStack = /* @__PURE__ */ memo(function Stack({
   alignment,
   wrap
 }) {
-  const className = classNames(styles$A.LegacyStack, vertical && styles$A.vertical, spacing && styles$A[variationName("spacing", spacing)], distribution && styles$A[variationName("distribution", distribution)], alignment && styles$A[variationName("alignment", alignment)], wrap === false && styles$A.noWrap);
-  const itemMarkup = elementChildren(children).map((child, index2) => {
+  const className = classNames(styles$z.LegacyStack, vertical && styles$z.vertical, spacing && styles$z[variationName("spacing", spacing)], distribution && styles$z[variationName("distribution", distribution)], alignment && styles$z[variationName("alignment", alignment)], wrap === false && styles$z.noWrap);
+  const itemMarkup = elementChildren(children).map((child, index) => {
     const props = {
-      key: index2
+      key: index
     };
     return wrapWithComponent(child, Item$4, props);
   });
@@ -8852,7 +8831,7 @@ const LegacyStack = /* @__PURE__ */ memo(function Stack({
   }, itemMarkup);
 });
 LegacyStack.Item = Item$4;
-var styles$z = {
+var styles$y = {
   "Collapsible": "Polaris-Collapsible",
   "isFullyClosed": "Polaris-Collapsible--isFullyClosed",
   "expandOnPrint": "Polaris-Collapsible--expandOnPrint"
@@ -8871,8 +8850,8 @@ function Collapsible({
   const collapsibleContainer = useRef(null);
   const isFullyOpen = animationState === "idle" && open && isOpen;
   const isFullyClosed = animationState === "idle" && !open && !isOpen;
-  const content2 = expandOnPrint || !isFullyClosed ? children : null;
-  const wrapperClassName = classNames(styles$z.Collapsible, isFullyClosed && styles$z.isFullyClosed, expandOnPrint && styles$z.expandOnPrint);
+  const content = expandOnPrint || !isFullyClosed ? children : null;
+  const wrapperClassName = classNames(styles$y.Collapsible, isFullyClosed && styles$y.isFullyClosed, expandOnPrint && styles$y.expandOnPrint);
   const transitionDisabled = isTransitionDisabled(transition);
   const transitionStyles = typeof transition === "object" && {
     transitionDuration: transition.duration,
@@ -8936,7 +8915,7 @@ function Collapsible({
     className: wrapperClassName,
     onTransitionEnd: handleCompleteAnimation,
     "aria-hidden": !open
-  }, content2);
+  }, content);
 }
 const zeroDurationRegex = /^0(ms|s)$/;
 function isTransitionDisabled(transitionProp) {
@@ -8951,7 +8930,7 @@ function isTransitionDisabled(transitionProp) {
   }
   return false;
 }
-var styles$y = {
+var styles$x = {
   "InlineGrid": "Polaris-InlineGrid"
 };
 function InlineGrid({
@@ -8966,7 +8945,7 @@ function InlineGrid({
     "--pc-inline-grid-align-items": alignItems
   };
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$y.InlineGrid,
+    className: styles$x.InlineGrid,
     style: sanitizeCustomProperties(style)
   }, children);
 }
@@ -9002,7 +8981,7 @@ function useFrame() {
   return frame;
 }
 function measureColumn(tableData) {
-  return function(column, index2) {
+  return function(column, index) {
     const {
       firstVisibleColumnIndex,
       tableLeftVisibleEdge: tableStart,
@@ -9015,14 +8994,14 @@ function measureColumn(tableData) {
     const isVisible = isVisibleLeft || isVisibleRight;
     const width = column.offsetWidth;
     if (isVisible) {
-      tableData.firstVisibleColumnIndex = Math.min(firstVisibleColumnIndex, index2);
+      tableData.firstVisibleColumnIndex = Math.min(firstVisibleColumnIndex, index);
     }
     return {
       leftEdge,
       rightEdge,
       isVisible,
       width,
-      index: index2
+      index
     };
   };
 }
@@ -9042,7 +9021,7 @@ function getPrevAndCurrentColumns(tableData, columnData) {
     currentColumn
   };
 }
-var styles$x = {
+var styles$w = {
   "DataTable": "Polaris-DataTable",
   "condensed": "Polaris-DataTable--condensed",
   "Navigation": "Polaris-DataTable__Navigation",
@@ -9086,7 +9065,7 @@ var styles$x = {
   "TooltipContent": "Polaris-DataTable__TooltipContent"
 };
 function Cell({
-  content: content2,
+  content,
   contentType,
   nthColumn,
   firstColumn,
@@ -9117,9 +9096,9 @@ function Cell({
 }) {
   const i18n = useI18n();
   const numeric = contentType === "numeric";
-  const className = classNames(styles$x.Cell, styles$x[`Cell-${variationName("verticalAlign", verticalAlign)}`], firstColumn && styles$x["Cell-firstColumn"], truncate && styles$x["Cell-truncated"], header && styles$x["Cell-header"], total && styles$x["Cell-total"], totalInFooter && styles$x["Cell-total-footer"], numeric && styles$x["Cell-numeric"], sortable && styles$x["Cell-sortable"], sorted && styles$x["Cell-sorted"], stickyHeadingCell && styles$x.StickyHeaderCell, hovered && styles$x["Cell-hovered"], lastFixedFirstColumn && inFixedNthColumn && fixedCellVisible && styles$x["Cell-separate"], nthColumn && inFixedNthColumn && stickyHeadingCell && styles$x.FixedFirstColumn);
-  const headerClassName = classNames(header && styles$x.Heading, header && contentType === "text" && styles$x["Heading-left"]);
-  const iconClassName = classNames(sortable && styles$x.Icon);
+  const className = classNames(styles$w.Cell, styles$w[`Cell-${variationName("verticalAlign", verticalAlign)}`], firstColumn && styles$w["Cell-firstColumn"], truncate && styles$w["Cell-truncated"], header && styles$w["Cell-header"], total && styles$w["Cell-total"], totalInFooter && styles$w["Cell-total-footer"], numeric && styles$w["Cell-numeric"], sortable && styles$w["Cell-sortable"], sorted && styles$w["Cell-sorted"], stickyHeadingCell && styles$w.StickyHeaderCell, hovered && styles$w["Cell-hovered"], lastFixedFirstColumn && inFixedNthColumn && fixedCellVisible && styles$w["Cell-separate"], nthColumn && inFixedNthColumn && stickyHeadingCell && styles$w.FixedFirstColumn);
+  const headerClassName = classNames(header && styles$w.Heading, header && contentType === "text" && styles$w["Heading-left"]);
+  const iconClassName = classNames(sortable && styles$w.Icon);
   const direction = sorted && sortDirection ? sortDirection : defaultSortDirection;
   const source = direction === "descending" ? SortDescendingIcon : SortAscendingIcon;
   const oppositeDirection = sortDirection === "ascending" ? "descending" : "ascending";
@@ -9138,8 +9117,8 @@ function Cell({
     onClick: onSort,
     onFocus: handleFocus,
     tabIndex: focusable ? 0 : -1
-  }, iconMarkup, content2);
-  const columnHeadingContent = sortable ? sortableHeadingContent : content2;
+  }, iconMarkup, content);
+  const columnHeadingContent = sortable ? sortableHeadingContent : content;
   const colSpanProp = colSpan && colSpan > 1 ? {
     colSpan
   } : {};
@@ -9176,11 +9155,11 @@ function Cell({
       ...minWidthStyles
     }
   }), truncate ? /* @__PURE__ */ React.createElement(TruncatedText, {
-    className: styles$x.TooltipContent
-  }, content2) : content2);
+    className: styles$w.TooltipContent
+  }, content) : content);
   const cellMarkup = header || firstColumn || nthColumn ? headingMarkup : /* @__PURE__ */ React.createElement("td", Object.assign({
     className
-  }, colSpanProp), content2);
+  }, colSpanProp), content);
   return stickyHeadingCell ? stickyHeading : cellMarkup;
 }
 const TruncatedText = ({
@@ -9191,13 +9170,13 @@ const TruncatedText = ({
   const {
     current
   } = textRef;
-  const text2 = /* @__PURE__ */ React.createElement("span", {
+  const text = /* @__PURE__ */ React.createElement("span", {
     ref: textRef,
     className
   }, children);
   return (current == null ? void 0 : current.scrollWidth) > (current == null ? void 0 : current.offsetWidth) ? /* @__PURE__ */ React.createElement(Tooltip, {
     content: textRef.current.innerText
-  }, text2) : text2;
+  }, text) : text;
 };
 var EditableTarget;
 (function(EditableTarget2) {
@@ -9215,7 +9194,7 @@ function isInputFocused() {
   } = document.activeElement;
   return tagName === EditableTarget.Input || tagName === EditableTarget.Textarea || tagName === EditableTarget.Select || document.activeElement.hasAttribute(EditableTarget.ContentEditable);
 }
-var styles$w = {
+var styles$v = {
   "Pagination": "Polaris-Pagination",
   "table": "Polaris-Pagination--table",
   "TablePaginationActions": "Polaris-Pagination__TablePaginationActions"
@@ -9233,7 +9212,7 @@ function Pagination({
   previousKeys,
   accessibilityLabel,
   accessibilityLabels,
-  label: label2,
+  label,
   type = "page"
 }) {
   const i18n = useI18n();
@@ -9280,7 +9259,7 @@ function Pagination({
     handler: nextURL ? handleCallback(clickPaginationLink("nextURL", node)) : handleCallback(nextHandler)
   }));
   if (type === "table") {
-    const labelMarkup2 = label2 ? /* @__PURE__ */ React.createElement(Box, {
+    const labelMarkup2 = label ? /* @__PURE__ */ React.createElement(Box, {
       padding: "300",
       paddingBlockStart: "0",
       paddingBlockEnd: "0"
@@ -9288,11 +9267,11 @@ function Pagination({
       as: "span",
       variant: "bodySm",
       fontWeight: "medium"
-    }, label2)) : null;
+    }, label)) : null;
     return /* @__PURE__ */ React.createElement("nav", {
       "aria-label": navLabel,
       ref: node,
-      className: classNames(styles$w.Pagination, styles$w.table)
+      className: classNames(styles$v.Pagination, styles$v.table)
     }, previousButtonEvents, nextButtonEvents, /* @__PURE__ */ React.createElement(Box, {
       background: "bg-surface-secondary",
       paddingBlockStart: "150",
@@ -9303,15 +9282,15 @@ function Pagination({
       align: "center",
       blockAlign: "center"
     }, /* @__PURE__ */ React.createElement("div", {
-      className: styles$w.TablePaginationActions,
+      className: styles$v.TablePaginationActions,
       "data-buttongroup-variant": "segmented"
     }, /* @__PURE__ */ React.createElement("div", null, constructedPrevious), labelMarkup2, /* @__PURE__ */ React.createElement("div", null, constructedNext)))));
   }
-  const labelTextMarkup = hasNext && hasPrevious ? /* @__PURE__ */ React.createElement("span", null, label2) : /* @__PURE__ */ React.createElement(Text, {
+  const labelTextMarkup = hasNext && hasPrevious ? /* @__PURE__ */ React.createElement("span", null, label) : /* @__PURE__ */ React.createElement(Text, {
     tone: "subdued",
     as: "span"
-  }, label2);
-  const labelMarkup = label2 ? /* @__PURE__ */ React.createElement(Box, {
+  }, label);
+  const labelMarkup = label ? /* @__PURE__ */ React.createElement(Box, {
     padding: "300",
     paddingBlockStart: "0",
     paddingBlockEnd: "0"
@@ -9321,7 +9300,7 @@ function Pagination({
   return /* @__PURE__ */ React.createElement("nav", {
     "aria-label": navLabel,
     ref: node,
-    className: styles$w.Pagination
+    className: styles$v.Pagination
   }, previousButtonEvents, nextButtonEvents, /* @__PURE__ */ React.createElement(ButtonGroup, {
     variant: "segmented"
   }, constructedPrevious, labelMarkup, constructedNext));
@@ -9353,13 +9332,13 @@ function AfterInitialMount({
   fallback = null
 }) {
   const isMounted = useIsAfterInitialMount();
-  const content2 = isMounted ? children : fallback;
+  const content = isMounted ? children : fallback;
   useEffect(() => {
     if (isMounted && onMount) {
       onMount();
     }
   }, [isMounted, onMount]);
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, content2);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, content);
 }
 function useStickyManager() {
   const stickyManager = useContext(StickyManagerContext);
@@ -9479,12 +9458,12 @@ function Navigation$2({
   }
 }) {
   const i18n = useI18n();
-  const pipMarkup = columnVisibilityData.map((column, index2) => {
-    if (index2 < fixedFirstColumns) return;
-    const className = classNames(styles$x.Pip, column.isVisible && styles$x["Pip-visible"]);
+  const pipMarkup = columnVisibilityData.map((column, index) => {
+    if (index < fixedFirstColumns) return;
+    const className = classNames(styles$w.Pip, column.isVisible && styles$w["Pip-visible"]);
     return /* @__PURE__ */ React.createElement("div", {
       className,
-      key: `pip-${index2}`
+      key: `pip-${index}`
     });
   });
   const leftA11yLabel = i18n.translate("Polaris.DataTable.navAccessibilityLabel", {
@@ -9494,7 +9473,7 @@ function Navigation$2({
     direction: "right"
   });
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$x.Navigation,
+    className: styles$w.Navigation,
     ref: setRef
   }, /* @__PURE__ */ React.createElement(Button, {
     variant: "tertiary",
@@ -9561,22 +9540,22 @@ class DataTableInner extends PureComponent {
     });
     this.setCellRef = ({
       ref,
-      index: index2,
+      index,
       inStickyHeader
     }) => {
       if (ref == null) {
         return;
       }
       if (inStickyHeader) {
-        this.stickyHeadings[index2] = ref;
-        const button2 = ref.querySelector("button");
-        if (button2 == null) {
+        this.stickyHeadings[index] = ref;
+        const button = ref.querySelector("button");
+        if (button == null) {
           return;
         }
-        button2.addEventListener("focus", this.handleHeaderButtonFocus);
+        button.addEventListener("focus", this.handleHeaderButtonFocus);
       } else {
-        this.tableHeadings[index2] = ref;
-        this.tableHeadingWidths[index2] = ref.clientWidth;
+        this.tableHeadings[index] = ref;
+        this.tableHeadingWidths[index] = ref.clientWidth;
       }
     };
     this.changeHeadingFocus = () => {
@@ -9597,37 +9576,37 @@ class DataTableInner extends PureComponent {
       const arrowsInStickyNav = stickyNav == null ? void 0 : stickyNav.querySelectorAll("button");
       const arrowsInHeaderNav = headerNav == null ? void 0 : headerNav.querySelectorAll("button");
       let stickyFocusedNavIndex = -1;
-      arrowsInStickyNav == null ? void 0 : arrowsInStickyNav.forEach((item, index2) => {
+      arrowsInStickyNav == null ? void 0 : arrowsInStickyNav.forEach((item, index) => {
         if (item === document.activeElement) {
-          stickyFocusedNavIndex = index2;
+          stickyFocusedNavIndex = index;
         }
       });
       let headerFocusedNavIndex = -1;
-      arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav.forEach((item, index2) => {
+      arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav.forEach((item, index) => {
         if (item === document.activeElement) {
-          headerFocusedNavIndex = index2;
+          headerFocusedNavIndex = index;
         }
       });
       if (stickyFocusedItemIndex < 0 && tableFocusedItemIndex < 0 && stickyFocusedNavIndex < 0 && headerFocusedNavIndex < 0) {
         return null;
       }
-      let button2;
+      let button;
       if (stickyFocusedItemIndex >= 0) {
-        button2 = tableHeadings[stickyFocusedItemIndex].querySelector("button");
+        button = tableHeadings[stickyFocusedItemIndex].querySelector("button");
       } else if (tableFocusedItemIndex >= 0) {
-        button2 = stickyHeadings[tableFocusedItemIndex].querySelector("button");
+        button = stickyHeadings[tableFocusedItemIndex].querySelector("button");
       }
       if (stickyFocusedNavIndex >= 0) {
-        button2 = arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav[stickyFocusedNavIndex];
+        button = arrowsInHeaderNav == null ? void 0 : arrowsInHeaderNav[stickyFocusedNavIndex];
       } else if (headerFocusedNavIndex >= 0) {
-        button2 = arrowsInStickyNav == null ? void 0 : arrowsInStickyNav[headerFocusedNavIndex];
+        button = arrowsInStickyNav == null ? void 0 : arrowsInStickyNav[headerFocusedNavIndex];
       }
-      if (button2 == null) {
+      if (button == null) {
         return null;
       }
-      button2.style.visibility = "visible";
-      button2.focus();
-      button2.style.removeProperty("visibility");
+      button.style.visibility = "visible";
+      button.focus();
+      button.style.removeProperty("visibility");
     };
     this.calculateColumnVisibilityData = (condensed) => {
       const fixedFirstColumns = this.fixedFirstColumns();
@@ -9757,8 +9736,8 @@ class DataTableInner extends PureComponent {
         return;
       }
       let prevWidths = 0;
-      for (let index2 = 0; index2 < currentColumn.index; index2++) {
-        prevWidths += this.state.columnVisibilityData[index2].width;
+      for (let index = 0; index < currentColumn.index; index++) {
+        prevWidths += this.state.columnVisibilityData[index].width;
       }
       const {
         current: scrollContainer
@@ -9782,7 +9761,7 @@ class DataTableInner extends PureComponent {
       return handleScroll;
     };
     this.renderHeading = ({
-      heading: heading2,
+      heading,
       headingIndex,
       inFixedNthColumn,
       inStickyHeader
@@ -9826,7 +9805,7 @@ class DataTableInner extends PureComponent {
       const cellProps = {
         header: true,
         stickyHeadingCell: inStickyHeader,
-        content: heading2,
+        content: heading,
         contentType: columnContentTypes[headingIndex],
         nthColumn: headingIndex < fixedFirstColumns,
         fixedFirstColumns,
@@ -9896,32 +9875,32 @@ class DataTableInner extends PureComponent {
     };
     this.renderTotals = ({
       total,
-      index: index2
+      index
     }) => {
       const fixedFirstColumns = this.fixedFirstColumns();
-      const id = `totals-cell-${index2}`;
+      const id = `totals-cell-${index}`;
       const {
         truncate = false,
         verticalAlign,
         columnContentTypes
       } = this.props;
-      let content2;
+      let content;
       let contentType;
-      if (index2 === 0) {
-        content2 = this.totalsRowHeading();
+      if (index === 0) {
+        content = this.totalsRowHeading();
       }
-      if (total !== "" && index2 > 0) {
-        contentType = columnContentTypes[index2];
-        content2 = total;
+      if (total !== "" && index > 0) {
+        contentType = columnContentTypes[index];
+        content = total;
       }
       const totalInFooter = this.props.showTotalsInFooter;
       return /* @__PURE__ */ React.createElement(Cell, {
         total: true,
         totalInFooter,
-        nthColumn: index2 <= fixedFirstColumns - 1,
-        firstColumn: index2 === 0,
+        nthColumn: index <= fixedFirstColumns - 1,
+        firstColumn: index === 0,
         key: id,
-        content: content2,
+        content,
         contentType,
         truncate,
         verticalAlign
@@ -9940,7 +9919,7 @@ class DataTableInner extends PureComponent {
     };
     this.defaultRenderRow = ({
       row,
-      index: index2,
+      index,
       inFixedNthColumn,
       rowHeights
     }) => {
@@ -9955,19 +9934,19 @@ class DataTableInner extends PureComponent {
         condensed
       } = this.state;
       const fixedFirstColumns = this.fixedFirstColumns();
-      const className = classNames(styles$x.TableRow, hoverable && styles$x.hoverable);
+      const className = classNames(styles$w.TableRow, hoverable && styles$w.hoverable);
       return /* @__PURE__ */ React.createElement("tr", {
-        key: `row-${index2}`,
+        key: `row-${index}`,
         className,
-        onMouseEnter: this.handleHover(index2),
+        onMouseEnter: this.handleHover(index),
         onMouseLeave: this.handleHover()
-      }, row.map((content2, cellIndex) => {
-        const hovered = index2 === this.state.rowHovered;
-        const id = `cell-${cellIndex}-row-${index2}`;
+      }, row.map((content, cellIndex) => {
+        const hovered = index === this.state.rowHovered;
+        const id = `cell-${cellIndex}-row-${index}`;
         const colSpan = this.getColSpan(row.length, headings.length, columnContentTypes.length, cellIndex);
         return /* @__PURE__ */ React.createElement(Cell, {
           key: id,
-          content: content2,
+          content,
           contentType: columnContentTypes[cellIndex],
           nthColumn: cellIndex <= fixedFirstColumns - 1,
           firstColumn: cellIndex === 0,
@@ -9976,7 +9955,7 @@ class DataTableInner extends PureComponent {
           colSpan,
           hovered,
           style: rowHeights ? {
-            height: `${rowHeights[index2]}px`
+            height: `${rowHeights[index]}px`
           } : {},
           inFixedNthColumn: condensed && inFixedNthColumn
         });
@@ -10053,17 +10032,17 @@ class DataTableInner extends PureComponent {
     }
     const fixedFirstColumns = this.fixedFirstColumns();
     const rowCountIsEven = rows.length % 2 === 0;
-    const className = classNames(styles$x.DataTable, condensed && styles$x.condensed, totals && styles$x.ShowTotals, showTotalsInFooter && styles$x.ShowTotalsInFooter, hasZebraStripingOnData && styles$x.ZebraStripingOnData, hasZebraStripingOnData && rowCountIsEven && styles$x.RowCountIsEven);
-    const wrapperClassName = classNames(styles$x.TableWrapper, condensed && styles$x.condensed, increasedTableDensity && styles$x.IncreasedTableDensity, stickyHeader && styles$x.StickyHeaderEnabled);
-    const headingMarkup = /* @__PURE__ */ React.createElement("tr", null, headings.map((heading2, index2) => this.renderHeading({
-      heading: heading2,
-      headingIndex: index2,
+    const className = classNames(styles$w.DataTable, condensed && styles$w.condensed, totals && styles$w.ShowTotals, showTotalsInFooter && styles$w.ShowTotalsInFooter, hasZebraStripingOnData && styles$w.ZebraStripingOnData, hasZebraStripingOnData && rowCountIsEven && styles$w.RowCountIsEven);
+    const wrapperClassName = classNames(styles$w.TableWrapper, condensed && styles$w.condensed, increasedTableDensity && styles$w.IncreasedTableDensity, stickyHeader && styles$w.StickyHeaderEnabled);
+    const headingMarkup = /* @__PURE__ */ React.createElement("tr", null, headings.map((heading, index) => this.renderHeading({
+      heading,
+      headingIndex: index,
       inFixedNthColumn: false,
       inStickyHeader: false
     })));
-    const totalsMarkup = totals ? /* @__PURE__ */ React.createElement("tr", null, totals.map((total, index2) => this.renderTotals({
+    const totalsMarkup = totals ? /* @__PURE__ */ React.createElement("tr", null, totals.map((total, index) => this.renderTotals({
       total,
-      index: index2
+      index
     }))) : null;
     const nthColumns = rows.map((row) => row.slice(0, fixedFirstColumns));
     const nthHeadings = headings.slice(0, fixedFirstColumns);
@@ -10073,7 +10052,7 @@ class DataTableInner extends PureComponent {
     const headerRowHeights = getRowClientHeights(tableHeaderRows);
     const bodyRowHeights = getRowClientHeights(tableBodyRows);
     const fixedNthColumnMarkup = condensed && fixedFirstColumns !== 0 && /* @__PURE__ */ React.createElement("table", {
-      className: classNames(styles$x.FixedFirstColumn, !isScrolledFarthestLeft && styles$x.separate),
+      className: classNames(styles$w.FixedFirstColumn, !isScrolledFarthestLeft && styles$w.separate),
       style: {
         width: `${(_c = columnVisibilityData[fixedFirstColumns - 1]) == null ? void 0 : _c.rightEdge}px`
       }
@@ -10081,34 +10060,34 @@ class DataTableInner extends PureComponent {
       style: {
         height: `${headerRowHeights[0]}px`
       }
-    }, nthHeadings.map((heading2, index2) => this.renderHeading({
-      heading: heading2,
-      headingIndex: index2,
+    }, nthHeadings.map((heading, index) => this.renderHeading({
+      heading,
+      headingIndex: index,
       inFixedNthColumn: true,
       inStickyHeader: false
     }))), totals && !showTotalsInFooter && /* @__PURE__ */ React.createElement("tr", {
       style: {
         height: `${headerRowHeights[1]}px`
       }
-    }, nthTotals == null ? void 0 : nthTotals.map((total, index2) => this.renderTotals({
+    }, nthTotals == null ? void 0 : nthTotals.map((total, index) => this.renderTotals({
       total,
-      index: index2
-    })))), /* @__PURE__ */ React.createElement("tbody", null, nthColumns.map((row, index2) => this.defaultRenderRow({
+      index
+    })))), /* @__PURE__ */ React.createElement("tbody", null, nthColumns.map((row, index) => this.defaultRenderRow({
       row,
-      index: index2,
+      index,
       inFixedNthColumn: true,
       rowHeights: bodyRowHeights
-    }))), totals && showTotalsInFooter && /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", null, nthTotals == null ? void 0 : nthTotals.map((total, index2) => this.renderTotals({
+    }))), totals && showTotalsInFooter && /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", null, nthTotals == null ? void 0 : nthTotals.map((total, index) => this.renderTotals({
       total,
-      index: index2
+      index
     })))));
-    const bodyMarkup = rows.map((row, index2) => this.defaultRenderRow({
+    const bodyMarkup = rows.map((row, index) => this.defaultRenderRow({
       row,
-      index: index2,
+      index,
       inFixedNthColumn: false
     }));
     const footerMarkup = footerContent ? /* @__PURE__ */ React.createElement("div", {
-      className: styles$x.Footer
+      className: styles$w.Footer
     }, footerContent) : null;
     const paginationMarkup = pagination ? /* @__PURE__ */ React.createElement(Pagination, Object.assign({
       type: "table"
@@ -10131,7 +10110,7 @@ class DataTableInner extends PureComponent {
       }
     });
     const stickyHeaderMarkup = stickyHeader ? /* @__PURE__ */ React.createElement(AfterInitialMount, null, /* @__PURE__ */ React.createElement("div", {
-      className: styles$x.StickyHeaderWrapper,
+      className: styles$w.StickyHeaderWrapper,
       role: "presentation"
     }, /* @__PURE__ */ React.createElement(Sticky, {
       boundingElement: this.dataTable.current,
@@ -10140,20 +10119,20 @@ class DataTableInner extends PureComponent {
         this.stickyHeaderActive = isSticky;
       }
     }, (isSticky) => {
-      const stickyHeaderInnerClassNames = classNames(styles$x.StickyHeaderInner, isSticky && styles$x["StickyHeaderInner-isSticky"]);
-      const stickyHeaderTableClassNames = classNames(styles$x.StickyHeaderTable, !isScrolledFarthestLeft && styles$x.separate);
+      const stickyHeaderInnerClassNames = classNames(styles$w.StickyHeaderInner, isSticky && styles$w["StickyHeaderInner-isSticky"]);
+      const stickyHeaderTableClassNames = classNames(styles$w.StickyHeaderTable, !isScrolledFarthestLeft && styles$w.separate);
       return /* @__PURE__ */ React.createElement("div", {
         className: stickyHeaderInnerClassNames
       }, /* @__PURE__ */ React.createElement("div", null, navigationMarkup("sticky")), /* @__PURE__ */ React.createElement("table", {
         className: stickyHeaderTableClassNames,
         ref: this.stickyTable
       }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", {
-        className: styles$x.StickyTableHeadingsRow
-      }, headings.map((heading2, index2) => {
+        className: styles$w.StickyTableHeadingsRow
+      }, headings.map((heading, index) => {
         return this.renderHeading({
-          heading: heading2,
-          headingIndex: index2,
-          inFixedNthColumn: Boolean(index2 <= fixedFirstColumns - 1 && fixedFirstColumns),
+          heading,
+          headingIndex: index,
+          inFixedNthColumn: Boolean(index <= fixedFirstColumns - 1 && fixedFirstColumns),
           inStickyHeader: true
         });
       })))));
@@ -10164,7 +10143,7 @@ class DataTableInner extends PureComponent {
     }, stickyHeaderMarkup, navigationMarkup("header"), /* @__PURE__ */ React.createElement("div", {
       className
     }, /* @__PURE__ */ React.createElement("div", {
-      className: styles$x.ScrollContainer,
+      className: styles$w.ScrollContainer,
       ref: this.scrollContainer
     }, /* @__PURE__ */ React.createElement(EventListener, {
       event: "resize",
@@ -10175,7 +10154,7 @@ class DataTableInner extends PureComponent {
       event: "scroll",
       handler: this.scrollListener
     }), fixedNthColumnMarkup, /* @__PURE__ */ React.createElement("table", {
-      className: styles$x.Table,
+      className: styles$w.Table,
       ref: this.table
     }, /* @__PURE__ */ React.createElement("thead", null, headingMarkup, headerTotalsMarkup), /* @__PURE__ */ React.createElement("tbody", null, bodyMarkup), footerTotalsMarkup)), paginationMarkup, footerMarkup));
   }
@@ -10200,7 +10179,7 @@ function DataTable(props) {
     i18n
   }));
 }
-var styles$v = {
+var styles$u = {
   "ImageContainer": "Polaris-EmptyState__ImageContainer",
   "Image": "Polaris-EmptyState__Image",
   "loaded": "Polaris-EmptyState--loaded",
@@ -10210,7 +10189,7 @@ var styles$v = {
 };
 function EmptyState({
   children,
-  heading: heading2,
+  heading,
   image,
   largeImage,
   imageContained,
@@ -10223,7 +10202,7 @@ function EmptyState({
   const handleLoad = useCallback(() => {
     setImageLoaded(true);
   }, []);
-  const imageClassNames = classNames(styles$v.Image, imageLoaded && styles$v.loaded, imageContained && styles$v.imageContained);
+  const imageClassNames = classNames(styles$u.Image, imageLoaded && styles$u.loaded, imageContained && styles$u.imageContained);
   const loadedImageMarkup = largeImage ? /* @__PURE__ */ React.createElement(Image, {
     alt: "",
     role: "presentation",
@@ -10245,8 +10224,8 @@ function EmptyState({
     source: image,
     onLoad: handleLoad
   });
-  const skeletonImageClassNames = classNames(styles$v.SkeletonImage, imageLoaded && styles$v.loaded);
-  const imageContainerClassNames = classNames(styles$v.ImageContainer, !imageLoaded && styles$v.SkeletonImageContainer);
+  const skeletonImageClassNames = classNames(styles$u.SkeletonImage, imageLoaded && styles$u.loaded);
+  const imageContainerClassNames = classNames(styles$u.ImageContainer, !imageLoaded && styles$u.SkeletonImageContainer);
   const imageMarkup = /* @__PURE__ */ React.createElement("div", {
     className: imageContainerClassNames
   }, loadedImageMarkup, /* @__PURE__ */ React.createElement("div", {
@@ -10264,13 +10243,13 @@ function EmptyState({
     variant: "primary",
     size: "medium"
   }) : null;
-  const headingMarkup = heading2 ? /* @__PURE__ */ React.createElement(Box, {
+  const headingMarkup = heading ? /* @__PURE__ */ React.createElement(Box, {
     paddingBlockEnd: "150"
   }, /* @__PURE__ */ React.createElement(Text, {
     variant: "headingMd",
     as: "p",
     alignment: "center"
-  }, heading2)) : null;
+  }, heading)) : null;
   const childrenMarkup = children ? /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     alignment: "center",
@@ -10366,7 +10345,7 @@ function normalizeAutoComplete(autoComplete) {
   }
   return autoComplete ? "on" : "off";
 }
-var styles$u = {
+var styles$t = {
   "Item": "Polaris-FormLayout__Item",
   "grouped": "Polaris-FormLayout--grouped",
   "condensed": "Polaris-FormLayout--condensed"
@@ -10375,7 +10354,7 @@ function Item$3({
   children,
   condensed = false
 }) {
-  const className = classNames(styles$u.Item, condensed ? styles$u.condensed : styles$u.grouped);
+  const className = classNames(styles$t.Item, condensed ? styles$t.condensed : styles$t.grouped);
   return children ? /* @__PURE__ */ React.createElement("div", {
     className
   }, children) : null;
@@ -10425,12 +10404,12 @@ const FormLayout = /* @__PURE__ */ memo(function FormLayout2({
   }, Children.map(children, wrapChildren));
 });
 FormLayout.Group = Group;
-function wrapChildren(child, index2) {
+function wrapChildren(child, index) {
   if (isElementOfType(child, Group)) {
     return child;
   }
   const props = {
-    key: index2
+    key: index
   };
   return wrapWithComponent(child, Item$3, props);
 }
@@ -10439,7 +10418,7 @@ function setRootProperty(name, value, node) {
   const element = document.documentElement;
   element.style.setProperty(name, value);
 }
-var styles$t = {
+var styles$s = {
   "Frame": "Polaris-Frame",
   "Navigation": "Polaris-Frame__Navigation",
   "hasTopBar": "Polaris-Frame--hasTopBar",
@@ -10477,7 +10456,7 @@ function useIsMountedRef() {
   }, []);
   return isMounted;
 }
-var styles$s = {
+var styles$r = {
   "Loading": "Polaris-Frame-Loading",
   "Level": "Polaris-Frame-Loading__Level"
 };
@@ -10502,19 +10481,19 @@ function Loading() {
     transform: `scaleX(${Math.floor(progress) / 100})`
   };
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$s.Loading,
+    className: styles$r.Loading,
     "aria-valuenow": progress,
     "aria-valuemin": 0,
     "aria-valuemax": 100,
     role: "progressbar",
     "aria-label": i18n.translate("Polaris.Loading.label")
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$s.Level,
+    className: styles$r.Level,
     style: customStyles,
     onTransitionEnd: () => setAnimating(false)
   }));
 }
-var styles$r = {
+var styles$q = {
   "startFade": "Polaris-Frame-CSSAnimation--startFade",
   "endFade": "Polaris-Frame-CSSAnimation--endFade"
 };
@@ -10546,13 +10525,13 @@ function CSSAnimation({
   useEffect(() => {
     isMounted.current = true;
   }, []);
-  const wrapperClassName = classNames(className, styles$r[variationName("start", type)], inProp && styles$r[variationName("end", type)]);
-  const content2 = transitionStatus === TransitionStatus.Exited && !inProp ? null : children;
+  const wrapperClassName = classNames(className, styles$q[variationName("start", type)], inProp && styles$q[variationName("end", type)]);
+  const content = transitionStatus === TransitionStatus.Exited && !inProp ? null : children;
   return /* @__PURE__ */ React.createElement("div", {
     className: wrapperClassName,
     ref: node,
     onTransitionEnd: handleTransitionEnd
-  }, content2);
+  }, content);
   function handleTransitionEnd() {
     transitionStatus === TransitionStatus.Exiting && changeTransitionStatus(TransitionStatus.Exited);
   }
@@ -10583,7 +10562,7 @@ function getWidth(value = {}, defaultWidth = 0, key = "width") {
   const width = typeof value === "number" ? value : pluckDeep(value, key);
   return width ? `${width}px` : `${defaultWidth}px`;
 }
-var styles$q = {
+var styles$p = {
   "ContextualSaveBar": "Polaris-Frame-ContextualSaveBar",
   "LogoContainer": "Polaris-Frame-ContextualSaveBar__LogoContainer",
   "ContextControl": "Polaris-Frame-ContextualSaveBar__ContextControl",
@@ -10592,12 +10571,12 @@ var styles$q = {
   "MessageContainer": "Polaris-Frame-ContextualSaveBar__MessageContainer",
   "ActionContainer": "Polaris-Frame-ContextualSaveBar__ActionContainer"
 };
-var styles$p = {
+var styles$o = {
   "Body": "Polaris-Modal__Body",
   "NoScrollBody": "Polaris-Modal__NoScrollBody",
   "IFrame": "Polaris-Modal__IFrame"
 };
-var styles$o = {
+var styles$n = {
   "Section": "Polaris-Modal-Section",
   "titleHidden": "Polaris-Modal-Section--titleHidden"
 };
@@ -10607,7 +10586,7 @@ function Section$2({
   subdued = false,
   titleHidden = false
 }) {
-  const className = classNames(styles$o.Section, titleHidden && styles$o.titleHidden);
+  const className = classNames(styles$n.Section, titleHidden && styles$n.titleHidden);
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, /* @__PURE__ */ React.createElement(Box, Object.assign({
@@ -10619,7 +10598,7 @@ function Section$2({
     background: "bg-surface-tertiary"
   }), children));
 }
-var styles$n = {
+var styles$m = {
   "Container": "Polaris-Modal-Dialog__Container",
   "Dialog": "Polaris-Modal-Dialog",
   "Modal": "Polaris-Modal-Dialog__Modal",
@@ -10732,7 +10711,7 @@ function Dialog({
   if (frameContext) {
     toastMessages = frameContext.toastMessages;
   }
-  const classes = classNames(styles$n.Modal, size && styles$n[variationName("size", size)], limitHeight && styles$n.limitHeight);
+  const classes = classNames(styles$m.Modal, size && styles$m[variationName("size", size)], limitHeight && styles$m.limitHeight);
   const TransitionChild = instant ? Transition : FadeUp;
   useEffect(() => {
     containerNode.current && !containerNode.current.contains(document.activeElement) && focusFirstFocusableNode(containerNode.current);
@@ -10763,7 +10742,7 @@ function Dialog({
     onEntered,
     onExited
   }), /* @__PURE__ */ React.createElement("div", {
-    className: styles$n.Container,
+    className: styles$m.Container,
     "data-polaris-layer": true,
     "data-polaris-overlay": true,
     ref: containerNode
@@ -10773,7 +10752,7 @@ function Dialog({
     "aria-label": labelledBy,
     "aria-labelledby": labelledBy,
     tabIndex: -1,
-    className: styles$n.Dialog
+    className: styles$m.Dialog
   }, /* @__PURE__ */ React.createElement("div", {
     className: classes
   }, /* @__PURE__ */ React.createElement(KeypressListener, {
@@ -10786,12 +10765,12 @@ function Dialog({
   }), children), ariaLiveAnnouncements))));
 }
 const fadeUpClasses = {
-  appear: classNames(styles$n.animateFadeUp, styles$n.entering),
-  appearActive: classNames(styles$n.animateFadeUp, styles$n.entered),
-  enter: classNames(styles$n.animateFadeUp, styles$n.entering),
-  enterActive: classNames(styles$n.animateFadeUp, styles$n.entered),
-  exit: classNames(styles$n.animateFadeUp, styles$n.exiting),
-  exitActive: classNames(styles$n.animateFadeUp, styles$n.exited)
+  appear: classNames(styles$m.animateFadeUp, styles$m.entering),
+  appearActive: classNames(styles$m.animateFadeUp, styles$m.entered),
+  enter: classNames(styles$m.animateFadeUp, styles$m.entering),
+  enterActive: classNames(styles$m.animateFadeUp, styles$m.entered),
+  exit: classNames(styles$m.animateFadeUp, styles$m.exiting),
+  exitActive: classNames(styles$m.animateFadeUp, styles$m.exited)
 };
 function FadeUp({
   children,
@@ -10948,7 +10927,7 @@ const Modal = function Modal2({
       primaryAction,
       secondaryActions
     }, footer);
-    const content2 = sectioned ? wrapWithComponent(children, Section$2, {
+    const content = sectioned ? wrapWithComponent(children, Section$2, {
       titleHidden
     }) : children;
     const body = loading ? /* @__PURE__ */ React.createElement(Box, {
@@ -10957,23 +10936,23 @@ const Modal = function Modal2({
       gap: "400",
       align: "center",
       blockAlign: "center"
-    }, /* @__PURE__ */ React.createElement(Spinner$1, null))) : content2;
+    }, /* @__PURE__ */ React.createElement(Spinner$1, null))) : content;
     const scrollContainerMarkup = noScroll ? /* @__PURE__ */ React.createElement("div", {
-      className: styles$p.NoScrollBody
+      className: styles$o.NoScrollBody
     }, /* @__PURE__ */ React.createElement(Box, {
       width: "100%",
       overflowX: "hidden",
       overflowY: "hidden"
     }, body)) : /* @__PURE__ */ React.createElement(Scrollable, {
       shadow: true,
-      className: styles$p.Body,
+      className: styles$o.Body,
       onScrolledToBottom
     }, body);
     const bodyMarkup = src ? /* @__PURE__ */ React.createElement("iframe", {
       name: iFrameName,
       title: iframeTitle,
       src,
-      className: styles$p.IFrame,
+      className: styles$o.IFrame,
       onLoad: handleIFrameLoad,
       style: {
         height: `${iframeHeight}px`
@@ -11105,21 +11084,21 @@ function ContextualSaveBar({
     alt: ""
   });
   const logoMarkup = alignContentFlush || contextControl ? null : /* @__PURE__ */ React.createElement("div", {
-    className: styles$q.LogoContainer,
+    className: styles$p.LogoContainer,
     style: {
       width
     }
   }, imageMarkup);
   const contextControlMarkup = contextControl ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$q.ContextControl
+    className: styles$p.ContextControl
   }, contextControl) : null;
-  const contentsClassName = classNames(styles$q.Contents, fullWidth && styles$q.fullWidth);
+  const contentsClassName = classNames(styles$p.Contents, fullWidth && styles$p.fullWidth);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    className: styles$q.ContextualSaveBar
+    className: styles$p.ContextualSaveBar
   }, contextControlMarkup, logoMarkup, /* @__PURE__ */ React.createElement("div", {
     className: contentsClassName
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$q.MessageContainer
+    className: styles$p.MessageContainer
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: AlertTriangleIcon
   }), message && /* @__PURE__ */ React.createElement(Text, {
@@ -11128,7 +11107,7 @@ function ContextualSaveBar({
     tone: "text-inverse",
     truncate: true
   }, message)), /* @__PURE__ */ React.createElement("div", {
-    className: styles$q.ActionContainer
+    className: styles$p.ActionContainer
   }, /* @__PURE__ */ React.createElement(LegacyStack, {
     spacing: "tight",
     wrap: false
@@ -11147,14 +11126,14 @@ function useDeepEffect(callback, dependencies, customCompare) {
 function useDeepCallback(callback, dependencies, customCompare) {
   return useCallback(callback, useDeepCompareRef(dependencies, customCompare));
 }
-var styles$m = {
+var styles$l = {
   "ToastManager": "Polaris-Frame-ToastManager",
   "ToastWrapper": "Polaris-Frame-ToastManager__ToastWrapper",
   "ToastWrapper-enter": "Polaris-Frame-ToastManager__ToastWrapper--enter",
   "ToastWrapper-exit": "Polaris-Frame-ToastManager__ToastWrapper--exit",
   "ToastWrapper-enter-done": "Polaris-Frame-ToastManager--toastWrapperEnterDone"
 };
-var styles$l = {
+var styles$k = {
   "Toast": "Polaris-Frame-Toast",
   "Action": "Polaris-Frame-Toast__Action",
   "error": "Polaris-Frame-Toast--error",
@@ -11166,7 +11145,7 @@ var styles$l = {
 const DEFAULT_TOAST_DURATION = 5e3;
 const DEFAULT_TOAST_DURATION_WITH_ACTION = 1e4;
 function Toast({
-  content: content2,
+  content,
   onDismiss,
   duration,
   error,
@@ -11215,14 +11194,14 @@ function Toast({
   }, [action2, duration]);
   const dismissMarkup = /* @__PURE__ */ React.createElement("button", {
     type: "button",
-    className: styles$l.CloseButton,
+    className: styles$k.CloseButton,
     onClick: onDismiss
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: XSmallIcon,
     tone: "inherit"
   }));
   const actionMarkup = action2 ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$l.Action
+    className: styles$k.Action
   }, /* @__PURE__ */ React.createElement(Button, {
     variant: "monochromePlain",
     removeUnderline: true,
@@ -11232,24 +11211,24 @@ function Toast({
   let leadingIconMarkup = null;
   if (error) {
     leadingIconMarkup = /* @__PURE__ */ React.createElement("div", {
-      className: styles$l.LeadingIcon
+      className: styles$k.LeadingIcon
     }, /* @__PURE__ */ React.createElement(Icon, {
       source: AlertCircleIcon,
       tone: "inherit"
     }));
   } else if (icon) {
     leadingIconMarkup = /* @__PURE__ */ React.createElement("div", {
-      className: styles$l.LeadingIcon
+      className: styles$k.LeadingIcon
     }, /* @__PURE__ */ React.createElement(Icon, {
       source: icon,
       tone: "inherit"
     }));
   }
-  const className = classNames(styles$l.Toast, error && styles$l.error, tone && styles$l[variationName("tone", tone)]);
+  const className = classNames(styles$k.Toast, error && styles$k.error, tone && styles$k[variationName("tone", tone)]);
   if (!action2 && onClick) {
     return /* @__PURE__ */ React.createElement("button", {
       "aria-live": "assertive",
-      className: classNames(className, styles$l.WithActionOnComponent),
+      className: classNames(className, styles$k.WithActionOnComponent),
       type: "button",
       onClick
     }, /* @__PURE__ */ React.createElement(KeypressListener, {
@@ -11264,7 +11243,7 @@ function Toast({
       fontWeight: "medium"
     }, tone === "magic" && {
       tone: "magic"
-    }), content2)));
+    }), content)));
   }
   return /* @__PURE__ */ React.createElement("div", {
     className,
@@ -11281,13 +11260,13 @@ function Toast({
     fontWeight: "medium"
   }, tone === "magic" && {
     tone: "magic"
-  }), content2)), actionMarkup, dismissMarkup);
+  }), content)), actionMarkup, dismissMarkup);
 }
 const ADDITIONAL_TOAST_BASE_MOVEMENT = 10;
 const TOAST_TRANSITION_DELAY = 30;
-function generateAdditionalVerticalMovement(index2) {
+function generateAdditionalVerticalMovement(index) {
   const getAmountToRemove = (idx) => (idx - 1) * idx / 2;
-  return index2 * ADDITIONAL_TOAST_BASE_MOVEMENT - getAmountToRemove(index2);
+  return index * ADDITIONAL_TOAST_BASE_MOVEMENT - getAmountToRemove(index);
 }
 const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
   toastMessages
@@ -11299,9 +11278,9 @@ const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
   const firstToast = useRef(null);
   const updateToasts = useDeepCallback(() => {
     const zeroIndexTotalMessages = toastMessages.length - 1;
-    toastMessages.forEach((_, index2) => {
-      const reversedOrder = zeroIndexTotalMessages - index2;
-      const currentToast = toastNodes[index2];
+    toastMessages.forEach((_, index) => {
+      const reversedOrder = zeroIndexTotalMessages - index;
+      const currentToast = toastNodes[index];
       if (!currentToast.current) return;
       const toastHeight = currentToast.current.clientHeight;
       const scale = shouldExpand ? 1 : 0.9 ** reversedOrder;
@@ -11329,10 +11308,10 @@ const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
       isFullyExpanded.current = false;
     }
   }, [toastMessages, shouldExpand]);
-  const toastsMarkup = toastMessages.map((toast2, index2) => {
-    const reverseOrderIndex = toastMessages.length - index2 - 1;
+  const toastsMarkup = toastMessages.map((toast2, index) => {
+    const reverseOrderIndex = toastMessages.length - index - 1;
     const toastNode = /* @__PURE__ */ createRef();
-    toastNodes[index2] = toastNode;
+    toastNodes[index] = toastNode;
     function handleMouseEnter() {
       setShouldExpand(true);
     }
@@ -11342,7 +11321,7 @@ const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
       }
     }
     return /* @__PURE__ */ React.createElement(CSSTransition, {
-      nodeRef: toastNodes[index2],
+      nodeRef: toastNodes[index],
       key: toast2.id,
       timeout: {
         enter: 0,
@@ -11364,7 +11343,7 @@ const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
     event: "resize",
     handler: updateToasts
   }), /* @__PURE__ */ React.createElement("div", {
-    className: styles$m.ToastManager,
+    className: styles$l.ToastManager,
     "aria-live": "assertive",
     onMouseEnter: function(event) {
       var _a2;
@@ -11380,9 +11359,9 @@ const ToastManager = /* @__PURE__ */ memo(function ToastManager2({
   }, toastsMarkup)));
 });
 const toastClasses = {
-  enter: classNames(styles$m.ToastWrapper, styles$m["ToastWrapper-enter"]),
-  enterDone: classNames(styles$m.ToastWrapper, styles$m["ToastWrapper-enter-done"]),
-  exit: classNames(styles$m.ToastWrapper, styles$m["ToastWrapper-exit"])
+  enter: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-enter"]),
+  enterDone: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-enter-done"]),
+  exit: classNames(styles$l.ToastWrapper, styles$l["ToastWrapper-exit"])
 };
 const APP_FRAME_MAIN = "AppFrameMain";
 const APP_FRAME_NAV = "AppFrameNav";
@@ -11569,7 +11548,7 @@ class FrameInner extends PureComponent {
         isNavigationCollapsed
       }
     } = this.props;
-    const navClassName = classNames(styles$t.Navigation, showMobileNavigation && styles$t["Navigation-visible"]);
+    const navClassName = classNames(styles$s.Navigation, showMobileNavigation && styles$s["Navigation-visible"]);
     const mobileNavHidden = isNavigationCollapsed && !showMobileNavigation;
     const mobileNavShowing = isNavigationCollapsed && showMobileNavigation;
     const tabIndex = mobileNavShowing ? 0 : -1;
@@ -11599,7 +11578,7 @@ class FrameInner extends PureComponent {
       hidden: mobileNavHidden
     }), navigation, /* @__PURE__ */ React.createElement("button", {
       type: "button",
-      className: styles$t.NavigationDismiss,
+      className: styles$s.NavigationDismiss,
       onClick: this.handleNavigationDismiss,
       "aria-hidden": mobileNavHidden || !isNavigationCollapsed && !showMobileNavigation,
       "aria-label": i18n.translate("Polaris.Frame.Navigation.closeMobileNavigationLabel"),
@@ -11608,19 +11587,19 @@ class FrameInner extends PureComponent {
       source: XIcon
     })))))) : null;
     const loadingMarkup = loadingStack > 0 ? /* @__PURE__ */ React.createElement("div", {
-      className: styles$t.LoadingBar,
+      className: styles$s.LoadingBar,
       id: APP_FRAME_LOADING_BAR
     }, /* @__PURE__ */ React.createElement(Loading, null)) : null;
     const topBarMarkup = topBar ? /* @__PURE__ */ React.createElement("div", Object.assign({
-      className: styles$t.TopBar
+      className: styles$s.TopBar
     }, layer.props, dataPolarisTopBar.props, {
       id: APP_FRAME_TOP_BAR
     }), topBar) : null;
     const globalRibbonMarkup = globalRibbon ? /* @__PURE__ */ React.createElement("div", {
-      className: styles$t.GlobalRibbonContainer,
+      className: styles$s.GlobalRibbonContainer,
       ref: this.setGlobalRibbonContainer
     }, globalRibbon) : null;
-    const skipClassName = classNames(styles$t.Skip, skipFocused && styles$t.focused);
+    const skipClassName = classNames(styles$s.Skip, skipFocused && styles$s.focused);
     const skipTarget = (skipToContentTarget == null ? void 0 : skipToContentTarget.current) ? skipToContentTarget.current.id : APP_FRAME_MAIN;
     const skipMarkup = /* @__PURE__ */ React.createElement("div", {
       className: skipClassName
@@ -11637,10 +11616,10 @@ class FrameInner extends PureComponent {
     const navigationAttributes = navigation ? {
       "data-has-navigation": true
     } : {};
-    const frameClassName = classNames(styles$t.Frame, navigation && styles$t.hasNav, topBar && styles$t.hasTopBar, sidebar && styles$t.hasSidebar);
+    const frameClassName = classNames(styles$s.Frame, navigation && styles$s.hasNav, topBar && styles$s.hasTopBar, sidebar && styles$s.hasSidebar);
     const contextualSaveBarMarkup = /* @__PURE__ */ React.createElement(CSSAnimation, {
       in: showContextualSaveBar,
-      className: styles$t.ContextualSaveBar,
+      className: styles$s.ContextualSaveBar,
       type: "fade"
     }, /* @__PURE__ */ React.createElement(ContextualSaveBar, this.contextualSaveBar));
     const navigationOverlayMarkup = showMobileNavigation && isNavigationCollapsed ? /* @__PURE__ */ React.createElement(Backdrop, {
@@ -11663,11 +11642,11 @@ class FrameInner extends PureComponent {
     }, /* @__PURE__ */ React.createElement("div", Object.assign({
       className: frameClassName
     }, layer.props, navigationAttributes), skipMarkup, topBarMarkup, navigationMarkup, contextualSaveBarMarkup, loadingMarkup, navigationOverlayMarkup, /* @__PURE__ */ React.createElement("main", {
-      className: styles$t.Main,
+      className: styles$s.Main,
       id: APP_FRAME_MAIN,
       "data-has-global-ribbon": Boolean(globalRibbon)
     }, /* @__PURE__ */ React.createElement("div", {
-      className: styles$t.Content
+      className: styles$s.Content
     }, children)), /* @__PURE__ */ React.createElement(ToastManager, {
       toastMessages
     }), globalRibbonMarkup, /* @__PURE__ */ React.createElement(EventListener, {
@@ -11677,11 +11656,11 @@ class FrameInner extends PureComponent {
   }
 }
 const navTransitionClasses = {
-  enter: classNames(styles$t["Navigation-enter"]),
-  enterActive: classNames(styles$t["Navigation-enterActive"]),
-  enterDone: classNames(styles$t["Navigation-enterActive"]),
-  exit: classNames(styles$t["Navigation-exit"]),
-  exitActive: classNames(styles$t["Navigation-exitActive"])
+  enter: classNames(styles$s["Navigation-enter"]),
+  enterActive: classNames(styles$s["Navigation-enterActive"]),
+  enterDone: classNames(styles$s["Navigation-enterActive"]),
+  exit: classNames(styles$s["Navigation-exit"]),
+  exitActive: classNames(styles$s["Navigation-exitActive"])
 };
 function Frame(props) {
   const i18n = useI18n();
@@ -11706,8 +11685,8 @@ function usePrevious(value) {
 }
 function getVisibleAndHiddenTabIndices(tabs, selected, disclosureWidth, tabWidths, containerWidth) {
   const sumTabWidths = tabWidths.reduce((sum, width) => sum + width, 0);
-  const arrayOfTabIndices = tabs.map((_, index2) => {
-    return index2;
+  const arrayOfTabIndices = tabs.map((_, index) => {
+    return index;
   });
   const visibleTabs = [];
   const hiddenTabs = [];
@@ -11733,7 +11712,7 @@ function getVisibleAndHiddenTabIndices(tabs, selected, disclosureWidth, tabWidth
     hiddenTabs
   };
 }
-var styles$k = {
+var styles$j = {
   "Outer": "Polaris-Tabs__Outer",
   "Wrapper": "Polaris-Tabs__Wrapper",
   "WrapperWithNewButton": "Polaris-Tabs__WrapperWithNewButton",
@@ -11905,7 +11884,7 @@ function RenameModal({
   }))))));
 }
 const Tab = /* @__PURE__ */ forwardRef(({
-  content: content2,
+  content,
   accessibilityLabel,
   badge,
   id,
@@ -11959,7 +11938,7 @@ const Tab = /* @__PURE__ */ forwardRef(({
       focusFirstFocusableNode(node.current);
     }
     wasSelected.current = selected;
-  }, [focused, id, content2, measuring, panelID, selected, activeModalType, disabled]);
+  }, [focused, id, content, measuring, panelID, selected, activeModalType, disabled]);
   let tabIndex;
   if (selected && !siblingTabHasFocus && !measuring) {
     tabIndex = 0;
@@ -12007,9 +11986,9 @@ const Tab = /* @__PURE__ */ forwardRef(({
   }, [renameAction]);
   const handleConfirmDeleteView = useCallback(async () => {
     var _a2;
-    await ((_a2 = deleteAction == null ? void 0 : deleteAction.onPrimaryAction) == null ? void 0 : _a2.call(deleteAction, content2));
+    await ((_a2 = deleteAction == null ? void 0 : deleteAction.onPrimaryAction) == null ? void 0 : _a2.call(deleteAction, content));
     handleModalClose();
-  }, [deleteAction, content2]);
+  }, [deleteAction, content]);
   const handleSaveDuplicateModal = useCallback(async (duplicateName) => {
     var _a2;
     await ((_a2 = duplicateAction == null ? void 0 : duplicateAction.onPrimaryAction) == null ? void 0 : _a2.call(duplicateAction, duplicateName));
@@ -12048,7 +12027,7 @@ const Tab = /* @__PURE__ */ forwardRef(({
       ...actionContent[type],
       ...additionalOptions,
       onAction: () => {
-        onAction2 == null ? void 0 : onAction2(content2);
+        onAction2 == null ? void 0 : onAction2(content);
         togglePopoverActive();
         if (isModalActivator) {
           handleModalOpen(type);
@@ -12062,15 +12041,15 @@ const Tab = /* @__PURE__ */ forwardRef(({
       handleClick();
     }
   }, [handleClick]);
-  const tabContainerClassNames = classNames(styles$k.TabContainer, selected && styles$k.Underline);
+  const tabContainerClassNames = classNames(styles$j.TabContainer, selected && styles$j.Underline);
   const urlIfNotDisabledOrSelected = disabled || selected ? void 0 : url;
   const BaseComponent = urlIfNotDisabledOrSelected ? UnstyledLink : UnstyledButton;
-  const tabClassName = classNames(styles$k.Tab, icon && styles$k["Tab-iconOnly"], popoverActive && styles$k["Tab-popoverActive"], selected && styles$k["Tab-active"], selected && (actions == null ? void 0 : actions.length) && styles$k["Tab-hasActions"]);
+  const tabClassName = classNames(styles$j.Tab, icon && styles$j["Tab-iconOnly"], popoverActive && styles$j["Tab-popoverActive"], selected && styles$j["Tab-active"], selected && (actions == null ? void 0 : actions.length) && styles$j["Tab-hasActions"]);
   const badgeMarkup = badge ? /* @__PURE__ */ React.createElement(Badge, {
     tone: selected ? void 0 : "new"
   }, badge) : null;
   const disclosureMarkup = selected && (actions == null ? void 0 : actions.length) ? /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$k.IconWrap)
+    className: classNames(styles$j.IconWrap)
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: ChevronDownIcon
   })) : null;
@@ -12097,10 +12076,10 @@ const Tab = /* @__PURE__ */ forwardRef(({
     as: "span",
     variant: "bodySm",
     fontWeight: "medium"
-  }, icon ?? content2), badgeMarkup), disclosureMarkup);
+  }, icon ?? content), badgeMarkup), disclosureMarkup);
   const isPlainButton = !selected || !(actions == null ? void 0 : actions.length);
   const renameModal = renameAction ? /* @__PURE__ */ React.createElement(RenameModal, {
-    name: content2,
+    name: content,
     open: activeModalType === "rename",
     onClose: handleModalClose,
     onClickPrimaryAction: handleSaveRenameModal,
@@ -12110,7 +12089,7 @@ const Tab = /* @__PURE__ */ forwardRef(({
   const duplicateModal = duplicateAction ? /* @__PURE__ */ React.createElement(DuplicateModal, {
     open: activeModalType === "duplicate",
     name: i18n.translate("Polaris.Tabs.Tab.copy", {
-      name: content2
+      name: content
     }),
     onClose: handleModalClose,
     onClickPrimaryAction: handleSaveDuplicateModal,
@@ -12133,7 +12112,7 @@ const Tab = /* @__PURE__ */ forwardRef(({
     title: i18n.translate("Polaris.Tabs.Tab.deleteModal.title"),
     instant: true
   }, /* @__PURE__ */ React.createElement(Modal.Section, null, i18n.translate("Polaris.Tabs.Tab.deleteModal.description", {
-    viewName: content2
+    viewName: content
   }))) : null;
   const markup = isPlainButton || disabled ? activator : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Popover2, {
     active: popoverActive,
@@ -12141,7 +12120,7 @@ const Tab = /* @__PURE__ */ forwardRef(({
     autofocusTarget: "first-node",
     onClose: togglePopoverActive
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$k.ActionListWrap
+    className: styles$j.ActionListWrap
   }, /* @__PURE__ */ React.createElement(ActionList, {
     actionRole: "menuitem",
     items: formattedActions
@@ -12214,21 +12193,21 @@ const TabMeasurer = /* @__PURE__ */ memo(function TabMeasurer2({
       setTimeout(handleMeasurement, 0);
     }
   });
-  const tabsMarkup = tabs.map((tab, index2) => {
+  const tabsMarkup = tabs.map((tab, index) => {
     return /* @__PURE__ */ React.createElement(Tab, {
       measuring: true,
       key: `$${tab.id}Hidden`,
       id: `${tab.id}Measurer`,
       siblingTabHasFocus,
-      focused: index2 === tabToFocus,
-      selected: index2 === selected,
+      focused: index === tabToFocus,
+      selected: index === selected,
       url: tab.url,
       content: tab.content,
       onTogglePopover: noop$2,
       onToggleModal: noop$2
     });
   });
-  const classname = classNames(styles$k.Tabs, styles$k.TabsMeasurer);
+  const classname = classNames(styles$j.Tabs, styles$j.TabsMeasurer);
   useEventListener("resize", handleMeasurement);
   return /* @__PURE__ */ React.createElement("div", {
     className: classname,
@@ -12243,7 +12222,7 @@ function Panel({
   tabID,
   children
 }) {
-  const className = classNames(styles$k.Panel, hidden && styles$k["Panel-hidden"]);
+  const className = classNames(styles$j.Panel, hidden && styles$j["Panel-hidden"]);
   return /* @__PURE__ */ React.createElement("div", {
     className,
     id,
@@ -12266,7 +12245,7 @@ const Item$2 = /* @__PURE__ */ memo(function Item({
       focusedNode.current.focus();
     }
   }, [focusedNode, focused]);
-  const classname = classNames(styles$k.Item);
+  const classname = classNames(styles$j.Item);
   const sharedProps = {
     id,
     ref: focusedNode,
@@ -12293,19 +12272,19 @@ function List$1({
 }) {
   const tabs = disclosureTabs.map(({
     id,
-    content: content2,
+    content,
     ...tabProps
-  }, index2) => {
+  }, index) => {
     return /* @__PURE__ */ React.createElement(Item$2, Object.assign({
       key: id
     }, tabProps, {
       id,
-      focused: index2 === focusIndex,
+      focused: index === focusIndex,
       onClick: onClick.bind(null, id)
-    }), content2);
+    }), content);
   });
   return /* @__PURE__ */ React.createElement("ul", {
-    className: styles$k.List,
+    className: styles$j.List,
     onKeyDown: handleKeyDown,
     onKeyUp: onKeyPress
   }, tabs);
@@ -12502,24 +12481,24 @@ const Tabs = ({
     const selectedIndex = tabs.indexOf(tab);
     onSelect == null ? void 0 : onSelect(selectedIndex);
   }, [tabs, onSelect]);
-  const renderTabMarkup = useCallback((tab, index2) => {
+  const renderTabMarkup = useCallback((tab, index) => {
     const handleClick = () => {
       var _a2;
       handleTabClick(tab.id);
       (_a2 = tab.onAction) == null ? void 0 : _a2.call(tab);
     };
     const viewNames2 = tabs.map(({
-      content: content2
-    }) => content2);
+      content
+    }) => content);
     const tabPanelID = tab.panelID || `${tab.id}-panel`;
     return /* @__PURE__ */ React.createElement(Tab, Object.assign({}, tab, {
-      key: `${index2}-${tab.id}`,
+      key: `${index}-${tab.id}`,
       id: tab.id,
       panelID: children ? tabPanelID : void 0,
       disabled: disabled || tab.disabled,
       siblingTabHasFocus: tabToFocus > -1,
-      focused: index2 === tabToFocus,
-      selected: index2 === selected,
+      focused: index === tabToFocus,
+      selected: index === selected,
       onAction: handleClick,
       accessibilityLabel: tab.accessibilityLabel,
       url: tab.url,
@@ -12527,14 +12506,14 @@ const Tabs = ({
       onToggleModal: handleToggleModal,
       onTogglePopover: handleTogglePopover,
       viewNames: viewNames2,
-      ref: index2 === selected ? selectedTabRef : null
+      ref: index === selected ? selectedTabRef : null
     }));
   }, [disabled, handleTabClick, tabs, children, selected, tabToFocus, handleToggleModal, handleTogglePopover]);
   const handleFocus = useCallback((event) => {
     const target = event.target;
-    const isItem = target.classList.contains(styles$k.Item);
+    const isItem = target.classList.contains(styles$j.Item);
     const isInNaturalDOMOrder = target.closest(`[data-tabs-focus-catchment]`) || isItem;
-    const isDisclosureActivator = target.classList.contains(styles$k.DisclosureActivator);
+    const isDisclosureActivator = target.classList.contains(styles$j.DisclosureActivator);
     if (isDisclosureActivator || !isInNaturalDOMOrder) {
       return;
     }
@@ -12546,9 +12525,9 @@ const Tabs = ({
     var _a2, _b, _c;
     const target = event.target;
     const relatedTarget = event.relatedTarget;
-    const isInNaturalDOMOrder = (_a2 = relatedTarget == null ? void 0 : relatedTarget.closest) == null ? void 0 : _a2.call(relatedTarget, `.${styles$k.Tabs}`);
-    const targetIsATab = (_c = (_b = target == null ? void 0 : target.classList) == null ? void 0 : _b.contains) == null ? void 0 : _c.call(_b, styles$k.Tab);
-    const focusReceiverIsAnItem = relatedTarget == null ? void 0 : relatedTarget.classList.contains(styles$k.Item);
+    const isInNaturalDOMOrder = (_a2 = relatedTarget == null ? void 0 : relatedTarget.closest) == null ? void 0 : _a2.call(relatedTarget, `.${styles$j.Tabs}`);
+    const targetIsATab = (_c = (_b = target == null ? void 0 : target.classList) == null ? void 0 : _b.contains) == null ? void 0 : _c.call(_b, styles$j.Tab);
+    const focusReceiverIsAnItem = relatedTarget == null ? void 0 : relatedTarget.classList.contains(styles$j.Item);
     if (!relatedTarget && !isTabModalOpen && !targetIsATab && !focusReceiverIsAnItem) {
       setState({
         tabToFocus: -1
@@ -12589,7 +12568,7 @@ const Tabs = ({
   }, [containerWidth, disclosureWidth, tabs, selected, tabWidths, setState]);
   const moveToSelectedTab = useCallback(() => {
     var _a2;
-    const activeButton = (_a2 = selectedTabRef.current) == null ? void 0 : _a2.querySelector(`.${styles$k["Tab-active"]}`);
+    const activeButton = (_a2 = selectedTabRef.current) == null ? void 0 : _a2.querySelector(`.${styles$j["Tab-active"]}`);
     if (activeButton) {
       moveToActiveTab(activeButton.offsetLeft);
     }
@@ -12692,16 +12671,16 @@ const Tabs = ({
   const tabsToShow = mdDown ? [...visibleTabs, ...hiddenTabs] : visibleTabs;
   const tabsMarkup = tabsToShow.sort((tabA, tabB) => tabA - tabB).filter((tabIndex) => tabs[tabIndex]).map((tabIndex) => renderTabMarkup(tabs[tabIndex], tabIndex));
   const disclosureActivatorVisible = visibleTabs.length < tabs.length && !mdDown;
-  const classname = classNames(styles$k.Tabs, fitted && styles$k.fitted, disclosureActivatorVisible && styles$k.fillSpace);
-  const wrapperClassNames = classNames(styles$k.Wrapper, canCreateNewView && styles$k.WrapperWithNewButton);
-  const disclosureTabClassName = classNames(styles$k.DisclosureTab, disclosureActivatorVisible && styles$k["DisclosureTab-visible"]);
-  const disclosureButtonClassName = classNames(styles$k.DisclosureActivator);
+  const classname = classNames(styles$j.Tabs, fitted && styles$j.fitted, disclosureActivatorVisible && styles$j.fillSpace);
+  const wrapperClassNames = classNames(styles$j.Wrapper, canCreateNewView && styles$j.WrapperWithNewButton);
+  const disclosureTabClassName = classNames(styles$j.DisclosureTab, disclosureActivatorVisible && styles$j["DisclosureTab-visible"]);
+  const disclosureButtonClassName = classNames(styles$j.DisclosureActivator);
   const disclosureButtonContent = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodySm",
     fontWeight: "medium"
   }, disclosureText ?? i18n.translate("Polaris.Tabs.toggleTabsLabel")), /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$k.IconWrap, disclosureActivatorVisible && showDisclosure && styles$k["IconWrap-open"])
+    className: classNames(styles$j.IconWrap, disclosureActivatorVisible && showDisclosure && styles$j["IconWrap-open"])
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: ChevronDownIcon,
     tone: "subdued"
@@ -12716,8 +12695,8 @@ const Tabs = ({
   const activator = disclosureButton;
   const disclosureTabs = hiddenTabs.map((tabIndex) => tabs[tabIndex]);
   const viewNames = tabs.map(({
-    content: content2
-  }) => content2);
+    content
+  }) => content);
   const tabMeasurer = /* @__PURE__ */ React.createElement(TabMeasurer, {
     tabToFocus,
     activator,
@@ -12748,20 +12727,20 @@ const Tabs = ({
     onToggleModal: handleToggleModal,
     tabIndexOverride: 0
   });
-  const panelMarkup = children ? tabs.map((_tab, index2) => {
-    return selected === index2 ? /* @__PURE__ */ React.createElement(Panel, {
-      id: tabs[index2].panelID || `${tabs[index2].id}-panel`,
-      tabID: tabs[index2].id,
-      key: tabs[index2].id
+  const panelMarkup = children ? tabs.map((_tab, index) => {
+    return selected === index ? /* @__PURE__ */ React.createElement(Panel, {
+      id: tabs[index].panelID || `${tabs[index].id}-panel`,
+      tabID: tabs[index].id,
+      key: tabs[index].id
     }, children) : /* @__PURE__ */ React.createElement(Panel, {
-      id: tabs[index2].panelID || `${tabs[index2].id}-panel`,
-      tabID: tabs[index2].id,
-      key: tabs[index2].id,
+      id: tabs[index].panelID || `${tabs[index].id}-panel`,
+      tabID: tabs[index].id,
+      key: tabs[index].id,
       hidden: true
     });
   }) : null;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$k.Outer
+    className: styles$j.Outer
   }, /* @__PURE__ */ React.createElement(Box, {
     padding: {
       md: "200"
@@ -12770,7 +12749,7 @@ const Tabs = ({
     className: wrapperClassNames,
     ref: scrollRef
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$k.ButtonWrapper,
+    className: styles$j.ButtonWrapper,
     ref: wrapRef
   }, /* @__PURE__ */ React.createElement("ul", {
     role: tabsMarkup.length > 0 ? "tablist" : void 0,
@@ -12796,7 +12775,7 @@ const Tabs = ({
     onClick: handleListTabClick,
     onKeyPress: handleKeyPress
   })))), canCreateNewView && tabsToShow.length > 0 ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$k.NewTab
+    className: styles$j.NewTab
   }, /* @__PURE__ */ React.createElement(CreateViewModal, {
     open: isNewViewModalActive,
     onClose: handleCloseNewViewModal,
@@ -12809,7 +12788,7 @@ const Tabs = ({
     }, newTab))
   })) : null))), panelMarkup);
 };
-var styles$j = {
+var styles$i = {
   "Layout": "Polaris-Layout",
   "Section": "Polaris-Layout__Section",
   "Section-fullWidth": "Polaris-Layout__Section--fullWidth",
@@ -12820,7 +12799,7 @@ var styles$j = {
   "AnnotationContent": "Polaris-Layout__AnnotationContent",
   "Annotation": "Polaris-Layout__Annotation"
 };
-var styles$i = {
+var styles$h = {
   "TextContainer": "Polaris-TextContainer",
   "spacingTight": "Polaris-TextContainer--spacingTight",
   "spacingLoose": "Polaris-TextContainer--spacingLoose"
@@ -12829,7 +12808,7 @@ function TextContainer({
   spacing,
   children
 }) {
-  const className = classNames(styles$i.TextContainer, spacing && styles$i[variationName("spacing", spacing)]);
+  const className = classNames(styles$h.TextContainer, spacing && styles$h[variationName("spacing", spacing)]);
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, children);
@@ -12845,11 +12824,11 @@ function AnnotatedSection({
     variant: "bodyMd"
   }, description) : description;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$j.AnnotatedSection
+    className: styles$i.AnnotatedSection
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$j.AnnotationWrapper
+    className: styles$i.AnnotationWrapper
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$j.Annotation
+    className: styles$i.Annotation
   }, /* @__PURE__ */ React.createElement(TextContainer, {
     spacing: "tight"
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -12859,14 +12838,14 @@ function AnnotatedSection({
   }, title), descriptionMarkup && /* @__PURE__ */ React.createElement(Box, {
     color: "text-secondary"
   }, descriptionMarkup))), /* @__PURE__ */ React.createElement("div", {
-    className: styles$j.AnnotationContent
+    className: styles$i.AnnotationContent
   }, children)));
 }
 function Section$1({
   children,
   variant
 }) {
-  const className = classNames(styles$j.Section, styles$j[`Section-${variant}`]);
+  const className = classNames(styles$i.Section, styles$i[`Section-${variant}`]);
   return /* @__PURE__ */ React.createElement("div", {
     className
   }, children);
@@ -12875,14 +12854,14 @@ const Layout = function Layout2({
   sectioned,
   children
 }) {
-  const content2 = sectioned ? /* @__PURE__ */ React.createElement(Section$1, null, children) : children;
+  const content = sectioned ? /* @__PURE__ */ React.createElement(Section$1, null, children) : children;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$j.Layout
-  }, content2);
+    className: styles$i.Layout
+  }, content);
 };
 Layout.AnnotatedSection = AnnotatedSection;
 Layout.Section = Section$1;
-var styles$h = {
+var styles$g = {
   "Tag": "Polaris-Tag",
   "disabled": "Polaris-Tag--disabled",
   "clickable": "Polaris-Tag--clickable",
@@ -12906,7 +12885,7 @@ function Tag({
 }) {
   const i18n = useI18n();
   const segmented = onRemove && url;
-  const className = classNames(styles$h.Tag, disabled && styles$h.disabled, onClick && styles$h.clickable, onRemove && styles$h.removable, url && !disabled && styles$h.linkable, segmented && styles$h.segmented, size && styles$h[variationName("size", size)]);
+  const className = classNames(styles$g.Tag, disabled && styles$g.disabled, onClick && styles$g.clickable, onRemove && styles$g.removable, url && !disabled && styles$g.linkable, segmented && styles$g.segmented, size && styles$g[variationName("size", size)]);
   let tagTitle = accessibilityLabel;
   if (!tagTitle) {
     tagTitle = typeof children === "string" ? children : void 0;
@@ -12917,7 +12896,7 @@ function Tag({
     truncate: true
   }, /* @__PURE__ */ React.createElement("span", {
     title: tagTitle,
-    className: styles$h.Text
+    className: styles$g.Text
   }, children));
   if (onClick) {
     return /* @__PURE__ */ React.createElement("button", {
@@ -12933,7 +12912,7 @@ function Tag({
   const removeButton = onRemove ? /* @__PURE__ */ React.createElement("button", {
     type: "button",
     "aria-label": ariaLabel,
-    className: classNames(styles$h.Button, segmented && styles$h.segmented),
+    className: classNames(styles$g.Button, segmented && styles$g.segmented),
     onClick: onRemove,
     onMouseUp: handleMouseUpByBlurring,
     disabled
@@ -12941,17 +12920,17 @@ function Tag({
     source: XSmallIcon
   })) : null;
   const tagContent = url && !disabled ? /* @__PURE__ */ React.createElement("a", {
-    className: classNames(styles$h.Link, segmented && styles$h.segmented),
+    className: classNames(styles$g.Link, segmented && styles$g.segmented),
     href: url
   }, tagText) : tagText;
   return /* @__PURE__ */ React.createElement("span", {
     className,
     "aria-disabled": disabled
   }, tagContent, size === "large" && /* @__PURE__ */ React.createElement("span", {
-    className: styles$h.overlay
+    className: styles$g.overlay
   }), removeButton);
 }
-var styles$g = {
+var styles$f = {
   "Link": "Polaris-Link",
   "monochrome": "Polaris-Link--monochrome",
   "removeUnderline": "Polaris-Link--removeUnderline"
@@ -12970,7 +12949,7 @@ function Link({
 }) {
   return /* @__PURE__ */ React.createElement(BannerContext.Consumer, null, (BannerContext2) => {
     const shouldBeMonochrome = monochrome || BannerContext2;
-    const className = classNames(styles$g.Link, shouldBeMonochrome && styles$g.monochrome, removeUnderline && styles$g.removeUnderline);
+    const className = classNames(styles$f.Link, shouldBeMonochrome && styles$f.monochrome, removeUnderline && styles$f.removeUnderline);
     return url ? /* @__PURE__ */ React.createElement(UnstyledLink, {
       onClick,
       className,
@@ -12990,7 +12969,7 @@ function Link({
     }, children);
   });
 }
-var styles$f = {
+var styles$e = {
   "List": "Polaris-List",
   "typeNumber": "Polaris-List--typeNumber",
   "Item": "Polaris-List__Item",
@@ -13000,7 +12979,7 @@ function Item$1({
   children
 }) {
   return /* @__PURE__ */ React.createElement("li", {
-    className: styles$f.Item
+    className: styles$e.Item
   }, children);
 }
 const List = function List2({
@@ -13008,7 +12987,7 @@ const List = function List2({
   gap = "loose",
   type = "bullet"
 }) {
-  const className = classNames(styles$f.List, gap && styles$f[variationName("spacing", gap)], type && styles$f[variationName("type", type)]);
+  const className = classNames(styles$e.List, gap && styles$e[variationName("spacing", gap)], type && styles$e[variationName("type", type)]);
   const ListElement = type === "bullet" ? "ul" : "ol";
   return /* @__PURE__ */ React.createElement(ListElement, {
     className
@@ -13018,7 +12997,7 @@ List.Item = Item$1;
 const NavigationContext = /* @__PURE__ */ createContext({
   location: ""
 });
-var styles$e = {
+var styles$d = {
   "Navigation": "Polaris-Navigation",
   "ContextControl": "Polaris-Navigation__ContextControl",
   "PrimaryNavigation": "Polaris-Navigation__PrimaryNavigation",
@@ -13088,16 +13067,16 @@ function SecondaryNavigation({
   const matchedItemPosition = subNavigationItems.findIndex((item) => isEqual(item, longestMatch));
   const hoveredItemPosition = subNavigationItems.findIndex((item) => isEqual(item, hoveredItem));
   return /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$e.SecondaryNavigation, showExpanded && styles$e.SecondaryNavigationOpen, !icon && styles$e["SecondaryNavigation-noIcon"])
+    className: classNames(styles$d.SecondaryNavigation, showExpanded && styles$d.SecondaryNavigationOpen, !icon && styles$d["SecondaryNavigation-noIcon"])
   }, /* @__PURE__ */ React.createElement(Collapsible, {
     id: secondaryNavigationId || uid,
     open: showExpanded,
     transition: false
   }, /* @__PURE__ */ React.createElement("ul", {
-    className: styles$e.List
-  }, subNavigationItems.map((item, index2) => {
+    className: styles$d.List
+  }, subNavigationItems.map((item, index) => {
     const {
-      label: label2,
+      label,
       ...rest
     } = item;
     const onClick = () => {
@@ -13106,13 +13085,13 @@ function SecondaryNavigation({
         item.onClick();
       }
     };
-    const shouldShowVerticalLine = index2 < matchedItemPosition;
+    const shouldShowVerticalLine = index < matchedItemPosition;
     return /* @__PURE__ */ React.createElement(ItemComponent, Object.assign({
-      key: label2
+      key: label
     }, rest, {
-      label: label2,
+      label,
       showVerticalLine: shouldShowVerticalLine,
-      showVerticalHoverPointer: index2 === hoveredItemPosition,
+      showVerticalHoverPointer: index === hoveredItemPosition,
       level: 1,
       onMouseEnter: item.disabled ? void 0 : () => setHoveredItem(item),
       onMouseLeave: item.disabled ? void 0 : () => setHoveredItem(void 0),
@@ -13128,7 +13107,7 @@ function Item2({
   url,
   icon: baseIcon,
   matchedItemIcon,
-  label: label2,
+  label,
   subNavigationItems = [],
   secondaryAction,
   secondaryActions,
@@ -13179,7 +13158,7 @@ function Item2({
   const tabIndex = disabled ? -1 : 0;
   const hasNewChild = subNavigationItems.filter((subNavigationItem) => subNavigationItem.new).length > 0;
   const indicatorMarkup = hasNewChild ? /* @__PURE__ */ React.createElement("span", {
-    className: styles$e.Indicator
+    className: styles$d.Indicator
   }, /* @__PURE__ */ React.createElement(Indicator, {
     pulse: true
   })) : null;
@@ -13198,7 +13177,7 @@ function Item2({
   const selected = selectedOverride == null ? matchState === MatchState.MatchForced || matchState === MatchState.MatchUrl || matchState === MatchState.MatchPaths : selectedOverride;
   const icon = selected || childIsActive ? matchedItemIcon ?? baseIcon : baseIcon;
   const iconMarkup = icon ? /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$e.Icon, shouldResizeIcon && styles$e["Icon-resized"])
+    className: classNames(styles$d.Icon, shouldResizeIcon && styles$d["Icon-resized"])
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: icon
   })) : null;
@@ -13215,7 +13194,7 @@ function Item2({
     badgeMarkup = badge;
   }
   const wrappedBadgeMarkup = badgeMarkup == null ? null : /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.Badge
+    className: styles$d.Badge
   }, badgeMarkup);
   const tone = !showVerticalHoverPointer && !matches2 && level !== 0 ? "subdued" : void 0;
   let fontWeight = "regular";
@@ -13225,22 +13204,22 @@ function Item2({
     fontWeight = "medium";
   }
   const itemLabelMarkup = /* @__PURE__ */ React.createElement("span", {
-    className: classNames(styles$e.Text, truncateText && styles$e["Text-truncated"]),
+    className: classNames(styles$d.Text, truncateText && styles$d["Text-truncated"]),
     ref: navTextRef
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodyMd",
     tone,
     fontWeight
-  }, label2), indicatorMarkup);
+  }, label), indicatorMarkup);
   if (url == null) {
-    const className2 = classNames(styles$e.Item, disabled && styles$e["Item-disabled"], selectedOverride && styles$e["Item-selected"]);
+    const className2 = classNames(styles$d.Item, disabled && styles$d["Item-disabled"], selectedOverride && styles$d["Item-selected"]);
     return /* @__PURE__ */ React.createElement("li", {
-      className: styles$e.ListItem
+      className: styles$d.ListItem
     }, /* @__PURE__ */ React.createElement("div", {
-      className: styles$e.ItemWrapper
+      className: styles$d.ItemWrapper
     }, /* @__PURE__ */ React.createElement("div", {
-      className: classNames(styles$e.ItemInnerWrapper, disabled && styles$e.ItemInnerDisabled, selectedOverride && styles$e["ItemInnerWrapper-selected"])
+      className: classNames(styles$d.ItemInnerWrapper, disabled && styles$d.ItemInnerDisabled, selectedOverride && styles$d["ItemInnerWrapper-selected"])
     }, /* @__PURE__ */ React.createElement("button", {
       type: "button",
       className: className2,
@@ -13261,7 +13240,7 @@ function Item2({
     }
   }
   const secondaryActionMarkup = (actions == null ? void 0 : actions.length) ? /* @__PURE__ */ React.createElement("span", {
-    className: styles$e.SecondaryActions
+    className: styles$d.SecondaryActions
   }, actions.map((action2) => /* @__PURE__ */ React.createElement(ItemSecondaryAction, Object.assign({
     key: action2.accessibilityLabel
   }, action2, {
@@ -13271,7 +13250,7 @@ function Item2({
   const itemContentMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, iconMarkup, itemLabelMarkup, secondaryActionMarkup ? null : wrappedBadgeMarkup);
   const outerContentMarkup = /* @__PURE__ */ React.createElement(React.Fragment, null, secondaryActionMarkup ? wrappedBadgeMarkup : null);
   const showExpanded = selected || expanded || childIsActive;
-  const itemClassName = classNames(styles$e.Item, disabled && styles$e["Item-disabled"], (selected || childIsActive) && styles$e["Item-selected"], showExpanded && styles$e.subNavigationActive, childIsActive && styles$e["Item-child-active"], showVerticalLine && styles$e["Item-line"], matches2 && styles$e["Item-line-pointer"], showVerticalHoverPointer && styles$e["Item-hover-pointer"]);
+  const itemClassName = classNames(styles$d.Item, disabled && styles$d["Item-disabled"], (selected || childIsActive) && styles$d["Item-selected"], showExpanded && styles$d.subNavigationActive, childIsActive && styles$d["Item-child-active"], showVerticalLine && styles$d["Item-line"], matches2 && styles$d["Item-line-pointer"], showVerticalHoverPointer && styles$d["Item-hover-pointer"]);
   let secondaryNavigationMarkup = null;
   if (subNavigationItems.length > 0) {
     const longestMatch = matchingSubNavigationItems.sort(({
@@ -13289,7 +13268,7 @@ function Item2({
       secondaryNavigationId
     });
   }
-  const className = classNames(styles$e.ListItem, Boolean(actions && actions.length) && styles$e["ListItem-hasAction"]);
+  const className = classNames(styles$d.ListItem, Boolean(actions && actions.length) && styles$d["ListItem-hasAction"]);
   const itemLinkMarkup = () => {
     const linkMarkup = /* @__PURE__ */ React.createElement(UnstyledLink, Object.assign({
       url,
@@ -13302,22 +13281,22 @@ function Item2({
     }, normalizeAriaAttributes(secondaryNavigationId, subNavigationItems.length > 0, showExpanded)), itemContentMarkup);
     return isTruncated ? /* @__PURE__ */ React.createElement(Tooltip, {
       hoverDelay: TOOLTIP_HOVER_DELAY,
-      content: label2,
+      content: label,
       preferredPosition: "above"
     }, linkMarkup) : linkMarkup;
   };
   return /* @__PURE__ */ React.createElement("li", {
     className,
     onMouseEnter: () => {
-      onMouseEnter == null ? void 0 : onMouseEnter(label2);
+      onMouseEnter == null ? void 0 : onMouseEnter(label);
     },
     onMouseLeave
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.ItemWrapper
+    className: styles$d.ItemWrapper
   }, /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$e.ItemInnerWrapper, selected && childIsActive && styles$e["ItemInnerWrapper-open"] || selected && !childIsActive && styles$e["ItemInnerWrapper-selected"], displayActionsOnHover && styles$e["ItemInnerWrapper-display-actions-on-hover"], disabled && styles$e.ItemInnerDisabled)
+    className: classNames(styles$d.ItemInnerWrapper, selected && childIsActive && styles$d["ItemInnerWrapper-open"] || selected && !childIsActive && styles$d["ItemInnerWrapper-selected"], displayActionsOnHover && styles$d["ItemInnerWrapper-display-actions-on-hover"], disabled && styles$d.ItemInnerDisabled)
   }, displayActionsOnHover && secondaryActionMarkup && wrappedBadgeMarkup ? /* @__PURE__ */ React.createElement("span", {
-    className: styles$e.ItemWithFloatingActions
+    className: styles$d.ItemWithFloatingActions
   }, itemLinkMarkup(), secondaryActionMarkup) : /* @__PURE__ */ React.createElement(React.Fragment, null, itemLinkMarkup(), secondaryActionMarkup), outerContentMarkup)), secondaryNavigationMarkup);
   function getClickHandler(onClick2) {
     return (event) => {
@@ -13355,7 +13334,7 @@ function ItemSecondaryAction({
   const markup = url ? /* @__PURE__ */ React.createElement(UnstyledLink, {
     external: true,
     url,
-    className: styles$e.SecondaryAction,
+    className: styles$d.SecondaryAction,
     tabIndex,
     "aria-disabled": disabled,
     "aria-label": accessibilityLabel,
@@ -13363,7 +13342,7 @@ function ItemSecondaryAction({
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: icon
   })) : /* @__PURE__ */ React.createElement(UnstyledButton, {
-    className: styles$e.SecondaryAction,
+    className: styles$d.SecondaryAction,
     tabIndex,
     disabled,
     accessibilityLabel,
@@ -13447,10 +13426,10 @@ function Section({
       animationFrame.current && cancelAnimationFrame(animationFrame.current);
     };
   });
-  const className = classNames(styles$e.Section, separator && styles$e["Section-withSeparator"], fill && styles$e["Section-fill"]);
+  const className = classNames(styles$d.Section, separator && styles$d["Section-withSeparator"], fill && styles$d["Section-fill"]);
   const buttonMarkup = action2 && /* @__PURE__ */ React.createElement("button", {
     type: "button",
-    className: styles$e.Action,
+    className: styles$d.Action,
     "aria-label": action2.accessibilityLabel,
     onClick: action2.onClick
   }, /* @__PURE__ */ React.createElement(Icon, {
@@ -13458,54 +13437,54 @@ function Section({
   }));
   const actionMarkup = action2 && (action2.tooltip ? /* @__PURE__ */ React.createElement(Tooltip, action2.tooltip, buttonMarkup) : buttonMarkup);
   const sectionHeadingMarkup = title && /* @__PURE__ */ React.createElement("li", {
-    className: styles$e.SectionHeading
+    className: styles$d.SectionHeading
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "span",
     variant: "bodySm",
     fontWeight: "medium",
     tone: "subdued"
   }, title), actionMarkup);
-  const itemsMarkup = items.map((item, index2) => {
+  const itemsMarkup = items.map((item, index) => {
     const {
       onClick,
-      label: label2,
+      label,
       subNavigationItems,
       ...rest
     } = item;
     const hasSubNavItems = subNavigationItems != null && subNavigationItems.length > 0;
     const handleToggleExpandedState = () => {
-      if (expandedIndex === index2) {
+      if (expandedIndex === index) {
         setExpandedIndex(-1);
       } else {
-        setExpandedIndex(index2);
+        setExpandedIndex(index);
       }
     };
     return /* @__PURE__ */ React.createElement(Item2, Object.assign({
-      key: label2
+      key: label
     }, rest, {
-      label: label2,
+      label,
       subNavigationItems,
       onClick: handleClick(onClick, hasSubNavItems),
       onToggleExpandedState: handleToggleExpandedState,
-      expanded: expandedIndex === index2
+      expanded: expandedIndex === index
     }));
   });
-  const toggleClassName = classNames(styles$e.Item, styles$e.RollupToggle);
+  const toggleClassName = classNames(styles$d.Item, styles$d.RollupToggle);
   const ariaLabel = rollup && (expanded ? rollup.hide : rollup.view);
   const toggleRollup = rollup && items.length > rollup.after && /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.ListItem,
+    className: styles$d.ListItem,
     key: "List Item"
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.ItemWrapper
+    className: styles$d.ItemWrapper
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.ItemInnerWrapper
+    className: styles$d.ItemInnerWrapper
   }, /* @__PURE__ */ React.createElement("button", {
     type: "button",
     className: toggleClassName,
     onClick: toggleExpanded,
     "aria-label": ariaLabel
   }, /* @__PURE__ */ React.createElement("span", {
-    className: styles$e.Icon
+    className: styles$d.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: MenuHorizontalIcon
   }))))));
@@ -13524,12 +13503,12 @@ function Section({
   }
   const additionalItemsId = useId();
   const activeItemsMarkup = rollup && additionalItems.length > 0 && /* @__PURE__ */ React.createElement("li", {
-    className: styles$e.RollupSection
+    className: styles$d.RollupSection
   }, /* @__PURE__ */ React.createElement(Collapsible, {
     id: additionalItemsId,
     open: expanded
   }, /* @__PURE__ */ React.createElement("ul", {
-    className: styles$e.List
+    className: styles$d.List
   }, additionalItems)), toggleRollup);
   return /* @__PURE__ */ React.createElement("ul", {
     className
@@ -13548,23 +13527,23 @@ const Navigation$1 = function Navigation({
   } = useFrame();
   const width = getWidth(logo, 104);
   const logoMarkup = logo ? /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$e.LogoContainer, logoSuffix && styles$e.hasLogoSuffix)
+    className: classNames(styles$d.LogoContainer, logoSuffix && styles$d.hasLogoSuffix)
   }, /* @__PURE__ */ React.createElement(UnstyledLink, {
     url: logo.url || "",
-    className: styles$e.LogoLink,
+    className: styles$d.LogoLink,
     style: {
       width
     }
   }, /* @__PURE__ */ React.createElement(Image, {
     source: logo.topBarSource || "",
     alt: logo.accessibilityLabel || "",
-    className: styles$e.Logo,
+    className: styles$d.Logo,
     style: {
       width
     }
   })), logoSuffix) : null;
   const mediaMarkup = contextControl ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$e.ContextControl
+    className: styles$d.ContextControl
   }, contextControl) : logoMarkup;
   const context = useMemo(() => ({
     location,
@@ -13575,10 +13554,10 @@ const Navigation$1 = function Navigation({
   }, /* @__PURE__ */ React.createElement(WithinContentContext.Provider, {
     value: true
   }, /* @__PURE__ */ React.createElement("nav", {
-    className: styles$e.Navigation,
+    className: styles$d.Navigation,
     "aria-labelledby": ariaLabelledBy
   }, mediaMarkup, /* @__PURE__ */ React.createElement(Scrollable, {
-    className: styles$e.PrimaryNavigation
+    className: styles$d.PrimaryNavigation
   }, children))));
 };
 Navigation$1.Item = Item2;
@@ -13589,13 +13568,13 @@ function isInterface(x) {
 function isReactElement(x) {
   return /* @__PURE__ */ isValidElement(x) && x !== void 0;
 }
-var styles$d = {
+var styles$c = {
   "Page": "Polaris-Page",
   "fullWidth": "Polaris-Page--fullWidth",
   "narrowWidth": "Polaris-Page--narrowWidth",
   "Content": "Polaris-Page__Content"
 };
-var styles$c = {
+var styles$b = {
   "TitleWrapper": "Polaris-Page-Header__TitleWrapper",
   "TitleWrapperExpand": "Polaris-Page-Header__TitleWrapperExpand",
   "BreadcrumbWrapper": "Polaris-Page-Header__BreadcrumbWrapper",
@@ -13611,7 +13590,7 @@ var styles$c = {
   "mediumTitle": "Polaris-Page-Header--mediumTitle",
   "isSingleRow": "Polaris-Page-Header--isSingleRow"
 };
-var styles$b = {
+var styles$a = {
   "Title": "Polaris-Header-Title",
   "TitleWithSubtitle": "Polaris-Header-Title__TitleWithSubtitle",
   "TitleWrapper": "Polaris-Header-Title__TitleWrapper",
@@ -13626,7 +13605,7 @@ function Title({
   compactTitle,
   hasSubtitleMaxWidth
 }) {
-  const className = classNames(styles$b.Title, subtitle && styles$b.TitleWithSubtitle);
+  const className = classNames(styles$a.Title, subtitle && styles$a.TitleWithSubtitle);
   const titleMarkup = title ? /* @__PURE__ */ React.createElement("h1", {
     className
   }, /* @__PURE__ */ React.createElement(Text, {
@@ -13638,10 +13617,10 @@ function Title({
     marginBlock: "100"
   }, titleMetadata) : null;
   const wrappedTitleMarkup = /* @__PURE__ */ React.createElement("div", {
-    className: styles$b.TitleWrapper
+    className: styles$a.TitleWrapper
   }, titleMarkup, titleMetadataMarkup);
   const subtitleMarkup = subtitle ? /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$b.SubTitle, compactTitle && styles$b.SubtitleCompact, hasSubtitleMaxWidth && styles$b.SubtitleMaxWidth)
+    className: classNames(styles$a.SubTitle, compactTitle && styles$a.SubtitleCompact, hasSubtitleMaxWidth && styles$a.SubtitleMaxWidth)
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "p",
     variant: "bodySm",
@@ -13675,7 +13654,7 @@ function Header({
   const isSingleRow = !primaryAction && !pagination && (isInterface(secondaryActions) && !secondaryActions.length || isReactElement(secondaryActions)) && !actionGroups.length;
   const hasActionGroupsOrSecondaryActions = actionGroups.length > 0 || isInterface(secondaryActions) && secondaryActions.length > 0 || isReactElement(secondaryActions);
   const breadcrumbMarkup = backAction ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.BreadcrumbWrapper
+    className: styles$b.BreadcrumbWrapper
   }, /* @__PURE__ */ React.createElement(Box, {
     maxWidth: "100%",
     paddingInlineEnd: "100",
@@ -13684,7 +13663,7 @@ function Header({
     backAction
   }))) : null;
   const paginationMarkup = pagination && !isNavigationCollapsed ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.PaginationWrapper
+    className: styles$b.PaginationWrapper
   }, /* @__PURE__ */ React.createElement(Box, {
     printHidden: true
   }, /* @__PURE__ */ React.createElement(Pagination, Object.assign({}, pagination, {
@@ -13692,7 +13671,7 @@ function Header({
     hasNext: pagination.hasNext
   })))) : null;
   const pageTitleMarkup = /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$c.TitleWrapper, !hasActionGroupsOrSecondaryActions && styles$c.TitleWrapperExpand)
+    className: classNames(styles$b.TitleWrapper, !hasActionGroupsOrSecondaryActions && styles$b.TitleWrapperExpand)
   }, /* @__PURE__ */ React.createElement(Title, {
     title,
     subtitle,
@@ -13736,13 +13715,13 @@ function Header({
     blockAlign: "center"
   }, breadcrumbMarkup, paginationMarkup)) : null;
   const additionalMetadataMarkup = additionalMetadata ? /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.AdditionalMetaData
+    className: styles$b.AdditionalMetaData
   }, /* @__PURE__ */ React.createElement(Text, {
     tone: "subdued",
     as: "span",
     variant: "bodySm"
   }, additionalMetadata)) : null;
-  const headerClassNames = classNames(isSingleRow && styles$c.isSingleRow, navigationMarkup && styles$c.hasNavigation, actionMenuMarkup && styles$c.hasActionMenu, isNavigationCollapsed && styles$c.mobileView, !backAction && styles$c.noBreadcrumbs, title && title.length < LONG_TITLE && styles$c.mediumTitle, title && title.length > LONG_TITLE && styles$c.longTitle);
+  const headerClassNames = classNames(isSingleRow && styles$b.isSingleRow, navigationMarkup && styles$b.hasNavigation, actionMenuMarkup && styles$b.hasActionMenu, isNavigationCollapsed && styles$b.mobileView, !backAction && styles$b.noBreadcrumbs, title && title.length < LONG_TITLE && styles$b.mediumTitle, title && title.length > LONG_TITLE && styles$b.longTitle);
   const {
     slot1,
     slot2,
@@ -13785,20 +13764,20 @@ function Header({
   }, /* @__PURE__ */ React.createElement(ConditionalRender, {
     condition: [slot1, slot2, slot3, slot4].some(notNull)
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.Row
+    className: styles$b.Row
   }, slot1, slot2, /* @__PURE__ */ React.createElement(ConditionalRender, {
     condition: [slot3, slot4].some(notNull)
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.RightAlign
+    className: styles$b.RightAlign
   }, /* @__PURE__ */ React.createElement(ConditionalWrapper, {
     condition: [slot3, slot4].every(notNull),
     wrapper: (children) => /* @__PURE__ */ React.createElement("div", {
-      className: styles$c.Actions
+      className: styles$b.Actions
     }, children)
   }, slot3, slot4))))), /* @__PURE__ */ React.createElement(ConditionalRender, {
     condition: [slot5].some(notNull)
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.Row
+    className: styles$b.Row
   }, /* @__PURE__ */ React.createElement(InlineStack, {
     gap: "400"
   }, slot5))))));
@@ -13816,24 +13795,24 @@ function PrimaryActionMarkup({
       helpText
     } = primaryAction;
     const primary = isPrimary === void 0 ? true : isPrimary;
-    const content2 = buttonFrom(shouldShowIconOnly(isNavigationCollapsed, primaryAction), {
+    const content = buttonFrom(shouldShowIconOnly(isNavigationCollapsed, primaryAction), {
       variant: primary ? "primary" : void 0
     });
     actionMarkup = helpText ? /* @__PURE__ */ React.createElement(Tooltip, {
       content: helpText
-    }, content2) : content2;
+    }, content) : content;
   } else {
     actionMarkup = primaryAction;
   }
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$c.PrimaryActionWrapper
+    className: styles$b.PrimaryActionWrapper
   }, /* @__PURE__ */ React.createElement(Box, {
     printHidden: true
   }, actionMarkup));
 }
 function shouldShowIconOnly(isMobile, action2) {
   let {
-    content: content2,
+    content,
     accessibilityLabel
   } = action2;
   const {
@@ -13844,12 +13823,12 @@ function shouldShowIconOnly(isMobile, action2) {
     icon: void 0
   };
   if (isMobile) {
-    accessibilityLabel = accessibilityLabel || content2;
-    content2 = void 0;
+    accessibilityLabel = accessibilityLabel || content;
+    content = void 0;
   }
   return {
     ...action2,
-    content: content2,
+    content,
     accessibilityLabel,
     icon
   };
@@ -13918,9 +13897,9 @@ function Page$5({
   narrowWidth,
   ...rest
 }) {
-  const pageClassName = classNames(styles$d.Page, fullWidth && styles$d.fullWidth, narrowWidth && styles$d.narrowWidth);
+  const pageClassName = classNames(styles$c.Page, fullWidth && styles$c.fullWidth, narrowWidth && styles$c.narrowWidth);
   const hasHeaderContent = rest.title != null && rest.title !== "" || rest.subtitle != null && rest.subtitle !== "" || rest.primaryAction != null || rest.secondaryActions != null && (isInterface(rest.secondaryActions) && rest.secondaryActions.length > 0 || isReactElement(rest.secondaryActions)) || rest.actionGroups != null && rest.actionGroups.length > 0 || rest.backAction != null;
-  const contentClassName = classNames(!hasHeaderContent && styles$d.Content);
+  const contentClassName = classNames(!hasHeaderContent && styles$c.Content);
   const headerMarkup = hasHeaderContent ? /* @__PURE__ */ React.createElement(Header, Object.assign({
     filterActions: true
   }, rest)) : null;
@@ -13930,7 +13909,7 @@ function Page$5({
     className: contentClassName
   }, children));
 }
-var styles$a = {
+var styles$9 = {
   "Select": "Polaris-Select",
   "disabled": "Polaris-Select--disabled",
   "error": "Polaris-Select--error",
@@ -13947,7 +13926,7 @@ var styles$a = {
 const PLACEHOLDER_VALUE = "";
 function Select({
   options: optionsProp,
-  label: label2,
+  label,
   labelAction,
   labelHidden: labelHiddenProp,
   labelInline,
@@ -13971,7 +13950,7 @@ function Select({
   const uniqId = useId();
   const id = idProp ?? uniqId;
   const labelHidden = labelInline ? true : labelHiddenProp;
-  const className = classNames(styles$a.Select, error && styles$a.error, tone && styles$a[variationName("tone", tone)], disabled && styles$a.disabled);
+  const className = classNames(styles$9.Select, error && styles$9.error, tone && styles$9[variationName("tone", tone)], disabled && styles$9.disabled);
   const handleFocus = useCallback((event) => {
     toggleFocused();
     onFocus == null ? void 0 : onFocus(event);
@@ -14004,26 +13983,26 @@ function Select({
     variant: "bodyMd",
     tone: tone && tone === "magic" && !focused ? "magic-subdued" : "subdued",
     truncate: true
-  }, label2));
+  }, label));
   const selectedOption = getSelectedOption(normalizedOptions, value);
   const prefixMarkup = selectedOption.prefix && /* @__PURE__ */ React.createElement("div", {
-    className: styles$a.Prefix
+    className: styles$9.Prefix
   }, selectedOption.prefix);
   const contentMarkup = /* @__PURE__ */ React.createElement("div", {
-    className: styles$a.Content,
+    className: styles$9.Content,
     "aria-hidden": true,
     "aria-disabled": disabled
   }, inlineLabelMarkup, prefixMarkup, /* @__PURE__ */ React.createElement("span", {
-    className: styles$a.SelectedOption
+    className: styles$9.SelectedOption
   }, selectedOption.label), /* @__PURE__ */ React.createElement("span", {
-    className: styles$a.Icon
+    className: styles$9.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: SelectIcon
   })));
   const optionsMarkup = normalizedOptions.map(renderOption);
   return /* @__PURE__ */ React.createElement(Labelled, {
     id,
-    label: label2,
+    label,
     error,
     action: labelAction,
     labelHidden,
@@ -14036,7 +14015,7 @@ function Select({
     id,
     name,
     value,
-    className: styles$a.Input,
+    className: styles$9.Input,
     disabled,
     onFocus: handleFocus,
     onBlur: handleBlur,
@@ -14045,7 +14024,7 @@ function Select({
     "aria-describedby": describedBy.length ? describedBy.join(" ") : void 0,
     "aria-required": requiredIndicator
   }, optionsMarkup), contentMarkup, /* @__PURE__ */ React.createElement("div", {
-    className: styles$a.Backdrop
+    className: styles$9.Backdrop
   })));
 }
 function isString(option) {
@@ -14102,7 +14081,7 @@ function flattenOptions(options2) {
 function renderSingleOption(option) {
   const {
     value,
-    label: label2,
+    label,
     prefix: _prefix,
     key,
     ...rest
@@ -14110,7 +14089,7 @@ function renderSingleOption(option) {
   return /* @__PURE__ */ React.createElement("option", Object.assign({
     key: key ?? value,
     value
-  }, rest), label2);
+  }, rest), label);
 }
 function renderOption(optionOrGroup) {
   if (isGroup(optionOrGroup)) {
@@ -14125,7 +14104,7 @@ function renderOption(optionOrGroup) {
   }
   return renderSingleOption(optionOrGroup);
 }
-var styles$9 = {
+var styles$8 = {
   "TopBar": "Polaris-TopBar",
   "Container": "Polaris-TopBar__Container",
   "LogoDisplayControl": "Polaris-TopBar__LogoDisplayControl",
@@ -14143,13 +14122,13 @@ var styles$9 = {
   "RightContent": "Polaris-TopBar__RightContent",
   "SecondaryMenu": "Polaris-TopBar__SecondaryMenu"
 };
-var styles$8 = {
+var styles$7 = {
   "Search": "Polaris-TopBar-Search",
   "SearchContent": "Polaris-TopBar-Search__SearchContent",
   "visible": "Polaris-TopBar-Search--visible",
   "Results": "Polaris-TopBar-Search__Results"
 };
-var styles$7 = {
+var styles$6 = {
   "SearchDismissOverlay": "Polaris-TopBar-SearchDismissOverlay",
   "visible": "Polaris-TopBar-SearchDismissOverlay--visible"
 };
@@ -14167,7 +14146,7 @@ function SearchDismissOverlay({
   }, [onDismiss]);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, visible ? /* @__PURE__ */ React.createElement(ScrollLock, null) : null, /* @__PURE__ */ React.createElement("div", {
     ref: node,
-    className: classNames(styles$7.SearchDismissOverlay, visible && styles$7.visible),
+    className: classNames(styles$6.SearchDismissOverlay, visible && styles$6.visible),
     onClick: handleDismiss
   }));
 }
@@ -14185,14 +14164,14 @@ function Search({
     visible: overlayVisible
   }) : null;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, overlayMarkup, /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$8.Search, visible && styles$8.visible)
+    className: classNames(styles$7.Search, visible && styles$7.visible)
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$8.SearchContent
+    className: styles$7.SearchContent
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$8.Results
+    className: styles$7.Results
   }, children))));
 }
-var styles$6 = {
+var styles$5 = {
   "SearchField": "Polaris-TopBar-SearchField",
   "focused": "Polaris-TopBar-SearchField--focused",
   "Input": "Polaris-TopBar-SearchField__Input",
@@ -14214,7 +14193,7 @@ function SearchField({
 }) {
   const i18n = useI18n();
   const [forceActive, setForceActive] = useState(false);
-  const input2 = useRef(null);
+  const input = useRef(null);
   const searchId = useId();
   const handleChange = useCallback(({
     currentTarget
@@ -14225,27 +14204,27 @@ function SearchField({
   const handleBlur = useCallback(() => onBlur && onBlur(), [onBlur]);
   const handleClear = useCallback(() => {
     onCancel && onCancel();
-    if (!input2.current) {
+    if (!input.current) {
       return;
     }
-    input2.current.value = "";
+    input.current.value = "";
     onChange("");
-    input2.current.focus();
+    input.current.focus();
   }, [onCancel, onChange]);
   useEffect(() => {
-    if (!input2.current) {
+    if (!input.current) {
       return;
     }
     if (focused) {
-      input2.current.focus();
+      input.current.focus();
     } else {
-      input2.current.blur();
+      input.current.blur();
     }
   }, [focused]);
   const clearMarkup = value !== "" && /* @__PURE__ */ React.createElement("button", {
     type: "button",
     "aria-label": i18n.translate("Polaris.TopBar.SearchField.clearButtonLabel"),
-    className: styles$6.Clear,
+    className: styles$5.Clear,
     onClick: handleClear,
     onBlur: () => {
       setForceActive(false);
@@ -14258,7 +14237,7 @@ function SearchField({
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: XCircleIcon
   }));
-  const className = classNames(styles$6.SearchField, (focused || active || forceActive) && styles$6.focused);
+  const className = classNames(styles$5.SearchField, (focused || active || forceActive) && styles$5.focused);
   return /* @__PURE__ */ React.createElement("div", {
     className,
     onFocus: handleFocus,
@@ -14270,22 +14249,22 @@ function SearchField({
     htmlFor: searchId
   }, i18n.translate("Polaris.TopBar.SearchField.search"))), /* @__PURE__ */ React.createElement("input", {
     id: searchId,
-    className: styles$6.Input,
+    className: styles$5.Input,
     placeholder,
     type: "search",
     autoCapitalize: "off",
     autoComplete: "off",
     autoCorrect: "off",
-    ref: input2,
+    ref: input,
     value,
     onChange: handleChange,
     onKeyDown: preventDefault
   }), /* @__PURE__ */ React.createElement("span", {
-    className: styles$6.Icon
+    className: styles$5.Icon
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: SearchIcon
   })), clearMarkup, /* @__PURE__ */ React.createElement("div", {
-    className: classNames(styles$6.Backdrop, showFocusBorder && styles$6.BackdropShowFocusBorder)
+    className: classNames(styles$5.Backdrop, showFocusBorder && styles$5.BackdropShowFocusBorder)
   }));
 }
 function preventDefault(event) {
@@ -14293,10 +14272,10 @@ function preventDefault(event) {
     event.preventDefault();
   }
 }
-var styles$5 = {
+var styles$4 = {
   "Details": "Polaris-TopBar-UserMenu__Details"
 };
-var styles$4 = {
+var styles$3 = {
   "MessageIndicatorWrapper": "Polaris-MessageIndicator__MessageIndicatorWrapper",
   "MessageIndicator": "Polaris-MessageIndicator"
 };
@@ -14305,18 +14284,18 @@ function MessageIndicator({
   active
 }) {
   const indicatorMarkup = active && /* @__PURE__ */ React.createElement("div", {
-    className: styles$4.MessageIndicator
+    className: styles$3.MessageIndicator
   });
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$4.MessageIndicatorWrapper
+    className: styles$3.MessageIndicatorWrapper
   }, indicatorMarkup, children);
 }
-var styles$3 = {
+var styles$2 = {
   "ActivatorWrapper": "Polaris-TopBar-Menu__ActivatorWrapper",
   "Activator": "Polaris-TopBar-Menu__Activator",
   "Activator-userMenu": "Polaris-TopBar-Menu__Activator--userMenu"
 };
-var styles$2 = {
+var styles$1 = {
   "Section": "Polaris-Menu-Message__Section"
 };
 function Message({
@@ -14338,7 +14317,7 @@ function Message({
     content: actionContent
   } = action2;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$2.Section
+    className: styles$1.Section
   }, /* @__PURE__ */ React.createElement(Popover2.Section, null, /* @__PURE__ */ React.createElement(LegacyStack, {
     vertical: true,
     spacing: "tight"
@@ -14383,10 +14362,10 @@ function Menu(props) {
   });
   return /* @__PURE__ */ React.createElement(Popover2, {
     activator: /* @__PURE__ */ React.createElement("div", {
-      className: styles$3.ActivatorWrapper
+      className: styles$2.ActivatorWrapper
     }, /* @__PURE__ */ React.createElement("button", {
       type: "button",
-      className: classNames(styles$3.Activator, userMenu && styles$3["Activator-userMenu"]),
+      className: classNames(styles$2.Activator, userMenu && styles$2["Activator-userMenu"]),
       onClick: onOpen,
       "aria-label": accessibilityLabel
     }, activatorContent)),
@@ -14396,7 +14375,7 @@ function Menu(props) {
     fullHeight: true,
     preferredAlignment: "right"
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$3.MenuItems
+    className: styles$2.MenuItems
   }, /* @__PURE__ */ React.createElement(Box, {
     width: customWidth
   }, /* @__PURE__ */ React.createElement(ActionList, {
@@ -14420,7 +14399,7 @@ function UserMenu({
 }) {
   const showIndicator = Boolean(message);
   const activatorContentMarkup = customActivator ? customActivator : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
-    className: styles$5.Details
+    className: styles$4.Details
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "p",
     variant: "bodySm",
@@ -14428,7 +14407,7 @@ function UserMenu({
     fontWeight: "medium",
     truncate: true
   }, name), /* @__PURE__ */ React.createElement("span", {
-    className: styles$5.Message
+    className: styles$4.Message
   }, /* @__PURE__ */ React.createElement(Text, {
     as: "p",
     variant: "bodyXs",
@@ -14477,7 +14456,7 @@ const TopBar = function TopBar2({
     setTrue: forceTrueFocused,
     setFalse: forceFalseFocused
   } = useToggle(false);
-  const iconClassName = classNames(styles$9.NavigationIcon, focused && styles$9.focused);
+  const iconClassName = classNames(styles$8.NavigationIcon, focused && styles$8.focused);
   const navigationButtonMarkup = showNavigationToggle ? /* @__PURE__ */ React.createElement("button", {
     type: "button",
     className: iconClassName,
@@ -14486,7 +14465,7 @@ const TopBar = function TopBar2({
     onBlur: forceFalseFocused,
     "aria-label": i18n.translate("Polaris.TopBar.toggleMenuLabel")
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.IconWrapper
+    className: styles$8.IconWrapper
   }, /* @__PURE__ */ React.createElement(Icon, {
     source: MenuIcon
   }))) : null;
@@ -14494,22 +14473,22 @@ const TopBar = function TopBar2({
   let contextMarkup;
   if (contextControl) {
     contextMarkup = /* @__PURE__ */ React.createElement("div", {
-      className: styles$9.ContextControl
+      className: styles$8.ContextControl
     }, contextControl);
   } else if (logo) {
-    const className = classNames(styles$9.LogoContainer, showNavigationToggle || searchField ? styles$9.LogoDisplayControl : styles$9.LogoDisplayContainer, logoSuffix && styles$9.hasLogoSuffix);
+    const className = classNames(styles$8.LogoContainer, showNavigationToggle || searchField ? styles$8.LogoDisplayControl : styles$8.LogoDisplayContainer, logoSuffix && styles$8.hasLogoSuffix);
     contextMarkup = /* @__PURE__ */ React.createElement("div", {
       className
     }, /* @__PURE__ */ React.createElement(UnstyledLink, {
       url: logo.url || "",
-      className: styles$9.LogoLink,
+      className: styles$8.LogoLink,
       style: {
         width
       }
     }, /* @__PURE__ */ React.createElement(Image, {
       source: logo.topBarSource || "",
       alt: logo.accessibilityLabel || "",
-      className: styles$9.Logo,
+      className: styles$8.Logo,
       style: {
         width
       }
@@ -14521,17 +14500,17 @@ const TopBar = function TopBar2({
     overlayVisible: searchResultsOverlayVisible
   }, searchResults)) : null;
   return /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.TopBar
+    className: styles$8.TopBar
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.Container
+    className: styles$8.Container
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.LeftContent
+    className: styles$8.LeftContent
   }, navigationButtonMarkup, contextMarkup), /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.Search
+    className: styles$8.Search
   }, searchMarkup), /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.RightContent
+    className: styles$8.RightContent
   }, /* @__PURE__ */ React.createElement("div", {
-    className: styles$9.SecondaryMenu
+    className: styles$8.SecondaryMenu
   }, secondaryMenu), userMenu)));
 };
 TopBar.Menu = Menu;
@@ -14550,7 +14529,7 @@ function loginErrorMessage(loginErrors) {
   }
   return {};
 }
-const links$1 = () => [{ rel: "stylesheet", href: polarisStyles }];
+const links$3 = () => [{ rel: "stylesheet", href: polarisStyles }];
 const loader$h = async ({ request }) => {
   const errors = loginErrorMessage(await login(request));
   return { errors, polarisTranslations };
@@ -14588,7 +14567,7 @@ const route36 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   __proto__: null,
   action: action$8,
   default: Auth,
-  links: links$1,
+  links: links$3,
   loader: loader$h
 }, Symbol.toStringTag, { value: "Module" }));
 const PlanContext = createContext(null);
@@ -16485,35 +16464,17 @@ function CampaignActiveIndicator() {
     activeCampaign.name
   ] });
 }
+const styles = "/assets/global-BaVPN7Pj.css";
+const links$2 = () => [{ rel: "stylesheet", href: styles }];
 const loader$g = async ({ request }) => {
-  const { authenticateWithFallback: authenticateWithFallback2, isClientSideNavigation: isClientSideNavigation2 } = await Promise.resolve().then(() => shopify_server);
+  const { authenticate: authenticate2 } = await Promise.resolve().then(() => shopify_server);
   const { connectToDatabase: connectToDatabase2 } = await Promise.resolve().then(() => mongodb_server);
+  const { admin, session } = await authenticate2.admin(request);
+  const { shop } = session;
+  console.log("App - Authenticated with shop:", shop);
   let campaigns = [];
-  let shopName = null;
-  const isClientNavigation = isClientSideNavigation2(request);
+  let shopName = shop || null;
   try {
-    const authResult = await authenticateWithFallback2(request);
-    if (!authResult.success) {
-      if (authResult.fallback && isClientNavigation) {
-        console.log("Campaigns - Using fallback data for client navigation");
-        return json({
-          campaigns: [],
-          shopName: authResult.shop || "unknown-shop",
-          authError: "Authentication temporarily unavailable",
-          fallbackMode: true,
-          isAuthenticated: false
-        });
-      }
-      const url = new URL(request.url);
-      const shop = url.searchParams.get("shop");
-      if (shop) {
-        return Response.redirect(`/auth?shop=${shop}`, 302);
-      }
-      return Response.redirect(`/auth/login`, 302);
-    }
-    const { session } = authResult;
-    shopName = session.shop;
-    console.log("Campaigns - Authenticated successfully, shop:", shopName);
     try {
       const { db } = await connectToDatabase2(shopName);
       console.log("Campaigns - Fetching campaigns from database:", shopName);
@@ -16527,15 +16488,6 @@ const loader$g = async ({ request }) => {
       console.log("Campaigns - Loaded campaigns:", (campaigns == null ? void 0 : campaigns.length) || 0);
     } catch (dbError) {
       console.error("Campaigns - Database error:", dbError);
-      if (isClientNavigation) {
-        campaigns = [];
-      } else {
-        return json({
-          campaigns: [],
-          error: "Failed to fetch campaigns from database",
-          dbError: dbError.message
-        });
-      }
     }
     return json({
       campaigns,
@@ -16546,79 +16498,34 @@ const loader$g = async ({ request }) => {
     });
   } catch (error) {
     console.error("Campaigns - Loader auth error:", error);
-    if (isClientNavigation) {
-      const url2 = new URL(request.url);
-      shopName = url2.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain") || "unknown-shop";
+    try {
+      const { db } = await connectToDatabase2(shopName);
       console.log(
-        "Campaigns - Client navigation fallback, using shop:",
+        "Campaigns - Fetching campaigns from database (fallback):",
         shopName
       );
-      return json({
-        campaigns: [],
-        shopName,
-        authError: "Authentication temporarily unavailable",
-        fallbackMode: true,
-        isAuthenticated: false
-      });
-    }
-    const url = new URL(request.url);
-    shopName = url.searchParams.get("shop") || request.headers.get("x-shopify-shop-domain");
-    if (!shopName) {
-      const referrer = request.headers.get("referer");
-      if (referrer) {
-        try {
-          const referrerUrl = new URL(referrer);
-          shopName = referrerUrl.searchParams.get("shop");
-        } catch (e) {
-          console.log("Could not parse referrer URL");
-        }
-      }
-    }
-    if (shopName) {
+      const campaignsCollection = db.collection("campaigns");
+      const campaignsCursor = await campaignsCollection.find({}).sort({ createdAt: -1 });
+      campaigns = await campaignsCursor.toArray();
+      campaigns = campaigns.map((campaign) => ({
+        ...campaign,
+        _id: campaign._id.toString()
+      }));
       console.log(
-        "Campaigns - Authentication failed, using shop from request:",
-        shopName
+        "Campaigns - Loaded campaigns (fallback):",
+        (campaigns == null ? void 0 : campaigns.length) || 0
       );
-      try {
-        const { db } = await connectToDatabase2(shopName);
-        console.log(
-          "Campaigns - Fetching campaigns from database (fallback):",
-          shopName
-        );
-        const campaignsCollection = db.collection("campaigns");
-        const campaignsCursor = await campaignsCollection.find({}).sort({ createdAt: -1 });
-        campaigns = await campaignsCursor.toArray();
-        campaigns = campaigns.map((campaign) => ({
-          ...campaign,
-          _id: campaign._id.toString()
-        }));
-        console.log(
-          "Campaigns - Loaded campaigns (fallback):",
-          (campaigns == null ? void 0 : campaigns.length) || 0
-        );
-      } catch (dbError) {
-        console.error("Campaigns - Database error (fallback):", dbError);
-      }
-      return json({
-        campaigns,
-        shopName,
-        authError: "Authentication failed, but campaigns loaded from fallback",
-        fallbackMode: false,
-        // Don't show fallback mode if we have data
-        isAuthenticated: false
-      });
-    } else {
-      if (error && typeof error.status === "number" && error.status === 302) {
-        throw error;
-      }
-      return json({
-        campaigns: [],
-        error: "Could not determine shop name. Please ensure you're accessing this from within the Shopify admin.",
-        authError: true,
-        fallbackMode: true,
-        isAuthenticated: false
-      });
+    } catch (dbError) {
+      console.error("Campaigns - Database error (fallback):", dbError);
     }
+    return json({
+      campaigns,
+      shopName,
+      authError: "Authentication failed, but campaigns loaded from fallback",
+      fallbackMode: false,
+      // Don't show fallback mode if we have data
+      isAuthenticated: false
+    });
   }
 };
 function CampaignList() {
@@ -17021,6 +16928,7 @@ function Campaigns$1() {
 const route37 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaigns$1,
+  links: links$2,
   loader: loader$g
 }, Symbol.toStringTag, { value: "Module" }));
 async function action$7({ request }) {
@@ -17811,12 +17719,12 @@ function StepTwo() {
     });
   };
   const handleFloatingButtonTextChange = (e) => {
-    const text2 = e.target.value;
-    setFloatingButtonText(text2);
+    const text = e.target.value;
+    setFloatingButtonText(text);
     updateCampaignData({
       layout: {
         ...campaignData.layout,
-        floatingButtonText: text2
+        floatingButtonText: text
       }
     });
   };
@@ -19331,9 +19239,9 @@ function StepThree() {
     );
     if (localDiscountCodes && localDiscountCodes.length > 0) {
       console.log("StepThree - Available discount codes:");
-      localDiscountCodes.forEach((code, index2) => {
+      localDiscountCodes.forEach((code, index) => {
         console.log(
-          `  ${index2 + 1}. Title: ${code.title}, Code: ${code.code}, ID: ${code.id}`
+          `  ${index + 1}. Title: ${code.title}, Code: ${code.code}, ID: ${code.id}`
         );
       });
     }
@@ -20028,13 +19936,13 @@ function StepThree() {
               ] }),
               /* @__PURE__ */ jsxs("div", { className: "mt-2", children: [
                 /* @__PURE__ */ jsx("p", { className: "text-xs text-green-600", children: "Available codes:" }),
-                /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: discountCodes.map((code, index2) => /* @__PURE__ */ jsx(
+                /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: discountCodes.map((code, index) => /* @__PURE__ */ jsx(
                   "span",
                   {
                     className: "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800",
                     children: code.title
                   },
-                  code.id || index2
+                  code.id || index
                 )) })
               ] })
             ] })
@@ -20074,10 +19982,10 @@ function StepThree() {
               /* @__PURE__ */ jsx("div", { className: "col-span-4", children: "Reward Code" }),
               /* @__PURE__ */ jsx("div", { className: "col-span-3", children: "Chance %" })
             ] }),
-            campaignData.content.wheel.sectors.map((sector, index2) => /* @__PURE__ */ jsxs(
+            campaignData.content.wheel.sectors.map((sector, index) => /* @__PURE__ */ jsxs(
               "div",
               {
-                className: `grid grid-cols-12 gap-2 p-2 ${index2 % 2 === 0 ? "bg-white" : "bg-gray-100"} ${sector.discountCodeId ? "border-l-4 border-green-500" : sector.reward === "Better luck next time" ? "border-l-4 border-red-300" : "border-l-4 border-gray-300"}`,
+                className: `grid grid-cols-12 gap-2 p-2 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"} ${sector.discountCodeId ? "border-l-4 border-green-500" : sector.reward === "Better luck next time" ? "border-l-4 border-red-300" : "border-l-4 border-gray-300"}`,
                 children: [
                   /* @__PURE__ */ jsxs("div", { className: "col-span-1 flex items-center justify-center font-medium text-gray-700", children: [
                     sector.id,
@@ -20494,9 +20402,9 @@ function StepThree() {
                   children: [
                     /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-full bg-black" }) }),
                     (_bb = (_ab = (_$a = campaignData.content) == null ? void 0 : _$a.wheel) == null ? void 0 : _ab.sectors) == null ? void 0 : _bb.map(
-                      (sector, index2) => {
+                      (sector, index) => {
                         const sectorCount = campaignData.content.wheel.sectors.length;
-                        const angle = 360 / sectorCount * index2 + 360 / sectorCount / 2;
+                        const angle = 360 / sectorCount * index + 360 / sectorCount / 2;
                         const radius = 110;
                         const x = radius * Math.cos((angle - 90) * (Math.PI / 180));
                         const y = radius * Math.sin((angle - 90) * (Math.PI / 180));
@@ -20509,7 +20417,7 @@ function StepThree() {
                               top: `calc(50% + ${y}px)`,
                               transform: "translate(-50%, -50%) rotate(" + angle + "deg)",
                               width: "60px",
-                              color: index2 % 2 === 0 ? "white" : "black"
+                              color: index % 2 === 0 ? "white" : "black"
                             },
                             children: sector.rewardType
                           },
@@ -20573,9 +20481,9 @@ function StepThree() {
                   children: [
                     /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-full bg-black" }) }),
                     (_ub = (_tb = (_sb = campaignData.content) == null ? void 0 : _sb.wheel) == null ? void 0 : _tb.sectors) == null ? void 0 : _ub.map(
-                      (sector, index2) => {
+                      (sector, index) => {
                         const sectorCount = campaignData.content.wheel.sectors.length;
-                        const angle = 360 / sectorCount * index2 + 360 / sectorCount / 2;
+                        const angle = 360 / sectorCount * index + 360 / sectorCount / 2;
                         const radius = 110;
                         const x = radius * Math.cos((angle - 90) * (Math.PI / 180));
                         const y = radius * Math.sin((angle - 90) * (Math.PI / 180));
@@ -20588,7 +20496,7 @@ function StepThree() {
                               top: `calc(50% + ${y}px)`,
                               transform: "translate(-50%, -50%) rotate(" + angle + "deg)",
                               width: "60px",
-                              color: index2 % 2 === 0 ? "white" : "black"
+                              color: index % 2 === 0 ? "white" : "black"
                             },
                             children: sector.rewardType
                           },
@@ -20667,9 +20575,9 @@ function StepThree() {
                 children: [
                   /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-6 h-6 rounded-full bg-black" }) }),
                   (_Rb = (_Qb = (_Pb = campaignData.content) == null ? void 0 : _Pb.wheel) == null ? void 0 : _Qb.sectors) == null ? void 0 : _Rb.map(
-                    (sector, index2) => {
+                    (sector, index) => {
                       const sectorCount = campaignData.content.wheel.sectors.length;
-                      const angle = 360 / sectorCount * index2 + 360 / sectorCount / 2;
+                      const angle = 360 / sectorCount * index + 360 / sectorCount / 2;
                       const radius = 60;
                       const x = radius * Math.cos((angle - 90) * (Math.PI / 180));
                       const y = radius * Math.sin((angle - 90) * (Math.PI / 180));
@@ -20682,7 +20590,7 @@ function StepThree() {
                             top: `calc(50% + ${y}px)`,
                             transform: "translate(-50%, -50%) rotate(" + angle + "deg)",
                             width: "30px",
-                            color: index2 % 2 === 0 ? "white" : "black"
+                            color: index % 2 === 0 ? "white" : "black"
                           },
                           children: sector.rewardType
                         },
@@ -20746,9 +20654,9 @@ function StepThree() {
                 children: [
                   /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-6 h-6 rounded-full bg-black" }) }),
                   (_ic = (_hc = (_gc = campaignData.content) == null ? void 0 : _gc.wheel) == null ? void 0 : _hc.sectors) == null ? void 0 : _ic.map(
-                    (sector, index2) => {
+                    (sector, index) => {
                       const sectorCount = campaignData.content.wheel.sectors.length;
-                      const angle = 360 / sectorCount * index2 + 360 / sectorCount / 2;
+                      const angle = 360 / sectorCount * index + 360 / sectorCount / 2;
                       const radius = 60;
                       const x = radius * Math.cos((angle - 90) * (Math.PI / 180));
                       const y = radius * Math.sin((angle - 90) * (Math.PI / 180));
@@ -20761,7 +20669,7 @@ function StepThree() {
                             top: `calc(50% + ${y}px)`,
                             transform: "translate(-50%, -50%) rotate(" + angle + "deg)",
                             width: "30px",
-                            color: index2 % 2 === 0 ? "white" : "black"
+                            color: index % 2 === 0 ? "white" : "black"
                           },
                           children: sector.rewardType
                         },
@@ -21780,7 +21688,7 @@ function StepFour() {
         ] }),
         pageTargeting.enabled && pageTargeting.urls.length > 0 && /* @__PURE__ */ jsxs("div", { className: "mt-2", children: [
           /* @__PURE__ */ jsx("p", { className: "text-sm font-medium text-gray-700 mb-2", children: "Added URLs:" }),
-          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2", children: pageTargeting.urls.map((url, index2) => /* @__PURE__ */ jsxs(
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2", children: pageTargeting.urls.map((url, index) => /* @__PURE__ */ jsxs(
             "div",
             {
               className: "bg-gray-100 px-3 py-1 rounded-full flex items-center",
@@ -21812,7 +21720,7 @@ function StepFour() {
                 )
               ]
             },
-            index2
+            index
           )) })
         ] })
       ] }),
@@ -24415,6 +24323,7 @@ const route49 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   default: Settings,
   loader: loader$b
 }, Symbol.toStringTag, { value: "Module" }));
+const links$1 = () => [{ rel: "stylesheet", href: styles }];
 function Tutorial() {
   const navigate = useNavigate();
   const videoRef = useRef(null);
@@ -24483,7 +24392,8 @@ function Tutorial() {
 }
 const route50 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: Tutorial
+  default: Tutorial,
+  links: links$1
 }, Symbol.toStringTag, { value: "Module" }));
 const action$2 = async ({ request }) => {
   console.log("General webhook route called:", request.method, request.url);
@@ -25137,7 +25047,7 @@ function Pricing() {
               "annually"
             ] }),
             /* @__PURE__ */ jsx("div", { className: "border-t border-gray-100 my-4" }),
-            /* @__PURE__ */ jsx("ul", { className: "space-y-3 mb-8", children: plan.features.map((feature, index2) => /* @__PURE__ */ jsxs("li", { className: "flex items-start", children: [
+            /* @__PURE__ */ jsx("ul", { className: "space-y-3 mb-8", children: plan.features.map((feature, index) => /* @__PURE__ */ jsxs("li", { className: "flex items-start", children: [
               /* @__PURE__ */ jsx(
                 "svg",
                 {
@@ -25158,7 +25068,7 @@ function Pricing() {
                 }
               ),
               /* @__PURE__ */ jsx("span", { className: "text-sm", children: feature })
-            ] }, index2)) }),
+            ] }, index)) }),
             /* @__PURE__ */ jsx(
               "button",
               {
@@ -25266,68 +25176,135 @@ const route55 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   default: Pricing,
   loader: loader$a
 }, Symbol.toStringTag, { value: "Module" }));
-const index = "_index_2zwis_6";
-const heading = "_heading_2zwis_16";
-const text = "_text_2zwis_17";
-const content = "_content_2zwis_27";
-const form = "_form_2zwis_32";
-const label = "_label_2zwis_40";
-const input = "_input_2zwis_48";
-const button = "_button_2zwis_52";
-const list = "_list_2zwis_56";
-const styles$1 = {
-  index,
-  heading,
-  text,
-  content,
-  form,
-  label,
-  input,
-  button,
-  list
-};
 const loader$9 = async ({ request }) => {
   const url = new URL(request.url);
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
-  return json({ showForm: Boolean(login) });
+  console.log(
+    "Index loader - checking authentication... app/routes/_index/route.jsx"
+  );
+  return { showForm: Boolean(login) };
 };
 function App$2() {
   const { showForm } = useLoaderData();
-  return /* @__PURE__ */ jsx("div", { className: styles$1.index, children: /* @__PURE__ */ jsxs("div", { className: styles$1.content, children: [
-    /* @__PURE__ */ jsx("h1", { className: styles$1.heading, children: "A short heading about [your app]" }),
-    /* @__PURE__ */ jsx("p", { className: styles$1.text, children: "A tagline about [your app] that describes your value proposition." }),
-    showForm && /* @__PURE__ */ jsxs(Form$1, { className: styles$1.form, method: "post", action: "/auth/login", children: [
-      /* @__PURE__ */ jsxs("label", { className: styles$1.label, children: [
-        /* @__PURE__ */ jsx("span", { children: "Shop domain" }),
+  return /* @__PURE__ */ jsx("div", { className: "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-4xl w-full space-y-8 text-center", children: [
+    /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsx("h1", { className: "text-4xl font-bold text-gray-900 sm:text-5xl", children: "Welcome to Spinorama" }),
+      /* @__PURE__ */ jsx("p", { className: "text-xl text-gray-600 max-w-2xl mx-auto", children: "Create engaging spin-to-win campaigns for your Shopify store to boost conversions and customer engagement." })
+    ] }),
+    showForm && /* @__PURE__ */ jsx("div", { className: "bg-white py-8 px-6 shadow-lg rounded-lg max-w-md mx-auto", children: /* @__PURE__ */ jsxs(Form$1, { method: "post", action: "/auth/login", className: "space-y-6", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx(
-          "input",
+          "label",
           {
-            className: styles$1.input,
-            type: "text",
-            name: "shop",
-            defaultValue: "https://wheel-of-wonders.myshopify.com"
+            htmlFor: "shop",
+            className: "block text-sm font-medium text-gray-700 text-left",
+            children: "Shop domain"
           }
         ),
-        /* @__PURE__ */ jsx("span", { children: "e.g: https://wheel-of-wonders.myshopify.com" })
+        /* @__PURE__ */ jsx("div", { className: "mt-1", children: /* @__PURE__ */ jsx(
+          "input",
+          {
+            id: "shop",
+            name: "shop",
+            type: "text",
+            required: true,
+            className: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm",
+            placeholder: "my-shop-domain.myshopify.com"
+          }
+        ) }),
+        /* @__PURE__ */ jsx("p", { className: "mt-2 text-sm text-gray-500 text-left", children: "e.g: my-shop-domain.myshopify.com" })
       ] }),
-      /* @__PURE__ */ jsx("button", { className: styles$1.button, type: "submit", children: "Log in" })
-    ] }),
-    /* @__PURE__ */ jsxs("ul", { className: styles$1.list, children: [
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsx("strong", { children: "Product feature" }),
-        ". Some detail about your feature and its benefit to your customer."
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          type: "submit",
+          className: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200",
+          children: "Log in to Shopify"
+        }
+      )
+    ] }) }),
+    /* @__PURE__ */ jsx("div", { className: "mt-16", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3", children: [
+      /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow-md", children: [
+        /* @__PURE__ */ jsx("div", { className: "text-indigo-600 mb-4", children: /* @__PURE__ */ jsx(
+          "svg",
+          {
+            className: "w-8 h-8 mx-auto",
+            fill: "none",
+            stroke: "currentColor",
+            viewBox: "0 0 24 24",
+            children: /* @__PURE__ */ jsx(
+              "path",
+              {
+                strokeLinecap: "round",
+                strokeLinejoin: "round",
+                strokeWidth: "2",
+                d: "M13 10V3L4 14h7v7l9-11h-7z"
+              }
+            )
+          }
+        ) }),
+        /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-2", children: "Easy Setup" }),
+        /* @__PURE__ */ jsx("p", { className: "text-gray-600 text-sm", children: "Get started in minutes with our simple setup process. No coding required to create your first spin wheel campaign." })
       ] }),
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsx("strong", { children: "Product feature" }),
-        ". Some detail about your feature and its benefit to your customer."
+      /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow-md", children: [
+        /* @__PURE__ */ jsx("div", { className: "text-indigo-600 mb-4", children: /* @__PURE__ */ jsx(
+          "svg",
+          {
+            className: "w-8 h-8 mx-auto",
+            fill: "none",
+            stroke: "currentColor",
+            viewBox: "0 0 24 24",
+            children: /* @__PURE__ */ jsx(
+              "path",
+              {
+                strokeLinecap: "round",
+                strokeLinejoin: "round",
+                strokeWidth: "2",
+                d: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              }
+            )
+          }
+        ) }),
+        /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-2", children: "Boost Conversions" }),
+        /* @__PURE__ */ jsx("p", { className: "text-gray-600 text-sm", children: "Increase email signups and sales with engaging spin-to-win popups that customers love to interact with." })
       ] }),
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsx("strong", { children: "Product feature" }),
-        ". Some detail about your feature and its benefit to your customer."
+      /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow-md sm:col-span-2 lg:col-span-1", children: [
+        /* @__PURE__ */ jsx("div", { className: "text-indigo-600 mb-4", children: /* @__PURE__ */ jsxs(
+          "svg",
+          {
+            className: "w-8 h-8 mx-auto",
+            fill: "none",
+            stroke: "currentColor",
+            viewBox: "0 0 24 24",
+            children: [
+              /* @__PURE__ */ jsx(
+                "path",
+                {
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round",
+                  strokeWidth: "2",
+                  d: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "path",
+                {
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round",
+                  strokeWidth: "2",
+                  d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                }
+              )
+            ]
+          }
+        ) }),
+        /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-2", children: "Customizable Design" }),
+        /* @__PURE__ */ jsx("p", { className: "text-gray-600 text-sm", children: "Match your brand with fully customizable colors, text, and wheel designs. Create campaigns that fit your store perfectly." })
       ] })
-    ] })
+    ] }) }),
+    /* @__PURE__ */ jsx("div", { className: "mt-12 pt-8 border-t border-gray-200", children: /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: "Trusted by thousands of Shopify merchants worldwide" }) })
   ] }) });
 }
 const route56 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -25432,7 +25409,6 @@ const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   GET,
   loader: loader$5
 }, Symbol.toStringTag, { value: "Module" }));
-const styles = "/assets/global-C_YOZQky.css";
 const links = () => [{ rel: "stylesheet", href: styles }];
 const loader$4 = async ({ request }) => {
   var _a2, _b, _c, _d, _e;
@@ -25562,7 +25538,6 @@ function App$1() {
     /* @__PURE__ */ jsx(br, { children: /* @__PURE__ */ jsx(Link$1, { to: "/app", rel: "home", children: "Home" }) }),
     /* @__PURE__ */ jsx(PlanProvider, { initialDiscountCodes: data2.discountCodes || [], children: /* @__PURE__ */ jsxs(CampaignProvider, { children: [
       /* @__PURE__ */ jsx(Outlet, {}),
-      " // ✅ Keep only this one",
       /* @__PURE__ */ jsx(Toaster, { position: "top-right" })
     ] }) })
   ] });
@@ -27032,74 +27007,6 @@ function App() {
       window.top.location.assign(redirectUrl);
     }
   }, []);
-  if (data.isDevelopment) {
-    return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
-      /* @__PURE__ */ jsx(Navigation2, {}),
-      /* @__PURE__ */ jsxs("div", { className: "mt-8", children: [
-        /* @__PURE__ */ jsx("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-          /* @__PURE__ */ jsx(
-            "svg",
-            {
-              className: "w-6 h-6 text-blue-600 mr-3",
-              fill: "none",
-              stroke: "currentColor",
-              viewBox: "0 0 24 24",
-              children: /* @__PURE__ */ jsx(
-                "path",
-                {
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                  strokeWidth: "2",
-                  d: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                }
-              )
-            }
-          ),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-blue-800", children: "Development Mode" }),
-            /* @__PURE__ */ jsxs("p", { className: "text-blue-700 mt-1", children: [
-              "Subscription Status: ",
-              data.subscriptionSource,
-              " | Has Subscription:",
-              " ",
-              data.hasActiveSubscription ? "✅ Yes" : "❌ No"
-            ] }),
-            /* @__PURE__ */ jsx("p", { className: "text-blue-600 text-sm mt-2", children: "In development, subscription is simulated. To test without subscription, modify the hasActiveSubscription function in Subscription.server.js" })
-          ] })
-        ] }) }),
-        /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg shadow-sm p-8", children: [
-          /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold mb-4", children: "Spinorama - Development" }),
-          /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6", children: "You're in development mode. The app is simulating an active subscription for testing." }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-8", children: [
-            /* @__PURE__ */ jsxs("div", { className: "bg-green-50 p-6 rounded-lg", children: [
-              /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "Test Campaign" }),
-              /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-4", children: "Create a test campaign to see how it works." }),
-              /* @__PURE__ */ jsx(
-                Link$1,
-                {
-                  to: "/campaigns/create",
-                  className: "bg-green-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-green-700 transition-colors",
-                  children: "Create Test Campaign"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "bg-purple-50 p-6 rounded-lg", children: [
-              /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold mb-2", children: "View Campaigns" }),
-              /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-4", children: "See all your test campaigns." }),
-              /* @__PURE__ */ jsx(
-                Link$1,
-                {
-                  to: "/campaigns",
-                  className: "bg-purple-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-purple-700 transition-colors",
-                  children: "View Campaigns"
-                }
-              )
-            ] })
-          ] })
-        ] })
-      ] })
-    ] });
-  }
   if (data.needsSubscription || !data.hasActiveSubscription) {
     return /* @__PURE__ */ jsxs("div", { className: "container mx-auto px-4 py-6", children: [
       /* @__PURE__ */ jsx(Navigation2, {}),
@@ -27215,7 +27122,7 @@ const route70 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
   default: App,
   loader
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-C8za1OE1.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-NidQMtHb.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-BXt4MBUm.js", "imports": ["/assets/index-CRk6jtUA.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-CEFzMNQl.js", "imports": ["/assets/index-CRk6jtUA.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billing.callback": { "id": "routes/billing.callback", "parentId": "root", "path": "billing/callback", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing.callback-DHjlUkH5.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.toggle": { "id": "routes/api.campaigns.toggle", "parentId": "routes/api.campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-BXw7Xzb6.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/AppProvider-B1ucjflU.js", "/assets/Page-wruexU6P.js", "/assets/Card-BKHNwIHz.js", "/assets/FormLayout-CkuomM3K.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js", "/assets/within-content-context-Iy9P2FMi.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-BsyXNLyw.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-BWtVRBRF.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/campaigns.toggle-local": { "id": "routes/campaigns.toggle-local", "parentId": "routes/campaigns", "path": "toggle-local", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-local-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-CWMVgUeL.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/components-CJ4Us95c.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-D0u9oa4_.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/campaigns.toggle": { "id": "routes/campaigns.toggle", "parentId": "routes/campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-DFJGBoQ6.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-CL6cwD5Y.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/index-BWtVRBRF.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-D8HJhumG.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/components-CJ4Us95c.js"], "css": [] }, "routes/test-auth": { "id": "routes/test-auth", "parentId": "root", "path": "test-auth", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-auth-DztJnzzW.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/test-sync": { "id": "routes/test-sync", "parentId": "root", "path": "test-sync", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-sync-k8nmNR2E.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.test": { "id": "routes/api.test", "parentId": "root", "path": "api/test", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billings": { "id": "routes/billings", "parentId": "root", "path": "billings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billings-CsVTVY1M.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-CJ4Us95c.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-O5JgIbCf.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-DdA_GPH8.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/index-BWtVRBRF.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DWq71Qsa.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-gM-NIhEk.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-CJ4Us95c.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": true, "module": "/assets/app-BA6e510k.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/AppProvider-B1ucjflU.js", "/assets/index-CSX1f1C-.js", "/assets/PlanContext-BY9hTbym.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-DjMk7jIJ.js", "/assets/index-Crcs4hqE.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-dR_jAc2z.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/index-DjMk7jIJ.js", "/assets/context-CUwc7ova.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-DwKtC-u8.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/Card-BKHNwIHz.js", "/assets/context-CUwc7ova.js", "/assets/FormLayout-CkuomM3K.js", "/assets/Select-qdInDXit.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BcuCR0vm.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-CSX1f1C-.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/Card-BKHNwIHz.js", "/assets/Link-7a-A0W0-.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/context-CUwc7ova.js", "/assets/within-content-context-Iy9P2FMi.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.billing": { "id": "routes/app.billing", "parentId": "routes/app", "path": "billing", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.billing-Dd8Xs631.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/context-CUwc7ova.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-CVyKQBFi.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/Page-wruexU6P.js", "/assets/Card-BKHNwIHz.js", "/assets/Select-qdInDXit.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-thWE3gi8.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] } }, "url": "/assets/manifest-c68c8d6e.js", "version": "c68c8d6e" };
+const serverManifest = { "entry": { "module": "/assets/entry.client-C8za1OE1.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-NidQMtHb.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.update-campaign-metafields": { "id": "routes/api.update-campaign-metafields", "parentId": "root", "path": "api/update-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-campaign-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign-metafields": { "id": "routes/api.sync-campaign-metafields", "parentId": "root", "path": "api/sync-campaign-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-metafields-ChG-6rmU.js", "imports": [], "css": [] }, "routes/webhooks[.]app[.]uninstalled": { "id": "routes/webhooks[.]app[.]uninstalled", "parentId": "root", "path": "webhooks.app.uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks_._app_._uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-data": { "id": "routes/api.direct-campaign-data", "parentId": "root", "path": "api/direct-campaign-data", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-data-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-campaign-save": { "id": "routes/api.direct-campaign-save", "parentId": "root", "path": "api/direct-campaign-save", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-campaign-save-BXt4MBUm.js", "imports": ["/assets/index-CRk6jtUA.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.get-active-campaign": { "id": "routes/api.get-active-campaign", "parentId": "root", "path": "api/get-active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.get-active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_DATA_REQUEST": { "id": "routes/CUSTOMERS_DATA_REQUEST", "parentId": "root", "path": "CUSTOMERS_DATA_REQUEST", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_DATA_REQUEST-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-db-connection": { "id": "routes/api.test-db-connection", "parentId": "root", "path": "api/test-db-connection", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-db-connection-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.test-subscription": { "id": "routes/api.test-subscription", "parentId": "root", "path": "api/test-subscription", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-subscription-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.update-metafields": { "id": "routes/api.update-metafields", "parentId": "root", "path": "api/update-metafields", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.update-metafields-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.debug-metafeilds": { "id": "routes/api.debug-metafeilds", "parentId": "root", "path": "api/debug-metafeilds", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.debug-metafeilds-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.active-campaign": { "id": "routes/api.active-campaign", "parentId": "root", "path": "api/active-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.active-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.current": { "id": "routes/api.billing.current", "parentId": "root", "path": "api/billing/current", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.current-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.embedded-script": { "id": "routes/api.embedded-script", "parentId": "root", "path": "api/embedded-script", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.embedded-script-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.cancel": { "id": "routes/api.billing.cancel", "parentId": "root", "path": "api/billing/cancel", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.cancel-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.billing.create": { "id": "routes/api.billing.create", "parentId": "root", "path": "api/billing/create", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.billing.create-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.direct-db-test": { "id": "routes/api.direct-db-test", "parentId": "root", "path": "api/direct-db-test", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.direct-db-test-CEFzMNQl.js", "imports": ["/assets/index-CRk6jtUA.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/api.discount-codes": { "id": "routes/api.discount-codes", "parentId": "root", "path": "api/discount-codes", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.discount-codes-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.serve-campaign": { "id": "routes/api.serve-campaign", "parentId": "root", "path": "api/serve-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.serve-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.redeem-coupon": { "id": "routes/api.redeem-coupon", "parentId": "root", "path": "api/redeem-coupon", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.redeem-coupon-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.sync-campaign": { "id": "routes/api.sync-campaign", "parentId": "root", "path": "api/sync-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.sync-campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/CUSTOMERS_REDACT": { "id": "routes/CUSTOMERS_REDACT", "parentId": "root", "path": "CUSTOMERS_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/CUSTOMERS_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.wheel-config": { "id": "routes/api.wheel-config", "parentId": "root", "path": "api/wheel-config", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.wheel-config-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billing.callback": { "id": "routes/billing.callback", "parentId": "root", "path": "billing/callback", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billing.callback-DHjlUkH5.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.save-result": { "id": "routes/api.save-result", "parentId": "root", "path": "api/save-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.spin-result": { "id": "routes/api.spin-result", "parentId": "root", "path": "api/spin-result", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.spin-result-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/create-campaign": { "id": "routes/create-campaign", "parentId": "root", "path": "create-campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/create-campaign-ChG-6rmU.js", "imports": [], "css": [] }, "routes/api.save-email": { "id": "routes/api.save-email", "parentId": "root", "path": "api/save-email", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.save-email-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns": { "id": "routes/api.campaigns", "parentId": "root", "path": "api/campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.status.$id": { "id": "routes/api.campaigns.status.$id", "parentId": "routes/api.campaigns", "path": "status/:id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.status._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.toggle": { "id": "routes/api.campaigns.toggle", "parentId": "routes/api.campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaigns.$id": { "id": "routes/api.campaigns.$id", "parentId": "routes/api.campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaigns._id-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.db-status": { "id": "routes/api.db-status", "parentId": "root", "path": "api/db-status", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.db-status-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/api.campaign": { "id": "routes/api.campaign", "parentId": "root", "path": "api/campaign", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.campaign-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/SHOP_REDACT": { "id": "routes/SHOP_REDACT", "parentId": "root", "path": "SHOP_REDACT", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/SHOP_REDACT-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/auth.login": { "id": "routes/auth.login", "parentId": "root", "path": "auth/login", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-BXw7Xzb6.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/AppProvider-B1ucjflU.js", "/assets/Page-wruexU6P.js", "/assets/Card-BKHNwIHz.js", "/assets/FormLayout-CkuomM3K.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js", "/assets/within-content-context-Iy9P2FMi.js"], "css": [] }, "routes/campaigns": { "id": "routes/campaigns", "parentId": "root", "path": "campaigns", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns-CZiU465k.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-BWtVRBRF.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/global-D4-GeCUm.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/campaigns.toggle-local": { "id": "routes/campaigns.toggle-local", "parentId": "routes/campaigns", "path": "toggle-local", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-local-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.edit.$id": { "id": "routes/campaigns.edit.$id", "parentId": "routes/campaigns", "path": "edit/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.edit._id-CWMVgUeL.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/components-CJ4Us95c.js"], "css": [] }, "routes/campaigns.create": { "id": "routes/campaigns.create", "parentId": "routes/campaigns", "path": "create", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.create-D0u9oa4_.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/campaigns.toggle": { "id": "routes/campaigns.toggle", "parentId": "routes/campaigns", "path": "toggle", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.toggle-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/campaigns.index": { "id": "routes/campaigns.index", "parentId": "routes/campaigns", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns.index-DFJGBoQ6.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/PlanContext-BY9hTbym.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/campaigns.$id": { "id": "routes/campaigns.$id", "parentId": "routes/campaigns", "path": ":id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id-CL6cwD5Y.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/index-BWtVRBRF.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/campaigns.$id.edit": { "id": "routes/campaigns.$id.edit", "parentId": "routes/campaigns.$id", "path": "edit", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/campaigns._id.edit-D8HJhumG.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/StepFour-h3JiGo8n.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-CSX1f1C-.js", "/assets/index-Crcs4hqE.js", "/assets/components-CJ4Us95c.js"], "css": [] }, "routes/test-auth": { "id": "routes/test-auth", "parentId": "root", "path": "test-auth", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-auth-DztJnzzW.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/test-sync": { "id": "routes/test-sync", "parentId": "root", "path": "test-sync", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/test-sync-k8nmNR2E.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js"], "css": [] }, "routes/api.test": { "id": "routes/api.test", "parentId": "root", "path": "api/test", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/api.test-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/billings": { "id": "routes/billings", "parentId": "root", "path": "billings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/billings-CsVTVY1M.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-CJ4Us95c.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js"], "css": [] }, "routes/settings": { "id": "routes/settings", "parentId": "root", "path": "settings", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/settings-O5JgIbCf.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/tutorial": { "id": "routes/tutorial", "parentId": "root", "path": "tutorial", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/tutorial-DakxI4Xo.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/index-BWtVRBRF.js", "/assets/global-D4-GeCUm.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/webhooks": { "id": "routes/webhooks", "parentId": "root", "path": "webhooks", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.app.uninstalled": { "id": "routes/webhooks.app.uninstalled", "parentId": "routes/webhooks", "path": "app/uninstalled", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.app.uninstalled-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/webhooks.save-result": { "id": "routes/webhooks.save-result", "parentId": "routes/webhooks", "path": "save-result", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-result-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/webhooks.save-email": { "id": "routes/webhooks.save-email", "parentId": "routes/webhooks", "path": "save-email", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/webhooks.save-email-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/pricing": { "id": "routes/pricing", "parentId": "root", "path": "pricing", "index": void 0, "caseSensitive": void 0, "hasAction": true, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/pricing-DWq71Qsa.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-DjMk7jIJ.js", "/assets/components-CJ4Us95c.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/route-BOd3SLVx.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/components-CJ4Us95c.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js"], "css": [] }, "routes/auth.$": { "id": "routes/auth.$", "parentId": "root", "path": "auth/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/auth._-l0sNRNKZ.js", "imports": [], "css": [] }, "routes/health": { "id": "routes/health", "parentId": "root", "path": "health", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/health-DOPKB9wf.js", "imports": [], "css": [] }, "routes/index": { "id": "routes/index", "parentId": "root", "path": "index", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/index-C6d-v1ok.js", "imports": [], "css": [] }, "routes/ping": { "id": "routes/ping", "parentId": "root", "path": "ping", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/ping-DOPKB9wf.js", "imports": [], "css": [] }, "routes/app": { "id": "routes/app", "parentId": "root", "path": "app", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": true, "module": "/assets/app-DJ-wFi0S.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/AppProvider-B1ucjflU.js", "/assets/index-CSX1f1C-.js", "/assets/PlanContext-BY9hTbym.js", "/assets/CampaignContext-3XUkqNZH.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/global-D4-GeCUm.js", "/assets/index-DjMk7jIJ.js", "/assets/index-Crcs4hqE.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js"], "css": [] }, "routes/app.campaigns.new": { "id": "routes/app.campaigns.new", "parentId": "routes/app", "path": "campaigns/new", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.campaigns.new-dR_jAc2z.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/index-DjMk7jIJ.js", "/assets/context-CUwc7ova.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app.integrations": { "id": "routes/app.integrations", "parentId": "routes/app", "path": "integrations", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.integrations-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.subscribers": { "id": "routes/app.subscribers", "parentId": "routes/app", "path": "subscribers", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.subscribers-DwKtC-u8.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/Card-BKHNwIHz.js", "/assets/context-CUwc7ova.js", "/assets/FormLayout-CkuomM3K.js", "/assets/Select-qdInDXit.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app.additional": { "id": "routes/app.additional", "parentId": "routes/app", "path": "additional", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.additional-BcuCR0vm.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-CSX1f1C-.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/Card-BKHNwIHz.js", "/assets/Link-7a-A0W0-.js", "/assets/index-BWtVRBRF.js", "/assets/index-Crcs4hqE.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/context-CUwc7ova.js", "/assets/within-content-context-Iy9P2FMi.js"], "css": [] }, "routes/app.game.$id": { "id": "routes/app.game.$id", "parentId": "routes/app", "path": "game/:id", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game._id-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.game.add": { "id": "routes/app.game.add", "parentId": "routes/app", "path": "game/add", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.game.add-CiNjbAlT.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/_commonjsHelpers-gnU0ypJ3.js"], "css": [] }, "routes/app.billing": { "id": "routes/app.billing", "parentId": "routes/app", "path": "billing", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.billing-Dd8Xs631.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/Page-wruexU6P.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/context-CUwc7ova.js", "/assets/index-Crcs4hqE.js"], "css": [] }, "routes/app.revenue": { "id": "routes/app.revenue", "parentId": "routes/app", "path": "revenue", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app.revenue-CVyKQBFi.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/index-BWtVRBRF.js", "/assets/index-CSX1f1C-.js", "/assets/AdminLayout-B1prxWqz.js", "/assets/Page-wruexU6P.js", "/assets/Card-BKHNwIHz.js", "/assets/Select-qdInDXit.js", "/assets/Layout-DHGRd_F1.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js", "/assets/index-DjMk7jIJ.js", "/assets/within-content-context-Iy9P2FMi.js", "/assets/context-CUwc7ova.js", "/assets/context-bB9LgXOD.js", "/assets/Link-7a-A0W0-.js"], "css": [] }, "routes/app._index": { "id": "routes/app._index", "parentId": "routes/app", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/app._index-C8lPRtUH.js", "imports": ["/assets/jsx-runtime-DlxonYWr.js", "/assets/Navigation-Rq2-uA4h.js", "/assets/PlanContext-BY9hTbym.js", "/assets/index-BWtVRBRF.js", "/assets/components-CJ4Us95c.js", "/assets/index-DjMk7jIJ.js", "/assets/_commonjsHelpers-gnU0ypJ3.js", "/assets/index-Crcs4hqE.js"], "css": [] } }, "url": "/assets/manifest-c262db18.js", "version": "c262db18" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";

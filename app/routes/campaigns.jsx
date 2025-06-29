@@ -15,17 +15,22 @@ import { toast } from "react-hot-toast";
 import CampaignActiveIndicator from "../components/CampaignActiveIndicator";
 import styles from "../styles/global.css?url";
 
+
 // export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
-  const { authenticateWithFallback, isClientSideNavigation } = await import(
+  const { authenticate } = await import(
     "../shopify.server"
   );
   const { connectToDatabase } = await import("../../lib/mongodb.server");
 
+  const { admin, session } = await authenticate.admin(request);
+      const { shop } = session;
+      console.log("App - Authenticated with shop:", shop);
+
   let campaigns = [];
-  let shopName = null;
+  let shopName = shop || null;
   let authError = null;
   // const isClientNavigation = isClientSideNavigation(request);
 
