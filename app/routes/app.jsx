@@ -19,6 +19,10 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const host = url.searchParams.get("host");
 
+  const shop = url.searchParams.get("shop");
+  const embedded = url.searchParams.get("embedded");
+
+
   if (!host) {
     throw new Error("Missing host query param in URL");
   }
@@ -26,10 +30,6 @@ export const loader = async ({ request }) => {
   try {
     // const { getDiscountCodes } = await import("./models/Subscription.server");
 
-    // const url = new URL(request.url);
-    // const shop = url.searchParams.get("shop");
-    // const embedded = url.searchParams.get("embedded");
-    // const host = url.searchParams.get("host");
 
     if (
       shop ||
@@ -113,7 +113,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function App() {
-  const { apiKey, host } = useLoaderData();
+  const { apiKey, host,shop } = useLoaderData();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
