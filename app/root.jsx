@@ -184,10 +184,10 @@ export default function App() {
   }, [data.discountCodes]);
 
   // ✅ Redirect to auth if essential params are missing
-  if (!shop || !host) {
-    console.log("Missing Shopify parameters. Redirecting to /auth");
-    return redirect("/auth");
-  }
+  // if (!shop || !host) {
+  //   console.log("Missing Shopify parameters. Redirecting to /auth");
+  //   return redirect("/auth");
+  // }
   return (
     <html>
       <head>
