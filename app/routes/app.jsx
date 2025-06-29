@@ -11,7 +11,8 @@ import { CampaignProvider } from "../context/CampaignContext";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { data } from "autoprefixer";
-import styles from "./styles/global.css?url";
+// import styles from "./styles/global.css?url";
+import styles from "../styles/global.css?url";
 
 // export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export const links = () => [{ rel: "stylesheet", href: styles }];
