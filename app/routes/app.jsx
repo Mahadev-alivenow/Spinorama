@@ -11,7 +11,10 @@ import { CampaignProvider } from "../context/CampaignContext";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { data } from "autoprefixer";
-export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+import styles from "./styles/global.css?url";
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
   const discountCodes = [];
