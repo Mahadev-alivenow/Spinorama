@@ -1,1 +1,0 @@
-import{j as e}from"./jsx-runtime-DlxonYWr.js";import"./index-DL0tHwE6.js";import"./_commonjsHelpers-D6-XlEtG.js";function t(){return console.log("AppIndex component rendered"),e.jsx(e.Fragment,{})}export{t as default};
