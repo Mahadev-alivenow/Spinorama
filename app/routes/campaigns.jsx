@@ -23,6 +23,8 @@ export const loader = async ({ request }) => {
   // const { authenticate } = await import(
   //   "../shopify.server"
   // );
+  const url = new URL(request.url);
+
   const { connectToDatabase } = await import("../../lib/mongodb.server");
 
   // const { admin, session } = await authenticate.admin(request);
