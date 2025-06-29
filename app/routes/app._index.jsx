@@ -286,7 +286,7 @@ export default function App() {
                 Visit the Shopify App Store to subscribe.
               </p>
               <a
-                href={`https://admin.shopify.com/store/wheel-of-wonders/charges/spinorama/pricing_plans`}
+                href={`https://admin.shopify.com/store/${data.shopFormatted}/charges/spinorama/pricing_plans`}
                 target="_top"
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
               >

@@ -18,7 +18,7 @@ export default function App() {
           href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
         />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <title>Discount Engage</title> {/* Add your custom title here */}
+        <title>Spinorama</title> {/* Add your custom title here */}
         <Meta />
         <Links />
       </head>
