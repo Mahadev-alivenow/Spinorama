@@ -1,7 +1,6 @@
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "../../shopify.server";
-import styles from "./styles.module.css";
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -10,50 +9,153 @@ export const loader = async ({ request }) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return json({ showForm: Boolean(login) });
+  console.log(
+    "Index loader - checking authentication... app/routes/_index/route.jsx",
+  );
+  return { showForm: Boolean(login) };
 };
 
 export default function App() {
   const { showForm } = useLoaderData();
 
   return (
-    <div className={styles.index}>
-      <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
-        <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl w-full space-y-8 text-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+            Welcome to Spinorama
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Create engaging spin-to-win campaigns for your Shopify store to
+            boost conversions and customer engagement.
+          </p>
+        </div>
+
         {showForm && (
-          <Form className={styles.form} method="post" action="/auth/login">
-            <label className={styles.label}>
-              <span>Shop domain</span>
-              <input
-                className={styles.input}
-                type="text"
-                name="shop"
-                defaultValue="https://wheel-of-wonders.myshopify.com"
-              />
-              <span>e.g: https://wheel-of-wonders.myshopify.com</span>
-            </label>
-            <button className={styles.button} type="submit">
-              Log in
-            </button>
-          </Form>
+          <div className="bg-white py-8 px-6 shadow-lg rounded-lg max-w-md mx-auto">
+            <Form method="post" action="/auth/login" className="space-y-6">
+              <div>
+                <label
+                  htmlFor="shop"
+                  className="block text-sm font-medium text-gray-700 text-left"
+                >
+                  Shop domain
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="shop"
+                    name="shop"
+                    type="text"
+                    required
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="my-shop-domain.myshopify.com"
+                  />
+                </div>
+                <p className="mt-2 text-sm text-gray-500 text-left">
+                  e.g: my-shop-domain.myshopify.com
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+              >
+                Log in to Shopify
+              </button>
+            </Form>
+          </div>
         )}
-        <ul className={styles.list}>
-          <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
-          </li>
-          <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
-          </li>
-          <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
-          </li>
-        </ul>
+
+        <div className="mt-16">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="text-indigo-600 mb-4">
+                <svg
+                  className="w-8 h-8 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Easy Setup
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Get started in minutes with our simple setup process. No coding
+                required to create your first spin wheel campaign.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="text-indigo-600 mb-4">
+                <svg
+                  className="w-8 h-8 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Boost Conversions
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Increase email signups and sales with engaging spin-to-win
+                popups that customers love to interact with.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md sm:col-span-2 lg:col-span-1">
+              <div className="text-indigo-600 mb-4">
+                <svg
+                  className="w-8 h-8 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Customizable Design
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Match your brand with fully customizable colors, text, and wheel
+                designs. Create campaigns that fit your store perfectly.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <p className="text-sm text-gray-500">
+            Trusted by thousands of Shopify merchants worldwide
+          </p>
+        </div>
       </div>
     </div>
   );

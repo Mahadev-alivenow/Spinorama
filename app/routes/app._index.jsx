@@ -153,83 +153,83 @@ export default function App() {
     }
   }, []);
   // Show development info
-  if (data.isDevelopment) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <Navigation />
-        <div className="mt-8">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <div className="flex items-center">
-              <svg
-                className="w-6 h-6 text-blue-600 mr-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <h3 className="text-lg font-semibold text-blue-800">
-                  Development Mode
-                </h3>
-                <p className="text-blue-700 mt-1">
-                  Subscription Status: {data.subscriptionSource} | Has
-                  Subscription:{" "}
-                  {data.hasActiveSubscription ? "✅ Yes" : "❌ No"}
-                </p>
-                <p className="text-blue-600 text-sm mt-2">
-                  In development, subscription is simulated. To test without
-                  subscription, modify the hasActiveSubscription function in
-                  Subscription.server.js
-                </p>
-              </div>
-            </div>
-          </div>
+  // if (data.isDevelopment) {
+  //   return (
+  //     <div className="container mx-auto px-4 py-6">
+  //       <Navigation />
+  //       <div className="mt-8">
+  //         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+  //           <div className="flex items-center">
+  //             <svg
+  //               className="w-6 h-6 text-blue-600 mr-3"
+  //               fill="none"
+  //               stroke="currentColor"
+  //               viewBox="0 0 24 24"
+  //             >
+  //               <path
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //                 strokeWidth="2"
+  //                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+  //               />
+  //             </svg>
+  //             <div>
+  //               <h3 className="text-lg font-semibold text-blue-800">
+  //                 Development Mode
+  //               </h3>
+  //               <p className="text-blue-700 mt-1">
+  //                 Subscription Status: {data.subscriptionSource} | Has
+  //                 Subscription:{" "}
+  //                 {data.hasActiveSubscription ? "✅ Yes" : "❌ No"}
+  //               </p>
+  //               <p className="text-blue-600 text-sm mt-2">
+  //                 In development, subscription is simulated. To test without
+  //                 subscription, modify the hasActiveSubscription function in
+  //                 Subscription.server.js
+  //               </p>
+  //             </div>
+  //           </div>
+  //         </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h1 className="text-3xl font-bold mb-4">Spinorama - Development</h1>
-            <p className="text-gray-600 mb-6">
-              You're in development mode. The app is simulating an active
-              subscription for testing.
-            </p>
+  //         <div className="bg-white rounded-lg shadow-sm p-8">
+  //           <h1 className="text-3xl font-bold mb-4">Spinorama - Development</h1>
+  //           <p className="text-gray-600 mb-6">
+  //             You're in development mode. The app is simulating an active
+  //             subscription for testing.
+  //           </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-green-50 p-6 rounded-lg">
-                <h2 className="text-xl font-semibold mb-2">Test Campaign</h2>
-                <p className="text-gray-600 mb-4">
-                  Create a test campaign to see how it works.
-                </p>
-                <Link
-                  to="/campaigns/create"
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-green-700 transition-colors"
-                >
-                  Create Test Campaign
-                </Link>
-              </div>
+  //           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+  //             <div className="bg-green-50 p-6 rounded-lg">
+  //               <h2 className="text-xl font-semibold mb-2">Test Campaign</h2>
+  //               <p className="text-gray-600 mb-4">
+  //                 Create a test campaign to see how it works.
+  //               </p>
+  //               <Link
+  //                 to="/campaigns/create"
+  //                 className="bg-green-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-green-700 transition-colors"
+  //               >
+  //                 Create Test Campaign
+  //               </Link>
+  //             </div>
 
-              <div className="bg-purple-50 p-6 rounded-lg">
-                <h2 className="text-xl font-semibold mb-2">View Campaigns</h2>
-                <p className="text-gray-600 mb-4">
-                  See all your test campaigns.
-                </p>
-                <Link
-                  to="/campaigns"
-                  className="bg-purple-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-purple-700 transition-colors"
-                >
-                  View Campaigns
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //             <div className="bg-purple-50 p-6 rounded-lg">
+  //               <h2 className="text-xl font-semibold mb-2">View Campaigns</h2>
+  //               <p className="text-gray-600 mb-4">
+  //                 See all your test campaigns.
+  //               </p>
+  //               <Link
+  //                 to="/campaigns"
+  //                 className="bg-purple-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-purple-700 transition-colors"
+  //               >
+  //                 View Campaigns
+  //               </Link>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Show subscription required message for users without active subscription
   if (data.needsSubscription || !data.hasActiveSubscription) {

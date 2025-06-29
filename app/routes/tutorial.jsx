@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { useRef, useState } from "react";
+import styles from "../styles/global.css?url";
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export default function Tutorial() {
   const navigate = useNavigate();

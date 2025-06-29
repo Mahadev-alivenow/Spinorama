@@ -13,6 +13,10 @@ import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import { toast } from "react-hot-toast";
 import CampaignActiveIndicator from "../components/CampaignActiveIndicator";
+import styles from "../styles/global.css?url";
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
   const { authenticateWithFallback, isClientSideNavigation } = await import(
