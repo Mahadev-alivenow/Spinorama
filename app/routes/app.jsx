@@ -170,11 +170,11 @@ const location = useLocation();
       </NavMenu>
       <PlanProvider initialDiscountCodes={data.discountCodes || []}>
         <CampaignProvider>
-          <Outlet />
+          <Outlet /> // ✅ Keep only this one
           <Toaster position="top-right" />
         </CampaignProvider>
       </PlanProvider>
-      <Outlet />
+      {/* ❌ Remove this duplicate <Outlet /> */}
     </AppProvider>
   );
 }
