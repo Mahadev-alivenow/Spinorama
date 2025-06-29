@@ -157,24 +157,24 @@ export async function authenticateWithFallback(request) {
   }
 }
 
-export async function login(request) {
-  const url = new URL(request.url);
-  const shop = url.searchParams.get("shop");
+// export async function login(request) {
+//   const url = new URL(request.url);
+//   const shop = url.searchParams.get("shop");
 
-  if (!shop || !shop.endsWith(".myshopify.com")) {
-    console.log("Invalid or missing shop param in login()");
-    return redirect("/auth/login");
-  }
+//   if (!shop || !shop.endsWith(".myshopify.com")) {
+//     console.log("Invalid or missing shop param in login()");
+//     return redirect("/auth/login");
+//   }
 
-  // Start OAuth flow (your logic here)
-  return await shopify.auth.begin({ shop, callbackPath: "/auth/callback" });
-}
+//   // Start OAuth flow (your logic here)
+//   return await shopify.auth.begin({ shop, callbackPath: "/auth/callback" });
+// }
 
 export default shopify;
 export const apiVersion = ApiVersion.January25;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
 export const unauthenticated = shopify.unauthenticated;
-// export const login = shopify.login;
+export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
