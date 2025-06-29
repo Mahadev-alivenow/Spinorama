@@ -13,7 +13,7 @@ import { CampaignProvider } from "./context/CampaignContext";
 import { PlanProvider } from "./context/PlanContext";
 import { useEffect } from "react";
 import styles from "./styles/global.css?url";
-import { AppProvider } from "@shopify/shopify-app-remix/react";
+// import { AppProvider } from "@shopify/shopify-app-remix/react";
 
 // Export CSS styles
 export const links = () => [{ rel: "stylesheet", href: styles }];
@@ -215,7 +215,7 @@ export default function App() {
         {/* <script src="https://unpkg.com/@shopify/app-bridge@3"></script> */}
       </head>
       <body>
-        <AppProvider apiKey={apiKey} host={host} shop={shop} isEmbeddedApp>
+        {/* <AppProvider apiKey={apiKey} host={host} shop={shop} isEmbeddedApp> */}
           <PlanProvider initialDiscountCodes={data.discountCodes || []}>
             <CampaignProvider>
               <Outlet />
@@ -242,7 +242,7 @@ export default function App() {
                   `,
             }}
           />
-        </AppProvider>
+        {/* </AppProvider> */}
       </body>
     </html>
   );
