@@ -13,6 +13,7 @@ import { useEffect } from "react";
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
+  const discountCodes = [];
   await authenticate.admin(request);
 
   const url = new URL(request.url);
@@ -101,8 +102,13 @@ export const loader = async ({ request }) => {
   }
 
   return json({
+    ENV: {
+      NODE_ENV: process.env.NODE_ENV,
+    },
     apiKey: process.env.SHOPIFY_API_KEY || "",
+    discountCodes,
     host,
+    shop,
   });
 };
 
