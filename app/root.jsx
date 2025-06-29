@@ -203,8 +203,8 @@ export default function App() {
         <Meta />
         <Links />
         {/* ✅ Load Shopify App Bridge scripts in head with blocking behavior */}
-        {/* <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-        <script src="https://unpkg.com/@shopify/app-bridge@3"></script> */}
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+        {/* <script src="https://unpkg.com/@shopify/app-bridge@3"></script> */}
       </head>
       <body>
         <AppProvider apiKey={apiKey} host={host} shop={shop} isEmbeddedApp>
