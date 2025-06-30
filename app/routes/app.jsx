@@ -23,12 +23,7 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
-  const subscriptions = await getSubscriptionStatus(admin.graphql);
-  const activeSubscriptions =
-    subscriptions.data.app.installation.activeSubscriptions;
-
-  console.log("App - Active subscriptions:", activeSubscriptions);
-
+  
   const discountCodes = [];
   let activeCampaign = null;
 
@@ -59,6 +54,17 @@ export const loader = async ({ request }) => {
 
       const { admin, session } = await authenticate.admin(request);
 
+      const subscriptions = await getSubscriptionStatus(admin.graphql);
+      const activeSubscriptions =
+        subscriptions.data.app.installation.activeSubscriptions;
+
+      console.log("App - Active subscriptions:", activeSubscriptions);
+
+      if (activeSubscriptions.length > 0) {
+        console.log("has active subscription", activeSubscriptions);
+      }else {
+        console.log("No active subscription found");
+      } 
       if (admin && session) {
         console.log("Root loader - attempting to fetch discount codes...");
         const discountCode = await getDiscountCodes(admin.graphql);
