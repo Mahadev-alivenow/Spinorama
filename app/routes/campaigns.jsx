@@ -16,8 +16,9 @@ import {
   useLocation,
   useRouteError,
 } from "@remix-run/react";
-import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
+
+import { boundary } from "@shopify/shopify-app-remix/server";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
@@ -32,8 +33,6 @@ import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { data } from "autoprefixer";
 // import styles from "./styles/global.css?url";
-
-
 
 import styles from "../styles/global.css?url";
 import CampaignList from "../components/CampaignsList";
@@ -637,14 +636,16 @@ export default function Campaigns() {
   }, [data.discountCodes]);
 
   return (
-    <PlanProvider initialDiscountCodes={data.discountCodes || []}>
-      <CampaignProvider>
-        {/* This is where the child routes will render */}
-        <Outlet />
+    <AppProvider isEmbeddedApp apiKey={apiKey} host={host}>
+      <PlanProvider initialDiscountCodes={data.discountCodes || []}>
+        <CampaignProvider>
+          {/* This is where the child routes will render */}
+          <Outlet />
 
-        {/* Display campaigns on the main campaigns route */}
-        {location.pathname === "/campaigns" && <CampaignList />}
-      </CampaignProvider>
-    </PlanProvider>
+          {/* Display campaigns on the main campaigns route */}
+          {location.pathname === "/campaigns" && <CampaignList />}
+        </CampaignProvider>
+      </PlanProvider>
+    </AppProvider>
   );
 }
