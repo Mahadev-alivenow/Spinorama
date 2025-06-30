@@ -8,6 +8,7 @@ import { authenticate } from "../shopify.server";
 import {
   getActiveCampaign,
   getDiscountCodes,
+  getSubscriptionStatus,
   syncActiveCampaignToMetafields,
 } from "../models/Subscription.server";
 import { PlanProvider } from "../context/PlanContext";
@@ -22,6 +23,12 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
+  const subscriptions = await getSubscriptionStatus(admin.graphql);
+  const activeSubscriptions =
+    subscriptions.data.app.installation.activeSubscriptions;
+
+  console.log("App - Active subscriptions:", activeSubscriptions);
+
   const discountCodes = [];
   let activeCampaign = null;
 
