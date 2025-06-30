@@ -23,7 +23,7 @@ export const loader = async ({ request }) => {
   // const { authenticate } = await import(
   //   "../shopify.server"
   // );
-  const url = new URL(request.url);
+  // const url = new URL(request.url);
 
   const { connectToDatabase } = await import("../../lib/mongodb.server");
 
@@ -31,7 +31,7 @@ export const loader = async ({ request }) => {
   //     const { shop } = session;
   //     console.log("App - Authenticated with shop:", shop);
 
-  const shop = url.searchParams.get("shop");
+  // const shop = url.searchParams.get("shop");
 
   let campaigns = [];
   let shopName = "wheel-of-wonders";
