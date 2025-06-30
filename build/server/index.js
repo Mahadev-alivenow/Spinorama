@@ -279,7 +279,7 @@ if (process.env.NODE_ENV === "development") {
     });
   }
 }
-async function formatShopName$2(shopName) {
+function formatShopName$2(shopName) {
   let formattedName = shopName.replace(/\.myshopify\.com$/i, "");
   formattedName = formattedName.replace(/[/\\. "$*<>:|?]/g, "_");
   if (!/^[a-zA-Z]/.test(formattedName)) {
@@ -380,7 +380,7 @@ async function hasActiveSubscription(graphql, shopName, isDevelopment = false) {
       return {
         hasSubscription: true,
         plan: activeSubscriptions[0],
-        source: shopName
+        source: "shopify"
       };
     }
     try {
@@ -1080,7 +1080,6 @@ const Subscription_server = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
   connectToDatabase: connectToDatabase$1,
   createCampaignLayoutMetafields,
   createSubscriptionMetafield,
-  formatShopName: formatShopName$2,
   getActiveCampaign,
   getDiscountCodes,
   getSubscriptionStatus,
@@ -26813,7 +26812,7 @@ async function loader({ request }) {
     const { shop } = session;
     console.log("App - Authenticated with shop:", shop);
     const discountCodes = [];
-    const isDevelopment = process.env.NODE_ENV === "production";
+    const isDevelopment = process.env.NODE_ENV === "development";
     const subscriptionStatus = await hasActiveSubscription(
       admin.graphql,
       shop,

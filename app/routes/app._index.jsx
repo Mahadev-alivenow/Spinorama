@@ -21,7 +21,7 @@ export async function loader({ request }) {
     console.log("App - Authenticated with shop:", shop);
 
     const discountCodes = [];
-    const isDevelopment = process.env.NODE_ENV === "production";
+    const isDevelopment = process.env.NODE_ENV === "development";
 
     // Check subscription status using our enhanced function
     const subscriptionStatus = await hasActiveSubscription(

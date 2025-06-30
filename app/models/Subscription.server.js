@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Helper function to format shop name for use as database name
-export async function formatShopName(shopName) {
+function formatShopName(shopName) {
   if (!shopName) return "wheel-of-wonders";
 
   // Remove 'myshopify.com' if present
@@ -190,7 +190,7 @@ export async function hasActiveSubscription(
       return {
         hasSubscription: true,
         plan: activeSubscriptions[0],
-        source: shopName,
+        source: "shopify",
       };
     }
 
