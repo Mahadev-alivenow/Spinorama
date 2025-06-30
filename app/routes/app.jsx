@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
@@ -64,6 +64,10 @@ export const loader = async ({ request }) => {
         console.log("has active subscription", activeSubscriptions);
       }else {
         console.log("No active subscription found");
+        return redirect(
+          `https://admin.shopify.com/store/${shop}/charges/spinorama/pricing_plans`,
+        );
+
       } 
       if (admin && session) {
         console.log("Root loader - attempting to fetch discount codes...");
