@@ -5,7 +5,11 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
-import { getDiscountCodes } from "../models/Subscription.server";
+import {
+  getActiveCampaign,
+  getDiscountCodes,
+  syncActiveCampaignToMetafields,
+} from "../models/Subscription.server";
 import { PlanProvider } from "../context/PlanContext";
 import { CampaignProvider } from "../context/CampaignContext";
 import { Toaster } from "react-hot-toast";
@@ -19,6 +23,8 @@ export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
   const discountCodes = [];
+  let activeCampaign = null;
+
   await authenticate.admin(request);
 
   const url = new URL(request.url);
@@ -27,14 +33,12 @@ export const loader = async ({ request }) => {
   const shop = url.searchParams.get("shop");
   const embedded = url.searchParams.get("embedded");
 
-
   if (!host) {
     throw new Error("Missing host query param in URL");
   }
 
   try {
     // const { getDiscountCodes } = await import("./models/Subscription.server");
-
 
     if (
       shop ||
@@ -83,6 +87,20 @@ export const loader = async ({ request }) => {
         }
 
         console.log("Root loader - processed discount codes:", discountCodes);
+
+        // Try to get active campaign, but don't fail if it errors
+        try {
+          activeCampaign = await getActiveCampaign(shop);
+          if (activeCampaign) {
+            await syncActiveCampaignToMetafields(admin.graphql, shop);
+          }
+        } catch (campaignError) {
+          console.log(
+            "App - Could not fetch/sync campaign:",
+            campaignError.message,
+          );
+          // Continue without campaign
+        }
       } else {
         console.log(
           "Root loader - authentication successful but no admin/session available",
@@ -114,6 +132,7 @@ export const loader = async ({ request }) => {
     discountCodes,
     host,
     shop,
+    hasCampaign: !!activeCampaign,
   });
 };
 
