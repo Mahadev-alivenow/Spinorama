@@ -1,7 +1,7 @@
 "use client";
 
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import Navigation from "../components/Navigation";
 import { usePlan } from "../context/PlanContext";
 import { useEffect } from "react";
@@ -13,11 +13,6 @@ import {
   createSubscriptionMetafield,
   syncActiveCampaignToMetafields,
 } from "../models/Subscription.server";
-
-import styles from "../styles/global.css?url";
-
-// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
-export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export async function loader({ request }) {
   try {
@@ -140,23 +135,6 @@ export default function App() {
     }
   }, [data, setDiscountCodes]);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shop = urlParams.get("shop");
-    const host = urlParams.get("host");
-
-    // If missing, and we're inside iframe → redirect to top-level
-    if (!shop || !host) {
-      if (window.top === window.self) {
-        // Not inside iframe — dev direct load
-        return;
-      }
-
-      const appOrigin = new URL(window.location.origin);
-      const redirectUrl = `/auth/toplevel?shop=${window.__SHOP_DOMAIN__}`; // Replace with a real fallback if you have one
-      window.top.location.assign(redirectUrl);
-    }
-  }, []);
   // Show development info
   if (data.isDevelopment) {
     return (
@@ -291,7 +269,7 @@ export default function App() {
                 Visit the Shopify App Store to subscribe.
               </p>
               <a
-                href={`https://admin.shopify.com/store/${data.shopFormatted}/charges/spinorama/pricing_plans`}
+                href={`https://admin.shopify.com/store/wheel-of-wonders/charges/spinorama/pricing_plans`}
                 target="_top"
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
               >
@@ -369,5 +347,3 @@ export default function App() {
     </div>
   );
 }
-
-//app.jsx

@@ -32,7 +32,7 @@ export const loader = async ({ request }) => {
   const discountCodes = [];
   let activeCampaign = null;
 
-  await authenticate.admin(request);
+  // await authenticate.admin(request);
 
   const url = new URL(request.url);
   const host = url.searchParams.get("host");
