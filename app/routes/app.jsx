@@ -106,13 +106,22 @@ export const loader = async ({ request }) => {
 
         // Try to get active campaign, but don't fail if it errors
         try {
-          activeCampaign = await getActiveCampaign(admin.graphql, shop);
+          activeCampaign = await getActiveCampaign(shop);
           if (activeCampaign) {
-            const syncResult = await syncActiveCampaignToMetafields(
+            const syncActiveCamp = await syncActiveCampaignToMetafields(
               admin.graphql,
               shop,
             );
-            console.log("Sync on THEME in app.jsx :", syncResult);
+            if (syncActiveCamp.success) {
+              console.log(
+                "Root from UI - successfully synced active campaign to metafields",
+              );
+            } else {
+              console.log(
+                "Root from UI failed - failed to sync active campaign to metafields:",
+                syncActiveCamp.error,
+              );
+            }
           }
         } catch (campaignError) {
           console.log(
