@@ -54,21 +54,21 @@ export const loader = async ({ request }) => {
 
       const { admin, session } = await authenticate.admin(request);
 
-      const subscriptions = await getSubscriptionStatus(admin.graphql);
-      const activeSubscriptions =
-        subscriptions.data.app.installation.activeSubscriptions;
+      // const subscriptions = await getSubscriptionStatus(admin.graphql);
+      // const activeSubscriptions =
+      //   subscriptions.data.app.installation.activeSubscriptions;
 
-      console.log("App - Active subscriptions:", activeSubscriptions);
+      // console.log("App - Active subscriptions:", activeSubscriptions);
 
-      if (activeSubscriptions.length > 0) {
-        console.log("has active subscription", activeSubscriptions);
-      }else {
-        console.log("No active subscription found");
-        return redirect(
-          `https://admin.shopify.com/store/${shop}/charges/spinorama/pricing_plans`,
-        );
+      // if (activeSubscriptions.length > 0) {
+      //   console.log("has active subscription", activeSubscriptions);
+      // }else {
+      //   console.log("No active subscription found for shop:", shop);
+      //   return redirect(
+      //     `https://admin.shopify.com/store/${shop}/charges/spinorama/pricing_plans`,
+      //   );
 
-      } 
+      // }
       if (admin && session) {
         console.log("Root loader - attempting to fetch discount codes...");
         const discountCode = await getDiscountCodes(admin.graphql);

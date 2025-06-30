@@ -12,6 +12,7 @@ import {
   hasActiveSubscription,
   createSubscriptionMetafield,
   syncActiveCampaignToMetafields,
+  getSubscriptionStatus,
 } from "../models/Subscription.server";
 
 export async function loader({ request }) {
@@ -68,6 +69,21 @@ export async function loader({ request }) {
       console.log(
         "App - Could not fetch discount codes:",
         discountError.message,
+      );
+    }
+    const subscriptions = await getSubscriptionStatus(admin.graphql);
+    const activeSubscriptions =
+      subscriptions.data.app.installation.activeSubscriptions;
+
+    console.log("App - Active subscriptions:", activeSubscriptions);
+
+    if (activeSubscriptions.length > 0) {
+      console.log("has active subscription", activeSubscriptions);
+    } else {
+      let shopFormatted = shop.replace(/\.myshopify\.com$/i, "");
+      console.log("No active subscription found for shop maha:", shopFormatted);
+      return redirect(
+        `https://admin.shopify.com/store/${shopFormatted}/charges/spinorama/pricing_plans`,
       );
     }
 
