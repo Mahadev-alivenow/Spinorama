@@ -25312,12 +25312,26 @@ const route60 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePrope
 const links = () => [{ rel: "stylesheet", href: styles }];
 const loader$4 = async ({ request }) => {
   var _a2, _b, _c, _d, _e;
-  const discountCodes = [];
-  let activeCampaign = null;
   const url = new URL(request.url);
   const host = url.searchParams.get("host");
   const shop = url.searchParams.get("shop");
   const embedded = url.searchParams.get("embedded");
+  const isThemeEditorRequest = url.searchParams.has("section_id") || url.pathname.includes("/apps/");
+  if (isThemeEditorRequest) {
+    return json({
+      ENV: {
+        NODE_ENV: process.env.NODE_ENV
+      },
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      discountCodes: [],
+      host,
+      shop,
+      hasCampaign: false,
+      isThemeEditor: true
+    });
+  }
+  const discountCodes = [];
+  let activeCampaign = null;
   if (!host) {
     throw new Error("Missing host query param in URL");
   }
@@ -25398,7 +25412,8 @@ const loader$4 = async ({ request }) => {
     discountCodes,
     host,
     shop,
-    hasCampaign: !!activeCampaign
+    hasCampaign: !!activeCampaign,
+    isThemeEditor: false
   });
 };
 function App$1() {
