@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
@@ -8,7 +8,6 @@ import { authenticate } from "../shopify.server";
 import {
   getActiveCampaign,
   getDiscountCodes,
-  getSubscriptionStatus,
   syncActiveCampaignToMetafields,
 } from "../models/Subscription.server";
 import { PlanProvider } from "../context/PlanContext";
@@ -23,6 +22,7 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
+
   
   const discountCodes = [];
   let activeCampaign = null;
@@ -54,21 +54,6 @@ export const loader = async ({ request }) => {
 
       const { admin, session } = await authenticate.admin(request);
 
-      // const subscriptions = await getSubscriptionStatus(admin.graphql);
-      // const activeSubscriptions =
-      //   subscriptions.data.app.installation.activeSubscriptions;
-
-      // console.log("App - Active subscriptions:", activeSubscriptions);
-
-      // if (activeSubscriptions.length > 0) {
-      //   console.log("has active subscription", activeSubscriptions);
-      // }else {
-      //   console.log("No active subscription found for shop:", shop);
-      //   return redirect(
-      //     `https://admin.shopify.com/store/${shop}/charges/spinorama/pricing_plans`,
-      //   );
-
-      // }
       if (admin && session) {
         console.log("Root loader - attempting to fetch discount codes...");
         const discountCode = await getDiscountCodes(admin.graphql);
