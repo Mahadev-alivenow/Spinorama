@@ -1,1 +1,0 @@
-import{j as e}from"./jsx-runtime-DlxonYWr.js";function t(){return e.jsxs("div",{children:[e.jsx("h1",{children:"Test Sync Route"}),e.jsx("p",{children:"Check the console for sync results"})]})}export{t as default};
