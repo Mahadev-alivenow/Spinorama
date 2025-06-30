@@ -9,6 +9,11 @@ import { toast } from "react-hot-toast";
 import DbStatusIndicator from "../components/DbStatusIndicator";
 import CampaignActiveIndicator from "../components/CampaignActiveIndicator";
 
+import styles from "../styles/global.css?url";
+
+// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [{ rel: "stylesheet", href: styles }];
+
 // Campaign list component to avoid context issues
 function CampaignList() {
   const {
