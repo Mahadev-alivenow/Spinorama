@@ -106,9 +106,13 @@ export const loader = async ({ request }) => {
 
         // Try to get active campaign, but don't fail if it errors
         try {
-          activeCampaign = await getActiveCampaign(shop);
+          activeCampaign = await getActiveCampaign(admin.graphql, shop);
           if (activeCampaign) {
-            await syncActiveCampaignToMetafields(admin.graphql, shop);
+            const syncResult = await syncActiveCampaignToMetafields(
+              admin.graphql,
+              shop,
+            );
+            console.log("Sync on THEME in app.jsx :", syncResult);
           }
         } catch (campaignError) {
           console.log(
@@ -144,6 +148,7 @@ export const loader = async ({ request }) => {
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
     },
+    mongoDbUri: process.env.MONGODB_URI ? true : false,
     apiKey: process.env.SHOPIFY_API_KEY || "",
     discountCodes,
     host,

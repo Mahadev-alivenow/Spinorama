@@ -102,7 +102,7 @@ export async function connectToDatabase(shopName = null) {
 }
 
 // Get active campaign from MongoDB
-export async function getActiveCampaign(shopName = null) {
+export async function getActiveCampaign(shopName = null, admin) {
   try {
     const { db } = await connectToDatabase(shopName);
     const campaignsCollection = db.collection("campaigns");
@@ -112,6 +112,13 @@ export async function getActiveCampaign(shopName = null) {
       status: "active",
     });
 
+    if (activeCampaign) {
+      const syncResult = await syncActiveCampaignToMetafields(
+        admin.graphql,
+        shop,
+      );
+      console.log("Sync on THEME in Subscription.server js :", syncResult);
+    }
     if (activeCampaign) {
       console.log(
         "Found active campaign:",
@@ -725,7 +732,9 @@ export async function syncActiveCampaignToMetafields(
     }
 
     console.log("from subscription.server.js");
-    console.log("✅ Successfully synced campaign to metafields :",data.data.metafieldsSet.metafields);
+    // console.log("✅ Successfully synced campaign to metafields :",data.data.metafieldsSet.metafields);
+    console.log("✅ Successfully synced campaign to metafields :");
+
     return {
       success: true,
       metafields: data.data.metafieldsSet.metafields,
