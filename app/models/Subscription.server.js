@@ -113,10 +113,7 @@ export async function getActiveCampaign(shopName = null, admin) {
     });
 
     if (activeCampaign) {
-      const syncResult = await syncActiveCampaignToMetafields(
-        admin.graphql,
-        shop,
-      );
+      const syncResult = await syncActiveCampaignToMetafields(admin, shopName);
       console.log("Sync on THEME in Subscription.server js :", syncResult);
     }
     if (activeCampaign) {
