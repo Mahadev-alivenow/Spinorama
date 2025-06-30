@@ -1,228 +1,16 @@
 "use client";
 
-import { json } from "@remix-run/node";
-import {
-  Outlet,
-  useNavigate,
-  useLocation,
-  useLoaderData,
-} from "@remix-run/react";
+import { Outlet, useNavigate, useLocation } from "@remix-run/react";
 import { CampaignProvider, useCampaign } from "../context/CampaignContext";
 import { PlanProvider } from "../context/PlanContext";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
 import { toast } from "react-hot-toast";
+import DbStatusIndicator from "../components/DbStatusIndicator";
 import CampaignActiveIndicator from "../components/CampaignActiveIndicator";
-import styles from "../styles/global.css?url";
-
-
-// export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
-export const links = () => [{ rel: "stylesheet", href: styles }];
-
-export const loader = async ({ request }) => {
-  // const { authenticate } = await import(
-  //   "../shopify.server"
-  // );
-  // const url = new URL(request.url);
-
-  const { connectToDatabase } = await import("../../lib/mongodb.server");
-
-  // const { admin, session } = await authenticate.admin(request);
-  //     const { shop } = session;
-  //     console.log("App - Authenticated with shop:", shop);
-
-  // const shop = url.searchParams.get("shop");
-
-  let campaigns = [];
-  let shopName = "wheel-of-wonders";
-  // const { session } = await authenticate.admin(request);
-  //       let shopName = session.shop;
-  console.log("Campaigns - Authenticated with shop:", shopName);
-  let authError = null;
-  // const isClientNavigation = isClientSideNavigation(request);
-
-  try {
-    // Use enhanced authentication
-    // const authResult = await authenticateWithFallback(request);
-
-    // if (!authResult.success) {
-    //   // Handle fallback case for client navigation
-    //   if (authResult.fallback && isClientNavigation) {
-    //     console.log("Campaigns - Using fallback data for client navigation");
-
-    //     return json({
-    //       campaigns: [],
-    //       shopName: authResult.shop || "unknown-shop",
-    //       authError: "Authentication temporarily unavailable",
-    //       fallbackMode: true,
-    //       isAuthenticated: false,
-    //     });
-    //   }
-
-    //   // For direct navigation, redirect to auth
-    //   const url = new URL(request.url);
-    //   const shop = url.searchParams.get("shop");
-
-    //   if (shop) {
-    //     return Response.redirect(`/auth?shop=${shop}`, 302);
-    //   }
-
-    //   return Response.redirect(`/auth/login`, 302);
-    // }
-
-    // const { session } = authResult;
-    // shopName = session.shop;
-    // console.log("Campaigns - Authenticated successfully, shop:", shopName);
-
-    // Try to get campaigns from database
-    try {
-      const { db } = await connectToDatabase(shopName);
-      console.log("Campaigns - Fetching campaigns from database:", shopName);
-
-      const campaignsCollection = db.collection("campaigns");
-      const campaignsCursor = await campaignsCollection
-        .find({})
-        .sort({ createdAt: -1 });
-      campaigns = await campaignsCursor.toArray();
-
-      // Convert ObjectId to string for JSON serialization
-      campaigns = campaigns.map((campaign) => ({
-        ...campaign,
-        _id: campaign._id.toString(),
-      }));
-
-      console.log("Campaigns - Loaded campaigns:", campaigns?.length || 0);
-    } catch (dbError) {
-      console.error("Campaigns - Database error:", dbError);
-
-      // For client navigation, continue with empty campaigns but don't show fallback mode
-      // if (isClientNavigation) {
-      //   campaigns = [];
-      // } else {
-      //   return json({
-      //     campaigns: [],
-      //     error: "Failed to fetch campaigns from database",
-      //     dbError: dbError.message,
-      //   });
-      // }
-    }
-
-    return json({
-      campaigns,
-      shopName,
-      authError: null,
-      fallbackMode: false,
-      isAuthenticated: true,
-    });
-  } catch (error) {
-    console.error("Campaigns - Loader auth error:", error);
-    authError = error;
-
-    // Enhanced fallback logic for client navigation
-    // if (isClientNavigation) {
-    //   const url = new URL(request.url);
-    //   shopName =
-    //     url.searchParams.get("shop") ||
-    //     request.headers.get("x-shopify-shop-domain") ||
-    //     "unknown-shop";
-
-    //   console.log(
-    //     "Campaigns - Client navigation fallback, using shop:",
-    //     shopName,
-    //   );
-
-    //   return json({
-    //     campaigns: [],
-    //     shopName,
-    //     authError: "Authentication temporarily unavailable",
-    //     fallbackMode: true,
-    //     isAuthenticated: false,
-    //   });
-    // }
-
-    // Try to extract shop from request as fallback for direct navigation
-    // const url = new URL(request.url);
-    // shopName =
-    //   url.searchParams.get("shop") ||
-    //   request.headers.get("x-shopify-shop-domain");
-
-    // if (!shopName) {
-    //   // Try to extract from referrer
-    //   const referrer = request.headers.get("referer");
-    //   if (referrer) {
-    //     try {
-    //       const referrerUrl = new URL(referrer);
-    //       shopName = referrerUrl.searchParams.get("shop");
-    //     } catch (e) {
-    //       console.log("Could not parse referrer URL");
-    //     }
-    //   }
-    // }
-
-    // if (shopName) {
-    //   console.log(
-    //     "Campaigns - Authentication failed, using shop from request:",
-    //     shopName,
-    //   );
-
-    // Try to get campaigns even with auth failure
-    try {
-      const { db } = await connectToDatabase(shopName);
-      console.log(
-        "Campaigns - Fetching campaigns from database (fallback):",
-        shopName,
-      );
-
-      const campaignsCollection = db.collection("campaigns");
-      const campaignsCursor = await campaignsCollection
-        .find({})
-        .sort({ createdAt: -1 });
-      campaigns = await campaignsCursor.toArray();
-
-      // Convert ObjectId to string for JSON serialization
-      campaigns = campaigns.map((campaign) => ({
-        ...campaign,
-        _id: campaign._id.toString(),
-      }));
-
-      console.log(
-        "Campaigns - Loaded campaigns (fallback):",
-        campaigns?.length || 0,
-      );
-    } catch (dbError) {
-      console.error("Campaigns - Database error (fallback):", dbError);
-    }
-
-    return json({
-      campaigns,
-      shopName,
-      authError: "Authentication failed, but campaigns loaded from fallback",
-      fallbackMode: false, // Don't show fallback mode if we have data
-      isAuthenticated: false,
-    });
-    // } else {
-    //   // If we can't determine the shop and there's an auth error,
-    //   // check if it's a redirect response
-    //   if (error && typeof error.status === "number" && error.status === 302) {
-    //     // This is a redirect to login, throw it to let Remix handle it
-    //     throw error;
-    //   }
-
-    //   return json({
-    //     campaigns: [],
-    //     error:
-    //       "Could not determine shop name. Please ensure you're accessing this from within the Shopify admin.",
-    //     authError: true,
-    //     fallbackMode: true,
-    //     isAuthenticated: false,
-    //   });
-    // }
-  }
-};
 
 // Campaign list component to avoid context issues
 function CampaignList() {
-  const data = useLoaderData();
   const {
     allCampaigns,
     toggleCampaignStatus,
@@ -233,44 +21,6 @@ function CampaignList() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState(null);
   const navigate = useNavigate();
-
-  // Use campaigns from loader data if available, otherwise use context
-  const campaigns = data?.campaigns?.length > 0 ? data.campaigns : allCampaigns;
-  const shouldShowFallback = data?.fallbackMode && campaigns.length === 0;
-
-  // Show fallback UI only if we're in fallback mode AND have no data
-  if (shouldShowFallback) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <Navigation />
-        <div className="mt-8">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-yellow-800">
-              ⚠️ Running in offline mode. Campaign data may not be current.
-              Please refresh the page to restore full functionality.
-            </p>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h1 className="text-3xl font-bold mb-4">All Campaigns</h1>
-            <p className="text-gray-600 mb-6">
-              Your campaigns will appear here once connectivity is restored.
-            </p>
-            <h2 className="text-blue-600 mb-6">
-              Please create campaigns using the "Create Campaign" button.
-            </h2>
-            <div className="text-center">
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Refresh Page
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -296,46 +46,20 @@ function CampaignList() {
   // Handle edit campaign click
   const handleEditClick = (campaignId) => {
     console.log("Navigating to edit campaign:", campaignId);
+    // Changed the route format to match Remix's file-based routing
     navigate(`/campaigns/edit/${campaignId}`);
   };
 
   // Handle toggle status
   const handleToggleStatus = async (campaignId, currentStatus) => {
     try {
+      await toggleCampaignStatus(campaignId);
       const newStatus = currentStatus === "active" ? "draft" : "active";
-
-      if (newStatus === "active") {
-        toast.loading("Activating campaign and syncing to storefront...", {
-          id: `toggle-${campaignId}`,
-        });
-      } else {
-        toast.loading("Deactivating campaign...", {
-          id: `toggle-${campaignId}`,
-        });
-      }
-
-      const result = await toggleCampaignStatus(campaignId);
-
-      if (result.success) {
-        toast.success(
-          `Campaign ${newStatus === "active" ? "activated and synced to storefront" : "deactivated"} successfully!`,
-          { id: `toggle-${campaignId}` },
-        );
-
-        // Refresh the page after a short delay to show the toast
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500); // 1.5 second delay to show the success toast
-      } else {
-        toast.error("Failed to update campaign status", {
-          id: `toggle-${campaignId}`,
-        });
-      }
+      toast.success(
+        `Campaign ${newStatus === "active" ? "activated" : "deactivated"} successfully!`,
+      );
     } catch (error) {
-      console.error("Error toggling status:", error);
-      toast.error("Failed to update campaign status", {
-        id: `toggle-${campaignId}`,
-      });
+      toast.error("Failed to update campaign status");
     }
   };
 
@@ -358,6 +82,15 @@ function CampaignList() {
     }
   };
 
+  // Show database connection error if applicable
+  useEffect(() => {
+    if (dbStatus.status === "error") {
+      toast.error(
+        "Database connection error. Some features may not work properly.",
+      );
+    }
+  }, [dbStatus]);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <Navigation />
@@ -369,29 +102,35 @@ function CampaignList() {
             <div className="mt-2">
               <CampaignActiveIndicator />
             </div>
-            {/* {data?.shopName && (
-              <div className="text-sm text-gray-600 mt-1">
-                Shop:{" "}
-                <span className="font-semibold">
-                  {data.shopName.replace(/\.myshopify\.com$/i, "")}
-                </span>
-                {data?.authError && !data?.isAuthenticated && (
-                  <span className="text-orange-600 ml-2">
-                    (Limited functionality)
-                  </span>
-                )}
-              </div>
-            )} */}
           </div>
+          {/* <button
+            onClick={handleCreateClick}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+            disabled={dbStatus.status === "error"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Create New Campaign
+          </button> */}
         </div>
 
         {isLoading ? (
           <div className="flex justify-center py-10">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
-        ) : campaigns.length > 0 ? (
+        ) : allCampaigns.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {campaigns.map((campaign) => (
+            {allCampaigns.map((campaign) => (
               <div
                 key={campaign.id || campaign._id || `campaign-${Math.random()}`}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -522,6 +261,7 @@ function CampaignList() {
 
                   <div className="flex justify-between pt-3 border-t border-gray-100">
                     <div className="flex space-x-2">
+                      {/* Changed from Link to button with onClick handler for better control */}
                       <button
                         onClick={() =>
                           handleViewClick(campaign.id || campaign._id)
@@ -550,6 +290,7 @@ function CampaignList() {
                         </svg>
                         View
                       </button>
+                      {/* Changed from Link to button with onClick handler for better control */}
                       <button
                         onClick={() =>
                           handleEditClick(campaign.id || campaign._id)
@@ -624,6 +365,7 @@ function CampaignList() {
             <button
               onClick={handleCreateClick}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              disabled={dbStatus.status === "error"}
             >
               Create Your First Campaign
             </button>
@@ -657,6 +399,8 @@ function CampaignList() {
           </div>
         </div>
       )}
+
+      {/* <DbStatusIndicator /> */}
     </div>
   );
 }
