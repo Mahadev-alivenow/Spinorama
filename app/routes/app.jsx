@@ -35,15 +35,14 @@ export const loader = async ({ request }) => {
 
   if (isThemeEditorRequest) {
     return json({
-      ENV: {
-        NODE_ENV: process.env.NODE_ENV,
-      },
-      apiKey: process.env.SHOPIFY_API_KEY || "",
+      isThemeEditor: true,
       discountCodes: [],
       host,
       shop,
-      hasCampaign: false,
-      isThemeEditor: true,
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      ENV: {
+        NODE_ENV: process.env.NODE_ENV,
+      },
     });
   }
 
@@ -156,13 +155,18 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const data = useLoaderData();
-const location = useLocation();
+
+  const location = useLocation();
+  const isThemeEditor = data.isThemeEditor;
+
   const apiKey = data.apiKey || process.env.SHOPIFY_API_KEY || "";
   const query = new URLSearchParams(location.search);
   const shop = data.shop || query.get("shop") || "";
   const host = data.host || process.env.HOST || "";
 
   useEffect(() => {
+    if (isThemeEditor) return;
+
     if (typeof window !== "undefined") {
       if (data.discountCodes && data.discountCodes.length > 0) {
         window.GLOBAL_DISCOUNT_CODES = data.discountCodes;
@@ -201,6 +205,17 @@ const location = useLocation();
       }
     }
   }, [data.discountCodes]);
+
+  // ✅ For Theme Editor: return minimal app layout without any logic
+  if (isThemeEditor) {
+    return (
+      <AppProvider isEmbeddedApp apiKey={apiKey} host={host}>
+        <div style={{ padding: 20 }}>
+          <h1>Theme App Embed Loaded</h1>
+        </div>
+      </AppProvider>
+    );
+  }
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey} host={host}>
