@@ -167,7 +167,7 @@ export async function hasActiveSubscription(
 ) {
   try {
     // In development mode, always return true for testing (you can modify this)
-    if (isDevelopment || process.env.NODE_ENV === "production") {
+    if (isDevelopment || process.env.NODE_ENV === "development") {
       console.log("🔧 Development mode: Simulating active subscription");
       return {
         hasSubscription: true, // Change to false to test no subscription
@@ -190,7 +190,7 @@ export async function hasActiveSubscription(
       return {
         hasSubscription: true,
         plan: activeSubscriptions[0],
-        source: "shopify",
+        source: shopName,
       };
     }
 
