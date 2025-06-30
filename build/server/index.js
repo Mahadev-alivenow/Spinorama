@@ -1275,7 +1275,7 @@ async function loader$I({ request }) {
     const { session: session2, admin: admin2 } = await authenticate.admin(request);
     const shopName2 = session2.shop;
     const graphql = admin2.graphql;
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName2);
+    const syncResult = await syncActiveCampaignToMetafields(graphql, "wheel-of-wonders");
     if (syncResult.success) {
       return json({
         success: true,

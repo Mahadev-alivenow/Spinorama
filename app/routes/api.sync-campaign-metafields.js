@@ -236,7 +236,8 @@ export async function loader({ request }) {
     const graphql = admin.graphql;
 
     // Sync the current active campaign
-    const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
+    // const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
+    const syncResult = await syncActiveCampaignToMetafields(graphql, "wheel-of-wonders");
 
     if (syncResult.success) {
       return json({
