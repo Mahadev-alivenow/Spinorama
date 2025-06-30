@@ -22,11 +22,6 @@ import styles from "../styles/global.css?url";
 export const links = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }) => {
-
-  
-  const discountCodes = [];
-  let activeCampaign = null;
-
   // await authenticate.admin(request);
 
   const url = new URL(request.url);
@@ -34,6 +29,26 @@ export const loader = async ({ request }) => {
 
   const shop = url.searchParams.get("shop");
   const embedded = url.searchParams.get("embedded");
+
+  const isThemeEditorRequest =
+    url.searchParams.has("section_id") || url.pathname.includes("/apps/");
+
+  if (isThemeEditorRequest) {
+    return json({
+      ENV: {
+        NODE_ENV: process.env.NODE_ENV,
+      },
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      discountCodes: [],
+      host,
+      shop,
+      hasCampaign: false,
+      isThemeEditor: true,
+    });
+  }
+
+  const discountCodes = [];
+  let activeCampaign = null;
 
   if (!host) {
     throw new Error("Missing host query param in URL");
@@ -135,6 +150,7 @@ export const loader = async ({ request }) => {
     host,
     shop,
     hasCampaign: !!activeCampaign,
+    isThemeEditor: false,
   });
 };
 
