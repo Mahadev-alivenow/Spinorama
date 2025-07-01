@@ -362,521 +362,522 @@ export async function createSubscriptionMetafield(
 }
 
 // // Updated syncActiveCampaignToMetafields with subscription checking
-// export async function syncActiveCampaignToMetafields(
-//   graphql,
-//   campaignOrShopName,
-// ) {
-//   try {
-//     let activeCampaign = null;
-//     let shopName = null;
-
-//     // Handle both campaign object and shop name parameters
-//     if (typeof campaignOrShopName === "string") {
-//       shopName = campaignOrShopName;
-//       activeCampaign = await getActiveCampaign(shopName);
-//     } else if (campaignOrShopName && typeof campaignOrShopName === "object") {
-//       activeCampaign = campaignOrShopName;
-//       // Try to extract shop name from campaign or use a fallback
-//       shopName = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
-//     } else {
-//       console.log("Invalid parameter for syncActiveCampaignToMetafields");
-//       return { success: false, message: "Invalid parameter" };
-//     }
-
-//     // First check if we have an active subscription
-//     const subscriptionStatus = await hasActiveSubscription(graphql, shopName);
-
-//     // Always set the subscription metafield based on current status
-//     await createSubscriptionMetafield(
-//       graphql,
-//       subscriptionStatus.hasSubscription,
-//       shopName,
-//     );
-
-//     // Only sync campaign data if we have a subscription
-//     if (!subscriptionStatus.hasSubscription) {
-//       console.log("⚠️ No active subscription - not syncing campaign data");
-//       return { success: false, message: "No active subscription" };
-//     }
-
-//     // Get the active campaign if we don't have it
-//     if (!activeCampaign) {
-//       activeCampaign = await getActiveCampaign(shopName);
-//     }
-
-//     if (!activeCampaign) {
-//       console.log("No active campaign found to sync to metafields");
-//       return { success: false, message: "No active campaign found" };
-//     }
-
-//     console.log(
-//       "🔄 Syncing active campaign to metafields:",
-//       activeCampaign.name,
-//     );
-
-//     // Extract layout and content information
-//     const layout = activeCampaign.layout || {};
-//     const content = activeCampaign.content || {};
-//     const rules = activeCampaign.rules || {};
-
-//     // Layout defaults
-//     const floatingButtonHasText =
-//       layout.floatingButtonHasText === true ? "true" : "false";
-//     const floatingButtonPosition =
-//       layout.floatingButtonPosition || "bottomRight";
-//     const floatingButtonText = layout.floatingButtonText || "";
-//     const showFloatingButton =
-//       layout.showFloatingButton === true ? "true" : "false";
-//     const primaryColor = activeCampaign.primaryColor || "#ffc700";
-//     const secondaryColor = activeCampaign.secondaryColor || "#ffffff";
-//     const tertiaryColor = activeCampaign.tertiaryColor || "#000000";
-//     const wheelSectors = String(layout.wheelSectors || "six");
-//     const envSelection = layout.theme || "light";
-//     const versionSelection = layout.popupLayout || "bottom";
-//     const displayStyle = layout.displayStyle || "popup";
-//     const colorTone = activeCampaign.color || "dualTone";
-//     const logoImage = layout.logo || "";
-
-//     // Content defaults
-//     const landing = content.landing || {};
-//     const headlineText = landing.title || "TRY YOUR LUCK";
-//     const headlineChildText =
-//       landing.subtitle || "This is a demo of our Spin to Win";
-//     const showLandingSubtitle =
-//       landing.showSubtitle === true ? "true" : "false";
-//     const showEmail = landing.showEmail === true ? "true" : "false";
-//     const emailPlaceholder = landing.emailPlaceholder || "Enter your Email";
-//     const showPrivacyPolicy =
-//       landing.showPrivacyPolicy === true ? "true" : "false";
-//     const termCondText =
-//       landing.privacyPolicyText || "I accept the terms and conditions";
-//     const landingButtonText = landing.buttonText || "SPIN";
-
-//     const result = content.result || {};
-//     const headlineResultText = result.title || "CONGRATULATIONS";
-//     const showResultSubtitle = result.showSubtitle === true ? "true" : "false";
-//     const resultSubtitle = result.subtitle || "";
-//     const showResultButton = result.showButton === true ? "true" : "false";
-//     const resultButtonText = result.buttonText || "REDEEM NOW";
-
-//     const wheel = content.wheel || {};
-//     const wheelSectorsData = wheel.sectors || [];
-//     const copySameCode = wheel.copySameCode === true ? "true" : "false";
-//     // Serialize sectors array for storage
-//     const wheelSectorsJson = JSON.stringify(wheelSectorsData);
-
-//     // Trigger settings
-//     const appearingRules = rules.appearingRules || {};
-//     const triggersJson = JSON.stringify({
-//       trigger_clicks_enabled: appearingRules.clicksCount?.enabled || false,
-//       trigger_clicks_value: appearingRules.clicksCount?.count || 0,
-//       trigger_exitIntent_enabled: appearingRules.exitIntent?.enabled || false,
-//       trigger_exitIntent_device: "desktop",
-//       trigger_inactivity_enabled: false,
-//       trigger_inactivity_seconds: 10,
-//       trigger_pageCount_enabled: appearingRules.pageCount?.enabled || false,
-//       trigger_pageCount_pages: appearingRules.pageCount?.count || 1,
-//       trigger_pageScroll_enabled: appearingRules.pageScroll?.enabled || false,
-//       trigger_pageScroll_percentage:
-//         appearingRules.pageScroll?.percentage || 50,
-//       trigger_timeDelay_enabled: appearingRules.timeDelay?.enabled || false,
-//       trigger_timeDelay_seconds: appearingRules.timeDelay?.seconds || 5,
-//     });
-
-//     // App installation ID
-//     const appIdQuery = await graphql(`
-//       #graphql
-//       query {
-//         currentAppInstallation {
-//           id
-//         }
-//         shop {
-//           id
-//         }
-//       }
-//     `);
-//     // const appInstallationID = (await appIdQuery.json()).data
-//     //   .shop.id;
-
-//     const appIdQueryData = await appIdQuery.json();
-//     // const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
-//     const appInstallationID = appIdQueryData.data.shop.id;
-
-//     console.log("Shop Installation ID:", appInstallationID);
-//     // console.log("Shop Installation ID:", shopInstallationID);
-
-//     // Build all metafields including subscription status
-//     const metafieldsInput = [
-//       // Subscription status
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "hasActiveSubscription",
-//         type: "boolean",
-//         value: "true",
-//         ownerId: appInstallationID,
-//       },
-//       // Layout metafields
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "floatingButtonHasText",
-//         type: "boolean",
-//         value: floatingButtonHasText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "floatingButtonPosition",
-//         type: "single_line_text_field",
-//         value: floatingButtonPosition,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "floatingButtonText",
-//         type: "single_line_text_field",
-//         value: floatingButtonText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "showFloatingButton",
-//         type: "boolean",
-//         value: showFloatingButton,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "displayStyle",
-//         type: "single_line_text_field",
-//         value: displayStyle,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "primaryColor",
-//         type: "single_line_text_field",
-//         value: primaryColor,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "secondaryColor",
-//         type: "single_line_text_field",
-//         value: secondaryColor,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "tertiaryColor",
-//         type: "single_line_text_field",
-//         value: tertiaryColor,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "activeCampaignId",
-//         type: "single_line_text_field",
-//         value: activeCampaign.id || "",
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "wheelSectors",
-//         type: "single_line_text_field",
-//         value: wheelSectors,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "wheelSectorsData",
-//         type: "json",
-//         value: wheelSectorsJson,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "envSelection",
-//         type: "single_line_text_field",
-//         value: envSelection,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "versionSelection",
-//         type: "single_line_text_field",
-//         value: versionSelection,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "colorTone",
-//         type: "single_line_text_field",
-//         value: colorTone,
-//         ownerId: appInstallationID,
-//       },
-//       // Landing page metafields
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "headlineText",
-//         type: "single_line_text_field",
-//         value: headlineText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "headlineChildText",
-//         type: "single_line_text_field",
-//         value: headlineChildText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "emailPlaceholder",
-//         type: "single_line_text_field",
-//         value: emailPlaceholder,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "termCondText",
-//         type: "single_line_text_field",
-//         value: termCondText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "landingButtonText",
-//         type: "single_line_text_field",
-//         value: landingButtonText,
-//         ownerId: appInstallationID,
-//       },
-//       // Result page metafields
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "headlineResultText",
-//         type: "single_line_text_field",
-//         value: headlineResultText,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "resultSubtitle",
-//         type: "single_line_text_field",
-//         value: resultSubtitle,
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "resultButtonText",
-//         type: "single_line_text_field",
-//         value: resultButtonText,
-//         ownerId: appInstallationID,
-//       },
-//       // Default coupon result
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "couponResult",
-//         type: "number_integer",
-//         value: "2",
-//         ownerId: appInstallationID,
-//       },
-//       {
-//         namespace: "wheel-of-wonders",
-//         key: "triggersData",
-//         type: "json",
-//         value: triggersJson,
-//         ownerId: appInstallationID,
-//       },
-//     ];
-
-//     // Remove any entries with blank values to avoid Shopify errors
-//     const filteredMetafields = metafieldsInput.filter(
-//       (mf) => mf.value !== undefined && mf.value !== null && mf.value !== "",
-//     );
-
-//     // Execute mutation
-//     const metafieldsMutation = await graphql(
-//       `
-//         mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
-//           metafieldsSet(metafields: $metafields) {
-//             metafields {
-//               id
-//               namespace
-//               key
-//               value
-//             }
-//             userErrors {
-//               field
-//               message
-//             }
-//           }
-//         }
-//       `,
-//       { variables: { metafields: filteredMetafields } },
-//     );
-
-//     const data = await metafieldsMutation.json();
-//     if (data.data?.metafieldsSet?.userErrors?.length) {
-//       console.error(
-//         "Metafield userErrors:",
-//         data.data.metafieldsSet.userErrors,
-//       );
-//       return { success: false, errors: data.data.metafieldsSet.userErrors };
-//     }
-
-//     console.log("from subscription.server.js");
-//     // console.log("✅ Successfully synced campaign to metafields :",data.data.metafieldsSet.metafields);
-//     console.log("✅ Successfully synced campaign to metafields :");
-    
-//     return {
-//       success: true,
-//       metafields: data.data.metafieldsSet.metafields,
-//       campaignId: activeCampaign.id,
-//     };
-//   } catch (error) {
-//     console.error("Error syncing campaign to metafields:", error);
-//     return { success: false, error: error.message };
-//   }
-// }
-
-
-// Create metafields for the active campaign
-export async function syncActiveCampaignToMetafields(graphql, shopName) {
+export async function syncActiveCampaignToMetafields(
+  graphql,
+  campaignOrShopName,
+) {
   try {
-    // Get the active campaign from MongoDB
-    const activeCampaign = await getActiveCampaign(shopName)
+    let activeCampaign = null;
+    let shopName = null;
 
-    if (!activeCampaign) {
-      console.log("No active campaign found to sync to metafields")
-      return { success: false, message: "No active campaign found" }
+    // Handle both campaign object and shop name parameters
+    if (typeof campaignOrShopName === "string") {
+      shopName = campaignOrShopName;
+      activeCampaign = await getActiveCampaign(shopName);
+    } else if (campaignOrShopName && typeof campaignOrShopName === "object") {
+      activeCampaign = campaignOrShopName;
+      // Try to extract shop name from campaign or use a fallback
+      shopName = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
+    } else {
+      console.log("Invalid parameter for syncActiveCampaignToMetafields");
+      return { success: false, message: "Invalid parameter" };
     }
 
-    console.log("Syncing active campaign to metafields:", activeCampaign,activeCampaign.name)
+    // First check if we have an active subscription
+    const subscriptionStatus = await hasActiveSubscription(graphql, shopName);
+
+    // Always set the subscription metafield based on current status
+    await createSubscriptionMetafield(
+      graphql,
+      subscriptionStatus.hasSubscription,
+      shopName,
+    );
+
+    // Only sync campaign data if we have a subscription
+    if (!subscriptionStatus.hasSubscription) {
+      console.log("⚠️ No active subscription - not syncing campaign data");
+      return { success: false, message: "No active subscription" };
+    }
+
+    // Get the active campaign if we don't have it
+    if (!activeCampaign) {
+      activeCampaign = await getActiveCampaign(shopName);
+    }
+
+    if (!activeCampaign) {
+      console.log("No active campaign found to sync to metafields");
+      return { success: false, message: "No active campaign found" };
+    }
+
+    console.log(
+      "🔄 Syncing active campaign to metafields:",
+      activeCampaign.name,
+      activeCampaign
+    );
 
     // Extract layout and content information
-    const layout = activeCampaign.layout 
-    const content = activeCampaign.content 
+    const layout = activeCampaign.layout || {};
+    const content = activeCampaign.content || {};
+    const rules = activeCampaign.rules || {};
 
     // Layout defaults
-    const floatingButtonHasText = layout.floatingButtonHasText 
-    const floatingButtonPosition = layout.floatingButtonPosition 
-    const floatingButtonText = layout.floatingButtonText 
-    const showFloatingButton = layout.showFloatingButton 
-    const primaryColor = activeCampaign.primaryColor 
-    const secondaryColor = activeCampaign.secondaryColor 
-    const tertiaryColor = activeCampaign.tertiaryColor 
-    const wheelSectors = String(layout.wheelSectors )
-    const envSelection = layout.theme 
-    const versionSelection = layout.popupLayout 
-    const displayStyle = layout.displayStyle 
-    const colorTone = activeCampaign.color 
-    const logoImage = layout.logo 
+    const floatingButtonHasText =
+      layout.floatingButtonHasText === true ? "true" : "false";
+    const floatingButtonPosition =
+      layout.floatingButtonPosition || "bottomRight";
+    const floatingButtonText = layout.floatingButtonText || "";
+    const showFloatingButton =
+      layout.showFloatingButton === true ? "true" : "false";
+    const primaryColor = activeCampaign.primaryColor || "#ffc700";
+    const secondaryColor = activeCampaign.secondaryColor || "#ffffff";
+    const tertiaryColor = activeCampaign.tertiaryColor || "#000000";
+    const wheelSectors = String(layout.wheelSectors || "six");
+    const envSelection = layout.theme || "light";
+    const versionSelection = layout.popupLayout || "bottom";
+    const displayStyle = layout.displayStyle || "popup";
+    const colorTone = activeCampaign.color || "dualTone";
+    const logoImage = layout.logo || "";
 
     // Content defaults
-    const landing = content.landing 
-    const headlineText = landing.title 
-    const headlineChildText = landing.subtitle 
-    const showLandingSubtitle = landing.showSubtitle 
-    const showEmail = landing.showEmail 
-    const emailPlaceholder = landing.emailPlaceholder 
-    const showPrivacyPolicy = landing.showPrivacyPolicy 
-    const termCondText = landing.privacyPolicyText 
-    const landingButtonText = landing.buttonText 
+    const landing = content.landing || {};
+    const headlineText = landing.title || "TRY YOUR LUCK";
+    const headlineChildText =
+      landing.subtitle || "This is a demo of our Spin to Win";
+    const showLandingSubtitle =
+      landing.showSubtitle === true ? "true" : "false";
+    const showEmail = landing.showEmail === true ? "true" : "false";
+    const emailPlaceholder = landing.emailPlaceholder || "Enter your Email";
+    const showPrivacyPolicy =
+      landing.showPrivacyPolicy === true ? "true" : "false";
+    const termCondText =
+      landing.privacyPolicyText || "I accept the terms and conditions";
+    const landingButtonText = landing.buttonText || "SPIN";
 
-    const result = content.result 
-    const headlineResultText = result.title 
-    const showResultSubtitle = result.showSubtitle 
-    const resultSubtitle = result.subtitle 
-    const showResultButton = result.showButton 
-    const resultButtonText = result.buttonText 
+    const result = content.result || {};
+    const headlineResultText = result.title || "CONGRATULATIONS";
+    const showResultSubtitle = result.showSubtitle === true ? "true" : "false";
+    const resultSubtitle = result.subtitle || "";
+    const showResultButton = result.showButton === true ? "true" : "false";
+    const resultButtonText = result.buttonText || "REDEEM NOW";
 
-    const wheel = content.wheel 
-    const wheelSectorsData = wheel.sectors 
-    const copySameCode = wheel.copySameCode 
+    const wheel = content.wheel || {};
+    const wheelSectorsData = wheel.sectors || [];
+    const copySameCode = wheel.copySameCode === true ? "true" : "false";
     // Serialize sectors array for storage
+    const wheelSectorsJson = JSON.stringify(wheelSectorsData);
 
-    const wheelSectorsJson = JSON.stringify(wheelSectorsData)
+    // Trigger settings
+    const appearingRules = rules.appearingRules || {};
+    const triggersJson = JSON.stringify({
+      trigger_clicks_enabled: appearingRules.clicksCount?.enabled || false,
+      trigger_clicks_value: appearingRules.clicksCount?.count || 0,
+      trigger_exitIntent_enabled: appearingRules.exitIntent?.enabled || false,
+      trigger_exitIntent_device: "desktop",
+      trigger_inactivity_enabled: false,
+      trigger_inactivity_seconds: 10,
+      trigger_pageCount_enabled: appearingRules.pageCount?.enabled || false,
+      trigger_pageCount_pages: appearingRules.pageCount?.count || 1,
+      trigger_pageScroll_enabled: appearingRules.pageScroll?.enabled || false,
+      trigger_pageScroll_percentage:
+        appearingRules.pageScroll?.percentage || 50,
+      trigger_timeDelay_enabled: appearingRules.timeDelay?.enabled || false,
+      trigger_timeDelay_seconds: appearingRules.timeDelay?.seconds || 5,
+    });
 
     // App installation ID
     const appIdQuery = await graphql(`
       #graphql
       query {
         currentAppInstallation {
-           id
-         }
-         shop {
-           id
-         }
+          id
+        }
+        shop {
+          id
+        }
       }
     `);
-    // const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id
-    const appInstallationID = (await appIdQuery.json()).data
-      .shop.id;
+    // const appInstallationID = (await appIdQuery.json()).data
+    //   .shop.id;
 
-    console.log("App Installation ID:", appInstallationID)
+    const appIdQueryData = await appIdQuery.json();
+    // const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+    const appInstallationID = appIdQueryData.data.shop.id;
 
-    // Build all metafields
+    console.log("Shop Installation ID:", appInstallationID);
+    // console.log("Shop Installation ID:", shopInstallationID);
+
+    // Build all metafields including subscription status
     const metafieldsInput = [
-      { namespace: "wheel-of-wonders", key: "floatingButtonHasText", type: "boolean", value: floatingButtonHasText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "floatingButtonPosition", type: "single_line_text_field", value: floatingButtonPosition, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "floatingButtonText", type: "single_line_text_field", value: floatingButtonText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "showFloatingButton", type: "boolean", value: showFloatingButton, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "displayStyle", type: "single_line_text_field", value: displayStyle, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "primaryColor", type: "single_line_text_field", value: primaryColor, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "secondaryColor", type: "single_line_text_field", value: secondaryColor, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "tertiaryColor", type: "single_line_text_field", value: tertiaryColor, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "activeCampaignId", type: "single_line_text_field", value: activeCampaign.id || "", ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "wheelSectors", type: "single_line_text_field", value: wheelSectors, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "wheelSectorsData", type: "json", value: wheelSectorsJson, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "envSelection", type: "single_line_text_field", value: envSelection, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "versionSelection", type: "single_line_text_field", value: versionSelection, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "colorTone", type: "single_line_text_field", value: colorTone, ownerId: appInstallationID },
-      //{ namespace: "wheel-of-wonders", key: "logoImage", type: "single_line_text_field", value: logoImage, ownerId: appInstallationID },
+      // Subscription status
+      {
+        namespace: "wheel-of-wonders",
+        key: "hasActiveSubscription",
+        type: "boolean",
+        value: "true",
+        ownerId: appInstallationID,
+      },
+      // Layout metafields
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonHasText",
+        type: "boolean",
+        value: floatingButtonHasText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonPosition",
+        type: "single_line_text_field",
+        value: floatingButtonPosition,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "floatingButtonText",
+        type: "single_line_text_field",
+        value: floatingButtonText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "showFloatingButton",
+        type: "boolean",
+        value: showFloatingButton,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "displayStyle",
+        type: "single_line_text_field",
+        value: displayStyle,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "primaryColor",
+        type: "single_line_text_field",
+        value: primaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "secondaryColor",
+        type: "single_line_text_field",
+        value: secondaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "tertiaryColor",
+        type: "single_line_text_field",
+        value: tertiaryColor,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "activeCampaignId",
+        type: "single_line_text_field",
+        value: activeCampaign.id || "",
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "wheelSectors",
+        type: "single_line_text_field",
+        value: wheelSectors,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "wheelSectorsData",
+        type: "json",
+        value: wheelSectorsJson,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "envSelection",
+        type: "single_line_text_field",
+        value: envSelection,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "versionSelection",
+        type: "single_line_text_field",
+        value: versionSelection,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "colorTone",
+        type: "single_line_text_field",
+        value: colorTone,
+        ownerId: appInstallationID,
+      },
       // Landing page metafields
-      { namespace: "wheel-of-wonders", key: "headlineText", type: "single_line_text_field", value: headlineText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "headlineChildText", type: "single_line_text_field", value: headlineChildText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "emailPlaceholder", type: "single_line_text_field", value: emailPlaceholder, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "termCondText", type: "single_line_text_field", value: termCondText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "landingButtonText", type: "single_line_text_field", value: landingButtonText, ownerId: appInstallationID },
+      {
+        namespace: "wheel-of-wonders",
+        key: "headlineText",
+        type: "single_line_text_field",
+        value: headlineText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "headlineChildText",
+        type: "single_line_text_field",
+        value: headlineChildText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "emailPlaceholder",
+        type: "single_line_text_field",
+        value: emailPlaceholder,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "termCondText",
+        type: "single_line_text_field",
+        value: termCondText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "landingButtonText",
+        type: "single_line_text_field",
+        value: landingButtonText,
+        ownerId: appInstallationID,
+      },
       // Result page metafields
-      { namespace: "wheel-of-wonders", key: "headlineResultText", type: "single_line_text_field", value: headlineResultText, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "resultSubtitle", type: "single_line_text_field", value: resultSubtitle, ownerId: appInstallationID },
-      { namespace: "wheel-of-wonders", key: "resultButtonText", type: "single_line_text_field", value: resultButtonText, ownerId: appInstallationID },
+      {
+        namespace: "wheel-of-wonders",
+        key: "headlineResultText",
+        type: "single_line_text_field",
+        value: headlineResultText,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "resultSubtitle",
+        type: "single_line_text_field",
+        value: resultSubtitle,
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "resultButtonText",
+        type: "single_line_text_field",
+        value: resultButtonText,
+        ownerId: appInstallationID,
+      },
       // Default coupon result
-      { namespace: "wheel-of-wonders", key: "couponResult", type: "number_integer", value: "2", ownerId: appInstallationID },
-    ]
+      {
+        namespace: "wheel-of-wonders",
+        key: "couponResult",
+        type: "number_integer",
+        value: "2",
+        ownerId: appInstallationID,
+      },
+      {
+        namespace: "wheel-of-wonders",
+        key: "triggersData",
+        type: "json",
+        value: triggersJson,
+        ownerId: appInstallationID,
+      },
+    ];
 
     // Remove any entries with blank values to avoid Shopify errors
     const filteredMetafields = metafieldsInput.filter(
-      mf => mf.value !== undefined && mf.value !== null && mf.value !== ""
-    )
+      (mf) => mf.value !== undefined && mf.value !== null && mf.value !== "",
+    );
 
     // Execute mutation
     const metafieldsMutation = await graphql(
       `
         mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
           metafieldsSet(metafields: $metafields) {
-            metafields { id namespace key value }
-            userErrors { field message }
+            metafields {
+              id
+              namespace
+              key
+              value
+            }
+            userErrors {
+              field
+              message
+            }
           }
         }
       `,
-      { variables: { metafields: filteredMetafields } }
-    )
+      { variables: { metafields: filteredMetafields } },
+    );
 
-    const data = await metafieldsMutation.json()
+    const data = await metafieldsMutation.json();
     if (data.data?.metafieldsSet?.userErrors?.length) {
-      console.error("Metafield userErrors:", data.data.metafieldsSet.userErrors)
-      return { success: false, errors: data.data.metafieldsSet.userErrors }
+      console.error(
+        "Metafield userErrors:",
+        data.data.metafieldsSet.userErrors,
+      );
+      return { success: false, errors: data.data.metafieldsSet.userErrors };
     }
 
-    console.log("Successfully synced campaign to metafields :", data.data.metafieldsSet.metafields)
-    return { success: true, metafields: data.data.metafieldsSet.metafields, campaignId: activeCampaign.id }
+    console.log("from subscription.server.js");
+    // console.log("✅ Successfully synced campaign to metafields :",data.data.metafieldsSet.metafields);
+    console.log("✅ Successfully synced campaign to metafields :");
+    
+    return {
+      success: true,
+      metafields: data.data.metafieldsSet.metafields,
+      campaignId: activeCampaign.id,
+    };
   } catch (error) {
-    console.error("Error syncing campaign to metafields:", error)
-    return { success: false, error: error.message }
+    console.error("Error syncing campaign to metafields:", error);
+    return { success: false, error: error.message };
   }
 }
+
+
+// Create metafields for the active campaign
+// export async function syncActiveCampaignToMetafields(graphql, shopName) {
+//   try {
+//     // Get the active campaign from MongoDB
+//     const activeCampaign = await getActiveCampaign(shopName)
+
+//     if (!activeCampaign) {
+//       console.log("No active campaign found to sync to metafields")
+//       return { success: false, message: "No active campaign found" }
+//     }
+
+//     console.log("Syncing active campaign to metafields:", activeCampaign,activeCampaign.name)
+
+//     // Extract layout and content information
+//     const layout = activeCampaign.layout 
+//     const content = activeCampaign.content 
+
+//     // Layout defaults
+//     const floatingButtonHasText = layout.floatingButtonHasText 
+//     const floatingButtonPosition = layout.floatingButtonPosition 
+//     const floatingButtonText = layout.floatingButtonText 
+//     const showFloatingButton = layout.showFloatingButton 
+//     const primaryColor = activeCampaign.primaryColor 
+//     const secondaryColor = activeCampaign.secondaryColor 
+//     const tertiaryColor = activeCampaign.tertiaryColor 
+//     const wheelSectors = String(layout.wheelSectors )
+//     const envSelection = layout.theme 
+//     const versionSelection = layout.popupLayout 
+//     const displayStyle = layout.displayStyle 
+//     const colorTone = activeCampaign.color 
+//     const logoImage = layout.logo 
+
+//     // Content defaults
+//     const landing = content.landing 
+//     const headlineText = landing.title 
+//     const headlineChildText = landing.subtitle 
+//     const showLandingSubtitle = landing.showSubtitle 
+//     const showEmail = landing.showEmail 
+//     const emailPlaceholder = landing.emailPlaceholder 
+//     const showPrivacyPolicy = landing.showPrivacyPolicy 
+//     const termCondText = landing.privacyPolicyText 
+//     const landingButtonText = landing.buttonText 
+
+//     const result = content.result 
+//     const headlineResultText = result.title 
+//     const showResultSubtitle = result.showSubtitle 
+//     const resultSubtitle = result.subtitle 
+//     const showResultButton = result.showButton 
+//     const resultButtonText = result.buttonText 
+
+//     const wheel = content.wheel 
+//     const wheelSectorsData = wheel.sectors 
+//     const copySameCode = wheel.copySameCode 
+//     // Serialize sectors array for storage
+
+//     const wheelSectorsJson = JSON.stringify(wheelSectorsData)
+
+//     // App installation ID
+//     const appIdQuery = await graphql(`
+//       #graphql
+//       query {
+//         currentAppInstallation {
+//            id
+//          }
+//          shop {
+//            id
+//          }
+//       }
+//     `);
+//     // const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id
+//     const appInstallationID = (await appIdQuery.json()).data
+//       .shop.id;
+
+//     console.log("App Installation ID:", appInstallationID)
+
+//     // Build all metafields
+//     const metafieldsInput = [
+//       { namespace: "wheel-of-wonders", key: "floatingButtonHasText", type: "boolean", value: floatingButtonHasText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "floatingButtonPosition", type: "single_line_text_field", value: floatingButtonPosition, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "floatingButtonText", type: "single_line_text_field", value: floatingButtonText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "showFloatingButton", type: "boolean", value: showFloatingButton, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "displayStyle", type: "single_line_text_field", value: displayStyle, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "primaryColor", type: "single_line_text_field", value: primaryColor, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "secondaryColor", type: "single_line_text_field", value: secondaryColor, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "tertiaryColor", type: "single_line_text_field", value: tertiaryColor, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "activeCampaignId", type: "single_line_text_field", value: activeCampaign.id || "", ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "wheelSectors", type: "single_line_text_field", value: wheelSectors, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "wheelSectorsData", type: "json", value: wheelSectorsJson, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "envSelection", type: "single_line_text_field", value: envSelection, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "versionSelection", type: "single_line_text_field", value: versionSelection, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "colorTone", type: "single_line_text_field", value: colorTone, ownerId: appInstallationID },
+//       //{ namespace: "wheel-of-wonders", key: "logoImage", type: "single_line_text_field", value: logoImage, ownerId: appInstallationID },
+//       // Landing page metafields
+//       { namespace: "wheel-of-wonders", key: "headlineText", type: "single_line_text_field", value: headlineText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "headlineChildText", type: "single_line_text_field", value: headlineChildText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "emailPlaceholder", type: "single_line_text_field", value: emailPlaceholder, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "termCondText", type: "single_line_text_field", value: termCondText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "landingButtonText", type: "single_line_text_field", value: landingButtonText, ownerId: appInstallationID },
+//       // Result page metafields
+//       { namespace: "wheel-of-wonders", key: "headlineResultText", type: "single_line_text_field", value: headlineResultText, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "resultSubtitle", type: "single_line_text_field", value: resultSubtitle, ownerId: appInstallationID },
+//       { namespace: "wheel-of-wonders", key: "resultButtonText", type: "single_line_text_field", value: resultButtonText, ownerId: appInstallationID },
+//       // Default coupon result
+//       { namespace: "wheel-of-wonders", key: "couponResult", type: "number_integer", value: "2", ownerId: appInstallationID },
+//     ]
+
+//     // Remove any entries with blank values to avoid Shopify errors
+//     const filteredMetafields = metafieldsInput.filter(
+//       mf => mf.value !== undefined && mf.value !== null && mf.value !== ""
+//     )
+
+//     // Execute mutation
+//     const metafieldsMutation = await graphql(
+//       `
+//         mutation CreateAppDataMetafield($metafields: [MetafieldsSetInput!]!) {
+//           metafieldsSet(metafields: $metafields) {
+//             metafields { id namespace key value }
+//             userErrors { field message }
+//           }
+//         }
+//       `,
+//       { variables: { metafields: filteredMetafields } }
+//     )
+
+//     const data = await metafieldsMutation.json()
+//     if (data.data?.metafieldsSet?.userErrors?.length) {
+//       console.error("Metafield userErrors:", data.data.metafieldsSet.userErrors)
+//       return { success: false, errors: data.data.metafieldsSet.userErrors }
+//     }
+
+//     console.log("Successfully synced campaign to metafields :", data.data.metafieldsSet.metafields)
+//     return { success: true, metafields: data.data.metafieldsSet.metafields, campaignId: activeCampaign.id }
+//   } catch (error) {
+//     console.error("Error syncing campaign to metafields:", error)
+//     return { success: false, error: error.message }
+//   }
+// }
 
 // Get discount codes from Shopify
 export async function getDiscountCodes(graphql) {
