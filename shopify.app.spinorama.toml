@@ -3,7 +3,7 @@
 client_id = "b1af4757b31fe702a75c6c21aaedd75c"
 name = "Spinorama"
 handle = "spinorama"
-application_url = "https://thou-sparc-players-entire.trycloudflare.com"
+application_url = "https://subsection-actor-nervous-document.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,26 +17,25 @@ scopes = "read_discounts,read_products,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://thou-sparc-players-entire.trycloudflare.com/auth/callback",
-  "https://thou-sparc-players-entire.trycloudflare.com/auth/shopify/callback",
-  "https://thou-sparc-players-entire.trycloudflare.com/api/auth/callback"
+  "https://subsection-actor-nervous-document.trycloudflare.com/auth/callback",
+  "https://subsection-actor-nervous-document.trycloudflare.com/auth/shopify/callback",
+  "https://subsection-actor-nervous-document.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2025-04"
 
   [[webhooks.subscriptions]]
-uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/customers_data_request"
-compliance_topics = [ "customers/data_request" ]
+  uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/customers_data_request"
+  compliance_topics = [ "customers/data_request" ]
 
-[[webhooks.subscriptions]]
-uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/customers_redact"
-compliance_topics = [ "customers/redact" ]
+  [[webhooks.subscriptions]]
+  uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/customers_redact"
+  compliance_topics = [ "customers/redact" ]
 
-[[webhooks.subscriptions]]
-uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/shop_redact"
-compliance_topics = [ "shop/redact" ]
-
+  [[webhooks.subscriptions]]
+  uri = "https://seal-app-2smk6.ondigitalocean.app/webhooks/gdpr/shop_redact"
+  compliance_topics = [ "shop/redact" ]
 
 [pos]
 embedded = false
