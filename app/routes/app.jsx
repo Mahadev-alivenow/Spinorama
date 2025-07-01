@@ -115,6 +115,7 @@ export const loader = async ({ request }) => {
             if (syncActiveCamp.success) {
               console.log(
                 "Root from UI - successfully synced active campaign to metafields",
+                syncActiveCamp,
               );
             } else {
               console.log(
