@@ -13,7 +13,7 @@ export default function Navigation({ createButtonText = "Create Campaign" }) {
     <>
       <div className="flex justify-between mb-8">
         <div className="bg-gray-100 rounded-lg shadow-sm p-1 flex items-center flex-1 mr-4">
-          <Link
+          {/* <Link
             to="/index"
             className={`${
               currentPath === "/app" || currentPath === "/app"
@@ -22,7 +22,7 @@ export default function Navigation({ createButtonText = "Create Campaign" }) {
             } px-8 py-3 rounded-lg font-medium text-center flex-1`}
           >
             Home
-          </Link>
+          </Link> */}
           <Link
             to="/campaigns"
             className={`${

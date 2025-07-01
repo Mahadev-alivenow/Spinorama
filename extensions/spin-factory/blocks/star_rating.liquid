@@ -19,6 +19,25 @@
 {% assign buttonText = app.metafields.wheel-of-wonders.floatingButtonText  %}
 {% assign showFloatingButton = app.metafields.wheel-of-wonders.showFloatingButton  %}
 {% assign primaryColor = app.metafields.wheel-of-wonders.primaryColor  %}
+{% assign headlineText = app.metafields.wheel-of-wonders.headlineText  %}
+{% assign headlineChildText = app.metafields.wheel-of-wonders.headlineChildText  %}
+{% assign headlineResultText = app.metafields.wheel-of-wonders.headlineResultText  %}
+{% assign termCondText = app.metafields.wheel-of-wonders.termCondText  %}
+{% assign buttonText = app.metafields.wheel-of-wonders.buttonText  %}
+{% assign resultButtonText = app.metafields.wheel-of-wonders.resultButtonText  %}
+{% assign resultSubtitle = app.metafields.wheel-of-wonders.resultSubtitle  %}
+
+{% assign secondaryColor = app.metafields.wheel-of-wonders.secondaryColor  %}
+{% assign tertiaryColor = app.metafields.wheel-of-wonders.tertiaryColor  %}
+
+{% assign versionSelection = app.metafields.wheel-of-wonders.versionSelection  %}
+{% assign envSelection = app.metafields.wheel-of-wonders.envSelection  %}
+{% assign emailPlaceholder = app.metafields.wheel-of-wonders.emailPlaceholder  %}
+{% assign couponResult = app.metafields.wheel-of-wonders.couponResult  %}
+{% assign colorTone = app.metafields.wheel-of-wonders.colorTone  %}
+
+{% comment %} Get shop domain for API calls {% endcomment %}
+
 {% assign shopDomain = shop.permanent_domain %}
 
 {% comment %} Determine wheel slices from metafields {% endcomment %}
@@ -34,7 +53,7 @@
 {% assign slices = 6 %}
 {% endcase %}
 
-<div style="display: block;">
+{% comment %} <div style="display: block;">
   <h2>check : {{ app.metafields.mtappsremixbillingdemo.hasPlan  }}</h2>
 
   <h3>Debug Metafields:</h3>
@@ -45,7 +64,7 @@
   <p>showFloatingButton: {{ app.metafields.wheel-of-wonders.showFloatingButton }}</p>
   <p>primaryColor: {{ app.metafields.wheel-of-wonders.primaryColor }}</p>
   <p>wheelSelector: {{ app.metafields.wheel-of-wonders.wheelSectors }}</p>
-</div>
+</div> {% endcomment %}
 
 {% if showFloatingButton %}
 <div id="spin-wheel-button" class="spin-wheel-position-{{ buttonPosition }}" style="display: block;">
@@ -100,8 +119,8 @@
           {% endcomment %}
         </div>
         <div class="TitleHeadline">
-          <div class="Hedline HeadlineTittle">GO AHEAD GIVE IT A SPIN!<br>
-            <span> This is a demo of our Spin to Win displays</span>
+          <div class="Hedline HeadlineTittle">{{ headlineText }}<br>
+            <span> {{ headlineChildText }} </span>
           </div>
         </div>
       </div>
@@ -110,7 +129,7 @@
           <input class="input" id="UserEnteredEmail" type="text" placeholder="email" required="">
         </div>
         <div class="SpintBtn ButtonText SpinBtnText" id="SpinBtnClick">
-          SPIN NOW
+          {{ landingButtonText }}
         </div>
       </div>
 
@@ -128,8 +147,8 @@
       </div>
       <div class="CouponTittleHeadline">
         <div class="Hedline CouponHeadlineText">
-          LUCKY DAY!
-          <span> You have won 10% discount for your shopping</span>
+          {{ headlineResultText }}
+          <span> {{ resultSubtitle }}</span>
         </div>
       </div>
 
@@ -139,7 +158,7 @@
           <input class="input ResultCoupon" id="CouponsText" style="pointer-events: none;" type="text" required="">
         </div>
         <div class="CoupontBtn ResultBtnText" id="CouponBtnClick">
-          REDEEM NOW
+          {{ resultButtonText }}
         </div>
       </div>
     </div>
@@ -221,20 +240,20 @@
     let ColorToneFromUser = "{{ app.metafields.wheel-of-wonders.colorTone }}";
     let primaryColorFromUser = "{{ primaryColor }}";
 
-    console.log( "Loaded settings:", {
-      HeadlineText: HeadlineTextFromUser,
-      HeadlineChildText: HeadlineChildTextFromUser,
-      ButtonText: ButtonTextFromUser,
-      BGColor: BGColorFromUser,
-      FrameBorderColor: FrameBorderColorFromUser,
-      LogoImage: LogoImagefromUser,
-      VersionSelection: VersionSelectionFromUser,
-      EnvormentSelection: EnvormentSelectionFromUser,
-      EmailPlaceholder: EmailPlaceHoldrFromUser,
-      CouponResult: CouponResultFromBackEnd,
-      ColorTone: ColorToneFromUser,
-      primaryColor: primaryColorFromUser
-    } );
+    // console.log( "Loaded settings:", {
+    //   HeadlineText: HeadlineTextFromUser,
+    //   HeadlineChildText: HeadlineChildTextFromUser,
+    //   ButtonText: ButtonTextFromUser,
+    //   BGColor: BGColorFromUser,
+    //   FrameBorderColor: FrameBorderColorFromUser,
+    //   LogoImage: LogoImagefromUser,
+    //   VersionSelection: VersionSelectionFromUser,
+    //   EnvormentSelection: EnvormentSelectionFromUser,
+    //   EmailPlaceholder: EmailPlaceHoldrFromUser,
+    //   CouponResult: CouponResultFromBackEnd,
+    //   ColorTone: ColorToneFromUser,
+    //   primaryColor: primaryColorFromUser
+    // } );
     // Helper function to determine if a color is light or dark
     function isLightColor( color )
     {
