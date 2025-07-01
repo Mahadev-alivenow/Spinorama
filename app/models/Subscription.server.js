@@ -438,6 +438,25 @@ export async function syncActiveCampaignToMetafields(
     const colorTone = activeCampaign.color || "dualTone";
     const logoImage = layout.logo || "";
 
+
+    console.log("Layout settings: with default in sub.server.js file", { 
+      floatingButtonHasText,
+      floatingButtonPosition,
+      floatingButtonText,
+      showFloatingButton,
+      primaryColor,
+
+      secondaryColor,   
+      tertiaryColor,
+      wheelSectors,
+      envSelection,
+      versionSelection,
+      displayStyle,
+      colorTone,
+      logoImage,
+    }
+    )
+
     // Content defaults
     const landing = content.landing || {};
     const headlineText = landing.title || "TRY YOUR LUCK";
@@ -500,8 +519,8 @@ export async function syncActiveCampaignToMetafields(
     //   .shop.id;
 
     const appIdQueryData = await appIdQuery.json();
-    // const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
-    const appInstallationID = appIdQueryData.data.shop.id;
+    const appInstallationID = appIdQueryData.data.currentAppInstallation.id;
+    // const appInstallationID = appIdQueryData.data.shop.id;
 
     console.log("Shop Installation ID:", appInstallationID);
     // console.log("Shop Installation ID:", shopInstallationID);
