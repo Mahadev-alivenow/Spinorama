@@ -63,7 +63,7 @@ function CampaignList() {
       toast.success(
         `Campaign ${newStatus === "active" ? "activated" : "deactivated"} successfully!`,
       );
-      navigate("/app"); // Refresh the campaigns list
+      // navigate("/campaigns"); // Refresh the campaigns list
     } catch (error) {
       toast.error("Failed to update campaign status");
     }
