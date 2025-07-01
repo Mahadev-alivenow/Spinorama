@@ -162,7 +162,7 @@ export default function Tutorial() {
             from the app dashboard.
           </p>
 
-          <p className="mt-4 text-gray-700">
+          {/* <p className="mt-4 text-gray-700">
             Need help? Watch the video above or{" "}
             <a
               href="mailto:admin@alivenow.in"
@@ -171,7 +171,7 @@ export default function Tutorial() {
               contact our support team
             </a>
             .
-          </p>
+          </p> */}
         </div>
       </div>
     </div>
