@@ -809,9 +809,9 @@ export async function syncActiveCampaignToMetafields(graphql, shopName) {
          }
       }
     `);
-    const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id
-    // const appInstallationID = (await appIdQuery.json()).data
-    //   .shop.id;
+    // const appInstallationID = (await appIdQuery.json()).data.currentAppInstallation.id
+    const appInstallationID = (await appIdQuery.json()).data
+      .shop.id;
 
     console.log("App Installation ID:", appInstallationID)
 
