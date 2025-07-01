@@ -33,7 +33,7 @@ const hmrConfig =
 
 export default defineConfig({
   server: {
-    allowedHosts: [host, "isle-mountains-arm-dining.trycloudflare.com"],
+    allowedHosts: [host, "dog-streaming-classic-tub.trycloudflare.com"],
     cors: {
       preflightContinue: true,
     },

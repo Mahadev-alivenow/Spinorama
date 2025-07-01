@@ -35,13 +35,16 @@
 {% endcase %}
 
 <div style="display: block;">
+  <h2>check : {{ app.metafields.mtappsremixbillingdemo.hasPlan  }}</h2>
+
   <h3>Debug Metafields:</h3>
+  <p>ALL: {{ app.metafields.wheel-of-wonders }}</p>
   <p>floatingButtonPosition: {{ app.metafields.wheel-of-wonders.floatingButtonPosition }}</p>
   <p>floatingButtonHasText: {{ app.metafields.wheel-of-wonders.floatingButtonHasText }}</p>
   <p>floatingButtonText: {{ app.metafields.wheel-of-wonders.floatingButtonText }}</p>
   <p>showFloatingButton: {{ app.metafields.wheel-of-wonders.showFloatingButton }}</p>
   <p>primaryColor: {{ app.metafields.wheel-of-wonders.primaryColor }}</p>
-  <p>primaryColor: {{ app.metafields.wheel-of-wonders.wheelSectors }}</p>
+  <p>wheelSelector: {{ app.metafields.wheel-of-wonders.wheelSectors }}</p>
 </div>
 
 {% if showFloatingButton %}
@@ -202,22 +205,36 @@
     const SpinAudio = document.getElementById( "SpinAudio" );
 
     // Default values from metafields
-    let HeadlineTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineText | default: 'TRY YOUR LUCK' }}";
-    let HeadlineChildTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineChildText | default: 'This is a demo of our Spin to Win' }}";
-    let HeadlineResultTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineResultText | default: 'CONGRATULATIONS' }}";
-    let TermCondTextFromUser = "{{ app.metafields.wheel-of-wonders.termCondText | default: 'I accept the terms and conditions' }}";
-    let ButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.buttonText | default: 'SPIN' }}";
-    let ResultButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.resultButtonText | default: 'REDEEM NOW' }}";
-    let BGColorFromUser = "{{ app.metafields.wheel-of-wonders.secondaryColor | default: '#107bd4' }}";
-    let FrameBorderColorFromUser = "{{ app.metafields.wheel-of-wonders.tertiaryColor | default: 'yellow' }}";
-    let LogoImagefromUser = "{{ app.metafields.wheel-of-wonders.logoImage | default: '' }}";
-    let VersionSelectionFromUser = "{{ app.metafields.wheel-of-wonders.versionSelection | default: 'bottom' }}";
-    let EnvormentSelectionFromUser = "{{ app.metafields.wheel-of-wonders.envSelection | default: 'light' }}";
-    let EmailPlaceHoldrFromUser = "{{ app.metafields.wheel-of-wonders.emailPlaceholder | default: 'Enter your Email' }}";
-    let CouponResultFromBackEnd = "{{ app.metafields.wheel-of-wonders.couponResult | default: 2 }}";
-    let ColorToneFromUser = "{{ app.metafields.wheel-of-wonders.colorTone | default: 'dualTone' }}";
+    let HeadlineTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineText }}";
+    let HeadlineChildTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineChildText }}";
+    let HeadlineResultTextFromUser = "{{ app.metafields.wheel-of-wonders.headlineResultText }}";
+    let TermCondTextFromUser = "{{ app.metafields.wheel-of-wonders.termCondText }}";
+    let ButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.buttonText }}";
+    let ResultButtonTextFromUser = "{{ app.metafields.wheel-of-wonders.resultButtonText }}";
+    let BGColorFromUser = "{{ app.metafields.wheel-of-wonders.secondaryColor }}";
+    let FrameBorderColorFromUser = "{{ app.metafields.wheel-of-wonders.tertiaryColor }}";
+    let LogoImagefromUser = "{{ app.metafields.wheel-of-wonders.logoImage }}";
+    let VersionSelectionFromUser = "{{ app.metafields.wheel-of-wonders.versionSelection }}";
+    let EnvormentSelectionFromUser = "{{ app.metafields.wheel-of-wonders.envSelection }}";
+    let EmailPlaceHoldrFromUser = "{{ app.metafields.wheel-of-wonders.emailPlaceholder }}";
+    let CouponResultFromBackEnd = "{{ app.metafields.wheel-of-wonders.couponResult }}";
+    let ColorToneFromUser = "{{ app.metafields.wheel-of-wonders.colorTone }}";
     let primaryColorFromUser = "{{ primaryColor }}";
 
+    console.log( "Loaded settings:", {
+      HeadlineText: HeadlineTextFromUser,
+      HeadlineChildText: HeadlineChildTextFromUser,
+      ButtonText: ButtonTextFromUser,
+      BGColor: BGColorFromUser,
+      FrameBorderColor: FrameBorderColorFromUser,
+      LogoImage: LogoImagefromUser,
+      VersionSelection: VersionSelectionFromUser,
+      EnvormentSelection: EnvormentSelectionFromUser,
+      EmailPlaceholder: EmailPlaceHoldrFromUser,
+      CouponResult: CouponResultFromBackEnd,
+      ColorTone: ColorToneFromUser,
+      primaryColor: primaryColorFromUser
+    } );
     // Helper function to determine if a color is light or dark
     function isLightColor( color )
     {

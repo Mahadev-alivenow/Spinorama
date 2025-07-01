@@ -201,13 +201,13 @@ app.get(
 
       const buttonData = {
         floatingButtonPosition:
-          activeCampaign.layout?.floatingButtonPosition || "bottomRight",
+          activeCampaign.layout?.floatingButtonPosition ,
         floatingButtonHasText:
-          activeCampaign.layout?.floatingButtonHasText === true,
+          activeCampaign.layout?.floatingButtonHasText ,
         floatingButtonText:
-          activeCampaign.layout?.floatingButtonText || "SPIN & WIN",
-        showFloatingButton: activeCampaign.layout?.showFloatingButton !== false,
-        primaryColor: activeCampaign.primaryColor || "#fe5300",
+          activeCampaign.layout?.floatingButtonText ,
+        showFloatingButton: activeCampaign.layout?.showFloatingButton ,
+        primaryColor: activeCampaign.primaryColor ,
         id: activeCampaign.id,
       };
 
