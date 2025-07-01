@@ -118,7 +118,7 @@ export default function Tutorial() {
           </div>
         </div>
 
-        {/* NEW SECTION: How to Install in Storefront */}
+        {/* NEW SECTION: How to Install in Storefront. */}
         <div className="md:col-span-2 bg-white p-6 rounded-xl shadow">
           <h2 className="text-2xl font-semibold mb-4">
             How to Add App to Your Storefront
