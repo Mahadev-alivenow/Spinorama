@@ -14,15 +14,15 @@
 </div>
 {% endcomment %}
 
-{% assign buttonPosition = app.metafields.wheel-of-wonders.floatingButtonPosition | default: 'bottomRight' %}
-{% assign showButtonText = app.metafields.wheel-of-wonders.floatingButtonHasText | default: true %}
-{% assign buttonText = app.metafields.wheel-of-wonders.floatingButtonText | default: 'SPIN & WIN' %}
-{% assign showFloatingButton = app.metafields.wheel-of-wonders.showFloatingButton | default: true %}
-{% assign primaryColor = app.metafields.wheel-of-wonders.primaryColor | default: '#ffc700' %}
+{% assign buttonPosition = app.metafields.wheel-of-wonders.floatingButtonPosition  %}
+{% assign showButtonText = app.metafields.wheel-of-wonders.floatingButtonHasText  %}
+{% assign buttonText = app.metafields.wheel-of-wonders.floatingButtonText  %}
+{% assign showFloatingButton = app.metafields.wheel-of-wonders.showFloatingButton  %}
+{% assign primaryColor = app.metafields.wheel-of-wonders.primaryColor  %}
 {% assign shopDomain = shop.permanent_domain %}
 
 {% comment %} Determine wheel slices from metafields {% endcomment %}
-{% assign slices_raw = app.metafields.wheel-of-wonders.wheelSectors | default: 'six' %}
+{% assign slices_raw = app.metafields.wheel-of-wonders.wheelSectors  %}
 {% case slices_raw %}
 {% when 'four' %}
 {% assign slices = 4 %}
@@ -33,6 +33,16 @@
 {% else %}
 {% assign slices = 6 %}
 {% endcase %}
+
+<div style="display: block;">
+  <h3>Debug Metafields:</h3>
+  <p>floatingButtonPosition: {{ app.metafields.wheel-of-wonders.floatingButtonPosition }}</p>
+  <p>floatingButtonHasText: {{ app.metafields.wheel-of-wonders.floatingButtonHasText }}</p>
+  <p>floatingButtonText: {{ app.metafields.wheel-of-wonders.floatingButtonText }}</p>
+  <p>showFloatingButton: {{ app.metafields.wheel-of-wonders.showFloatingButton }}</p>
+  <p>primaryColor: {{ app.metafields.wheel-of-wonders.primaryColor }}</p>
+  <p>primaryColor: {{ app.metafields.wheel-of-wonders.wheelSectors }}</p>
+</div>
 
 {% if showFloatingButton %}
 <div id="spin-wheel-button" class="spin-wheel-position-{{ buttonPosition }}" style="display: block;">
