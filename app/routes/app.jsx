@@ -14,7 +14,7 @@ import { PlanProvider } from "../context/PlanContext";
 import { CampaignProvider } from "../context/CampaignContext";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
-import { data } from "autoprefixer";
+// import { data } from "autoprefixer";
 // import styles from "./styles/global.css?url";
 import styles from "../styles/global.css?url";
 

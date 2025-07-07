@@ -134,8 +134,20 @@ export default function StepFour() {
         `Campaign ${launchStatus === "active" ? "launched" : "saved"} successfully!`,
       );
 
+      try {
+        await toggleCampaignStatus(campaignData.id, campaignData.status);
+        const newStatus = currentStatus === "active" ? "draft" : "active";
+        toast.success(
+          `Campaign ${newStatus === "active" ? "activated" : "deactivated"} successfully!`,
+        );
+        // navigate("/app"); // Refresh the campaigns list
+      } catch (error) {
+        toast.error("Failed to update campaign status");
+      }
+
       // Navigate to campaigns page
-      navigate("/app/campaigns");
+      console.log("ROUTE to app");
+      navigate("/app");
     } catch (error) {
       console.error("Error launching campaign:", error);
       toast.error(`Error: ${error.message}`);

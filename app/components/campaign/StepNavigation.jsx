@@ -69,13 +69,19 @@ export default function StepNavigation({
     if (campaignData.step === 4) {
       // If we're on the last step, trigger the onNext callback if provided
       if (onNext) {
-        onNext();
+        setTimeout(() => {
+          console.log("Wait for next step -----------")
+          onNext();
+        }, 500);
       } else {
         // Otherwise, show the launch modal
         setShowLaunchModal(true);
       }
     } else {
-      nextStep();
+      setTimeout(() => {
+        console.log("Wait for next step -----------");
+        nextStep();
+      }, 500);
     }
   };
 

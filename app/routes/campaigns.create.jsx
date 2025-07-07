@@ -79,6 +79,35 @@ export default function CreateCampaign() {
         `Campaign ${status === "active" ? "launched" : "saved"} successfully!`,
       );
 
+      try {
+        const syncResponse = await fetch("/api/sync-campaign-metafields", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ campaignId: campaign.id }),
+        });
+
+        if (syncResponse.ok) {
+          toast.success("Campaign activated and synced to storefront!");
+          // console.log("syncing campaign metafields: ",syncResponse);
+          // window.location.reload();
+        } else {
+          console.log("RELOADING PAGE not ok", syncResponse);
+
+          // navigate("/");
+
+          toast.success(
+            "Campaign activated! Sync to storefront may take a moment.",
+          );
+        }
+      } catch (syncError) {
+        console.log("RELOADING PAGE", syncError);
+        // window.location.reload();
+        toast.success(
+          "Campaign activated! Sync to storefront may take a moment.",
+        );
+      }
+
       // Navigate to campaigns page
       setTimeout(() => {
         navigate("/campaigns");

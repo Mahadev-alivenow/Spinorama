@@ -64,9 +64,46 @@ export function CampaignProvider({ children }) {
   });
   const [isOfflineMode, setIsOfflineMode] = useState(false);
 
+  // Utility to generate a random name
+  // const generateRandomCampaignName = () => {
+  //   const adjectives = [
+  //     "Lucky",
+  //     "Brave",
+  //     "Swift",
+  //     "Happy",
+  //     "Crazy",
+  //     "Magic",
+  //     "Bold",
+  //     "Alpha",
+  //     "Epic",
+  //     "Silent",
+  //   ];
+  //   const nouns = [
+  //     "Fox",
+  //     "Tiger",
+  //     "Storm",
+  //     "Star",
+  //     "Wave",
+  //     "Wizard",
+  //     "Falcon",
+  //     "Comet",
+  //     "Shadow",
+  //     "Drift",
+  //   ];
+
+  //   const randomAdjective =
+  //     adjectives[Math.floor(Math.random() * adjectives.length)];
+  //   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+
+  //   return `Campaign-${randomAdjective}${randomNoun}`;
+  // };
+
+  // let randomCapaignName = generateRandomCampaignName();
+  // console.log("random campaign name:", generateRandomCampaignName());
+  // console.log("random campaign name variable:", randomCapaignName);
   // Initialize campaign data with default values
   const [campaignData, setCampaignData] = useState({
-    name: "Campaign Name",
+    campaignName: "Camapign Name", // Random campaign name
     step: 1,
     look: "custom", // custom or readyMade
     color: "singleTone", // singleTone or dualTone
@@ -452,7 +489,7 @@ export function CampaignProvider({ children }) {
   const updateCampaignName = useCallback((name) => {
     setCampaignData((prevData) => ({
       ...prevData,
-      name: name || "Campaign Name",
+      name: name,
     }));
     toast.success("Campaign name updated!");
   }, []);
@@ -711,7 +748,7 @@ export function CampaignProvider({ children }) {
         campaignWithId = {
           ...campaign,
           id: campaign.id || `campaign-${Date.now()}`,
-          name: campaign.name || "Campaign Name",
+          name: campaign.name,
           createdAt: campaign.createdAt || new Date().toISOString(),
           status: campaign.status || "draft",
           primaryColor: campaign.primaryColor || "#fe5300",

@@ -33,7 +33,7 @@ const hmrConfig =
 
 export default defineConfig({
   server: {
-    allowedHosts: [host, "subsection-actor-nervous-document.trycloudflare.com"],
+    allowedHosts: [host, "reel-eight-many-medline.trycloudflare.com"],
     cors: {
       preflightContinue: true,
     },
@@ -46,7 +46,7 @@ export default defineConfig({
   },
   css: {
     postcss: {
-      plugins: [tailwindcss, autoprefixer],
+      plugins: [tailwindcss, autoprefixer()],
     },
   },
   plugins: [

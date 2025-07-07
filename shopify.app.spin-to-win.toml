@@ -3,7 +3,7 @@
 client_id = "aa7f6258a74870e804dc2246dc4b683d"
 name = "spin-to-win"
 handle = "spin-to-win-10"
-application_url = "https://liquid-deadline-sail-decrease.trycloudflare.com"
+application_url = "https://graduate-ranked-like-delivery.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,9 @@ scopes = "read_products,write_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://liquid-deadline-sail-decrease.trycloudflare.com/auth/callback",
-  "https://liquid-deadline-sail-decrease.trycloudflare.com/auth/shopify/callback",
-  "https://liquid-deadline-sail-decrease.trycloudflare.com/api/auth/callback"
+  "https://graduate-ranked-like-delivery.trycloudflare.com/auth/callback",
+  "https://graduate-ranked-like-delivery.trycloudflare.com/auth/shopify/callback",
+  "https://graduate-ranked-like-delivery.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

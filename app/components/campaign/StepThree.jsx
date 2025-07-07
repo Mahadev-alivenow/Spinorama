@@ -9,7 +9,7 @@ export default function StepThree() {
   const { campaignData, updateCampaignData } = useCampaign();
   const { discountCodes, setDiscountCodes, fetchAndSetDiscountCodes,currentPlan } =
     usePlan();
-  const [activeTab, setActiveTab] = useState("landing");
+  const [activeTab, setActiveTab] = useState("wheel");
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [showFileModal, setShowFileModal] = useState(false);
   const [currentFileField, setCurrentFileField] = useState(null);

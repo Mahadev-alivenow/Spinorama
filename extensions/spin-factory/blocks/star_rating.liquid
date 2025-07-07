@@ -343,6 +343,7 @@
     try
     {
       const wheelSectorsData = JSON.parse( '{{ app.metafields.wheel-of-wonders.wheelSectorsData }}' );
+      console.log( "Parsed wheel sectors data:", wheelSectorsData );
       if ( wheelSectorsData && wheelSectorsData.length > 0 )
       {
         // Map the sectors to coupon text
@@ -542,6 +543,7 @@
         el.style.fill = WheelFontColor1FromUser;
         el.style.fontFamily = "'Roboto', sans-serif";
         el.style.fontWeight = "bold";
+
       } );
 
       document.querySelectorAll( '.WheelFontColor2' ).forEach( function ( el )
@@ -557,9 +559,13 @@
         const couponElement = document.querySelector( `.Coup${ i + 1 }` );
         if ( couponElement && i < AllCoupons.length )
         {
-          couponElement.textContent = `${ AllCoupons[ i ] }`;
+          const couponText = AllCoupons[ i ];
+          const truncated = couponText.length > 15 ? couponText.slice( 0, 12 ) + "..." : couponText;
+          couponElement.textContent = truncated;
+          couponElement.title = couponText; // Optional: show full text on hover
         }
       }
+
     }
 
     // Wheel positioning functions
