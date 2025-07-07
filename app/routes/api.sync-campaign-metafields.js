@@ -234,10 +234,11 @@ export async function loader({ request }) {
     const { session, admin } = await authenticate.admin(request);
     const shopName = session.shop;
     const graphql = admin.graphql;
+    console.log("GraphQL client initialized for shop:", shopName);
 
     // Sync the current active campaign
-    // const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
-    const syncResult = await syncActiveCampaignToMetafields(graphql, "wheel-of-wonders");
+     const syncResult = await syncActiveCampaignToMetafields(graphql, shopName);
+    //const syncResult = await syncActiveCampaignToMetafields(graphql, "wheel-of-wonders");
 
     if (syncResult.success) {
       return json({

@@ -377,7 +377,7 @@ export async function syncActiveCampaignToMetafields(
     } else if (campaignOrShopName && typeof campaignOrShopName === "object") {
       activeCampaign = campaignOrShopName;
       // Try to extract shop name from campaign or use a fallback
-      shopName = activeCampaign.shop || "wheel-of-wonders.myshopify.com";
+      shopName = activeCampaign.shop;
     } else {
       console.log("Invalid parameter for syncActiveCampaignToMetafields");
       return { success: false, message: "Invalid parameter" };
