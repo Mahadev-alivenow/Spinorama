@@ -9,6 +9,7 @@ import {
   getActiveCampaign,
   getDiscountCodes,
   syncActiveCampaignToMetafields,
+  syncDiscountCodesToMetafields,
 } from "../models/Subscription.server";
 import { PlanProvider } from "../context/PlanContext";
 import { CampaignProvider } from "../context/CampaignContext";
@@ -48,14 +49,13 @@ export const loader = async ({ request }) => {
 
   const discountCodes = [];
   let activeCampaign = null;
-
+  let codes = [];
   if (!host) {
     throw new Error("Missing host query param in URL");
   }
 
   try {
     // const { getDiscountCodes } = await import("./models/Subscription.server");
-
     if (
       shop ||
       embedded ||
@@ -74,6 +74,9 @@ export const loader = async ({ request }) => {
         const nodes = discountCode?.data?.discountNodes?.edges || [];
 
         console.log("Root loader - raw discount nodes:", nodes.length);
+
+        codes = await syncDiscountCodesToMetafields(admin.graphql);
+        console.log(" mahadev codes", codes);
 
         for (const { node } of nodes) {
           const discount = node.discount;
@@ -165,6 +168,7 @@ export const loader = async ({ request }) => {
     shop,
     hasCampaign: !!activeCampaign,
     isThemeEditor: false,
+    codes,
   });
 };
 

@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "497fc4fda60045f9003e12cb804b29f0"
+name = "stagging-spinorama"
+handle = "stagging-spinorama"
+application_url = "https://guitar-bc-rugby-gather.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "stagging-spinorama.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_discounts,read_products,write_discounts,write_products"
+
+[auth]
+redirect_urls = [
+  "https://guitar-bc-rugby-gather.trycloudflare.com/auth/callback",
+  "https://guitar-bc-rugby-gather.trycloudflare.com/auth/shopify/callback",
+  "https://guitar-bc-rugby-gather.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-07"
+
+[pos]
+embedded = false

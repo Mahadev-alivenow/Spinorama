@@ -33,7 +33,10 @@ const hmrConfig =
 
 export default defineConfig({
   server: {
-    allowedHosts: [host, "reel-eight-many-medline.trycloudflare.com"],
+    allowedHosts: [
+      host,
+      "crossing-addresses-analyst-hey.trycloudflare.com",
+    ],
     cors: {
       preflightContinue: true,
     },

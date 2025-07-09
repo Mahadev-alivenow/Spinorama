@@ -956,6 +956,243 @@ export async function getDiscountCodes(graphql) {
   return res;
 }
 
+export async function syncDiscountCodesToMetafields(graphql) {
+  try {
+    // Step 1: Get App Installation ID
+    const appIdQuery = await graphql(`
+      query {
+        currentAppInstallation {
+          id
+        }
+      }
+    `);
+
+    const appInstallationID = (await appIdQuery.json()).data
+      .currentAppInstallation.id;
+    console.log("App Installation ID:", appInstallationID);
+
+    // Step 2: Get Discount Codes from Shopify
+    const discountCodesQuery = await graphql(`
+      query getDiscountCodes {
+        discountNodes(first: 50) {
+          edges {
+            node {
+              id
+              discount {
+                __typename
+                ... on DiscountCodeBasic {
+                  title
+                  summary
+                  codes(first: 10) {
+                    edges {
+                      node {
+                        code
+                      }
+                    }
+                  }
+                }
+                ... on DiscountCodeBxgy {
+                  title
+                  summary
+                  codes(first: 10) {
+                    edges {
+                      node {
+                        code
+                      }
+                    }
+                  }
+                }
+                ... on DiscountCodeFreeShipping {
+                  title
+                  summary
+                  codes(first: 10) {
+                    edges {
+                      node {
+                        code
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `);
+
+    const discountsResult = await discountCodesQuery.json();
+
+    // Step 3: Format discount codes as flat array (or grouped, based on your logic)
+    const codes = [];
+
+    discountsResult.data.discountNodes.edges.forEach(({ node }) => {
+      const discount = node.discount;
+      if (discount?.codes?.edges) {
+        discount.codes.edges.forEach(({ node: codeNode }) => {
+          codes.push(codeNode.code);
+        });
+      }
+    });
+
+    console.log("Collected Discount Codes:", codes);
+
+    // Step 4: Save to App Metafield
+    const metafieldsMutation = await graphql(
+      `
+        mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+          metafieldsSet(metafields: $metafields) {
+            metafields {
+              key
+              namespace
+              value
+              type
+              ownerType
+              id
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `,
+      {
+        variables: {
+          metafields: [
+            {
+              namespace: "codes",
+              key: "shopifyDiscountCodes",
+              type: "json",
+              value: JSON.stringify(codes),
+              ownerId: appInstallationID,
+            },
+          ],
+        },
+      },
+    );
+
+    const data = await metafieldsMutation.json();
+
+    if (data.data?.metafieldsSet?.userErrors?.length) {
+      console.error(
+        "Metafield userErrors:",
+        data.data.metafieldsSet.userErrors,
+      );
+      return {
+        success: false,
+        errors: data.data.metafieldsSet.userErrors,
+      };
+    }
+
+    console.log(
+      "✅ Successfully synced discount codes to metafields:",
+      data.data.metafieldsSet.metafields,
+    );
+
+    return {
+      success: true,
+      metafields: data.data.metafieldsSet.metafields,
+      discountCodes: codes,
+    };
+  } catch (error) {
+    console.error("❌ Error syncing discount codes to metafields:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+
+// export async function getDiscountCodes(graphql) {
+//   // Step 1: Get app installation ID
+//   const appIdQuery = await graphql(`
+//     #graphql
+//     query {
+//       currentAppInstallation {
+//         id
+//       }
+//     }
+//   `);
+//   const appInstallationID = (await appIdQuery.json()).data
+//     .currentAppInstallation.id;
+//   console.log("App Installation ID:", appInstallationID);
+
+//   // Step 2: Query discount codes
+//   const result = await graphql(`
+//     #graphql
+//     query getDiscountCodes {
+//       discountNodes(first: 50) {
+//         edges {
+//           node {
+//             id
+//             discount {
+//               __typename
+//               ... on DiscountCodeBasic {
+//                 title
+//                 summary
+//                 codes(first: 10) {
+//                   edges {
+//                     node {
+//                       code
+//                     }
+//                   }
+//                 }
+//               }
+//               ... on DiscountCodeBxgy {
+//                 title
+//                 summary
+//                 codes(first: 10) {
+//                   edges {
+//                     node {
+//                       code
+//                     }
+//                   }
+//                 }
+//               }
+//               ... on DiscountCodeFreeShipping {
+//                 title
+//                 summary
+//                 codes(first: 10) {
+//                   edges {
+//                     node {
+//                       code
+//                     }
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   `);
+
+//   const res = await result.json();
+
+//   // Step 3: Extract and log discount codes
+//   const discountCodes = [];
+//   res?.data?.discountNodes?.edges?.forEach((edge) => {
+//     const discount = edge.node.discount;
+//     const codes = discount?.codes?.edges?.map((e) => e.node.code) || [];
+//     discountCodes.push(...codes);
+//   });
+
+//   console.log("Fetched Discount Codes:", discountCodes);
+
+//   // Step 4: Prepare metafield payload
+//   const metafieldPayload = {
+//     namespace: "wheel-of-wonders",
+//     key: "shopifyDiscountCodes",
+//     type: "json",
+//     value: JSON.stringify(discountCodes),
+//     ownerId: appInstallationID,
+//   };
+
+//   console.log("Metafield to save:", metafieldPayload);
+
+//   return { discountCodes, metafieldPayload };
+// }
+
+
+
 // Create metafields specifically for campaign layout
 export async function createCampaignLayoutMetafields(graphql, shopName) {
   try {

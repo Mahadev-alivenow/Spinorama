@@ -2,17 +2,13 @@
 {{ 'theme.css' | asset_url | stylesheet_tag }}
 {{ 'spin-wheel.css' | asset_url | stylesheet_tag }}
 
-{% comment %}
+
 <!-- Debug section - uncomment to see metafield values -  -->
-<div style="display: none;">
+{% comment %} <div style="display: none;">
   <h3>Debug Metafields:</h3>
-  <p>floatingButtonPosition: {{ app.metafields.wheel-of-wonders.floatingButtonPosition }}</p>
-  <p>floatingButtonHasText: {{ app.metafields.wheel-of-wonders.floatingButtonHasText }}</p>
-  <p>floatingButtonText: {{ app.metafields.wheel-of-wonders.floatingButtonText }}</p>
-  <p>showFloatingButton: {{ app.metafields.wheel-of-wonders.showFloatingButton }}</p>
-  <p>primaryColor: {{ app.metafields.wheel-of-wonders.primaryColor }}</p>
-</div>
-{% endcomment %}
+<p>CODES : {{ app.metafields.codes.shopifyDiscountCodes }}</p>
+</div> {% endcomment %}
+
 
 {% assign buttonPosition = app.metafields.wheel-of-wonders.floatingButtonPosition  %}
 {% assign showButtonText = app.metafields.wheel-of-wonders.floatingButtonHasText  %}
@@ -339,31 +335,47 @@
     }
 
     // Try to get wheel sectors data from metafields JSON
-    {% if app.metafields.wheel-of-wonders.wheelSectorsData %}
+
+    {% if app.metafields.codes.shopifyDiscountCodes %}
+
     try
     {
-      const wheelSectorsData = JSON.parse( '{{ app.metafields.wheel-of-wonders.wheelSectorsData }}' );
-      console.log( "Parsed wheel sectors data:", wheelSectorsData );
-      if ( wheelSectorsData && wheelSectorsData.length > 0 )
+      let parsedData;
+      try
       {
-        // Map the sectors to coupon text
-        const sectorCoupons = wheelSectorsData.map( sector => sector.rewardType || sector.text || "10% OFF" );
+        parsedData = JSON.parse( '{{ app.metafields.codes.shopifyDiscountCodes }}' );
+      } catch ( e )
+      {
+        console.warn( "Failed to parse wheel sectors data:", e );
+        parsedData = [];
+      }
 
-        // Make sure we have enough coupons for the wheel
+      console.log( "Parsed wheel sectors data:", parsedData );
+
+      if ( Array.isArray( parsedData ) && parsedData.length > 0 )
+      {
+        // Use parsed data if available
+        const sectorCoupons = parsedData.map( sector =>
+        {
+          // Handle either plain string or object format
+          return ( typeof sector === 'string' )
+            ? sector.slice( 0, 15 )
+            : ( sector.rewardType || sector.text || "10% OFF" ).slice( 0, 15 );
+        } );
+
         while ( sectorCoupons.length < WheelSectorFromUser )
         {
           sectorCoupons.push( "10% OFF" );
         }
 
-        // Trim if we have too many
-        if ( sectorCoupons.length > WheelSectorFromUser )
-        {
-          AllCoupons = sectorCoupons.slice( 0, WheelSectorFromUser );
-        } else
-        {
-          AllCoupons = sectorCoupons;
-        }
+        AllCoupons = sectorCoupons.slice( 0, WheelSectorFromUser );
+      } else
+      {
+        // Fallback default values
+        console.log( "⚠️ No valid data found. Using default coupons." );
+        AllCoupons = Array.from( { length: WheelSectorFromUser }, () => "10% OFF" );
       }
+
     } catch ( e )
     {
       console.error( "Error parsing wheel sectors data:", e );
@@ -896,7 +908,7 @@
       // First try to save to the remote API
       const apiUrl = 'https://seal-app-2smk6.ondigitalocean.app/api/save-email';
       // const apiUrl = 'https://appearance-hierarchy-ww-here.trycloudflare.com/api/save-email';
-      
+
 
       fetch( apiUrl, {
         method: 'POST',
